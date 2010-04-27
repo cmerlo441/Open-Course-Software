@@ -1,0 +1,156 @@
+<?php
+
+$no_header = 1;
+require_once( '../_header.inc' );
+
+if( $_SESSION[ 'admin' ] == 1 ) {
+    
+    if( isset( $_POST[ 'type' ] ) and isset( $_POST[ 'weight' ] ) and $_POST[ 'type' ] > 0 ) {
+        $weight = substr( $_POST[ 'weight' ], 0, strlen( $_POST[ 'weight' ] ) - 1 );
+        $insert_query = 'insert into grade_weights( id, course, grade_type, grade_weight, collected ) '
+            . "values( null, {$_POST[ 'id' ]}, {$_POST[ 'type' ]}, $weight, {$_POST[ 'collected' ]} )";
+        $insert_result = $db->query( $insert_query );
+    } else if( isset( $_POST[ 'remove_id' ] ) ) {
+        $remove_query = 'delete from grade_weights '
+            . "where id = {$_POST[ 'remove_id' ]}";
+        $remove_result = $db->query( $remove_query );
+    }
+    
+    $details_query = 'select id, dept, course, short_name, long_name, prereq, catalog, outline from courses '
+        . "where id = {$_POST[ 'id' ]}";
+	$details_result = $db->query( $details_query );
+	$row = $details_result->fetch_assoc( );
+    $details_result->close( );
+
+	print "<form class=\"course_details_form\" id=\"{$row[ 'id' ]}\">\n";
+	print "<h3><span class=\"dept\" id=\"{$row[ 'id' ]}\">{$row[ 'dept' ]}</span> "
+		. "<span class=\"course\" id=\"{$row[ 'id' ]}\">{$row[ 'course' ]}</span>: "
+		. "<span class=\"long_name\" id=\"{$row[ 'id' ]}\">{$row[ 'long_name' ]}</span></h3>\n";
+	print "<p><b>Short Name</b>: <span class=\"short_name\" id=\"{$row[ 'id' ]}\">"
+		. "{$row[ 'short_name' ]}</span></p>\n";
+	print "<p><b>Prerequisite</b>: <span class=\"prereq\" id=\"{$row[ 'id' ]}\">"
+		. "{$row[ 'prereq' ]}</span></p>\n";
+	print "<p><b>Catalog Description</b>:<br />"
+		. "<span class=\"catalog\" id=\"{$row[ 'id' ]}\">{$row[ 'catalog' ]}</p>\n";
+	print "<p><b>Course Outline</b>:<br />"
+	  . "<span class=\"outline\" id=\"{$row[ 'id' ]}\">{$row[ 'outline' ]}</p>\n";
+    
+    $weights_query = 'select w.id, t.grade_type as t, w.grade_weight as w, collected as c '
+        . 'from grade_types as t, grade_weights as w '
+        . "where w.course = {$_POST[ 'id' ]} "
+        . 'and w.grade_type = t.id '
+        . 'order by w.grade_weight desc, t.grade_type';
+    $weights_result = $db->query( $weights_query );
+
+    print "<p><b>Grade Weights</b>:<br />";
+    if( $weights_result->num_rows == 0 ) {
+        print "None.\n";
+    } else {
+        $sum = 0;
+        print "<ul id=\"grade_weights\">\n";
+        while( $row = $weights_result->fetch_assoc( ) ) {
+            print "<li><a href=\"javascript:void(0)\" class=\"remove_grade_weight\" id=\"{$row[ 'id' ]}\" "
+                . "title=\"Remove {$row[ 't' ]} Weight\">"
+                . "<img src=\"$docroot/images/silk_icons/cancel.png\" height=\"16\" width=\"16\" /></a>\n";
+            print "<span class=\"grade_type\" id=\"{$row[ 'id' ]}\">{$row[ 't' ]}</span>"
+                . ": <span class=\"grade_weight\" id=\"{$row[ 'id' ]}\">{$row[ 'w' ]}</span>%";
+            if( $row[ 'c' ] == 1 ) {
+                print ' (Collected)';
+            }
+            print "</li>\n";
+            $sum += $row[ 'w' ];
+        }
+        print "<li><b>Total: ";
+        if( $sum != 100 ) {
+            print "<span class=\"wrong_total\">$sum%</span>";
+        } else {
+            print "$sum%";
+        }
+        print "</b></li>\n";
+        print "</ul>\n";
+    }
+    print "</p>\n";
+
+
+    print "<div id=\"new_grade_weight\">\n";
+    print "<table><tr><td><select id=\"grade_type\">\n";
+    print "<option value=\"0\">Add New Grade Weight</option>\n";
+    $weights_query = 'select id, grade_type from grade_types order by grade_type';
+    $weights_result = $db->query( $weights_query );
+    while( $row = $weights_result->fetch_assoc( ) ) {
+        print "<option value=\"{$row[ 'id' ]}\">{$row[ 'grade_type' ]}</option>\n";
+    }
+    print "</select></td>";
+    print "<td>Weight:</td><td><div class=\"slider\" id=\"new_weight\" style=\"width:100px\"></div></td>\n";
+    print "<td><input type=\"text\" id=\"new_weight_amount\" size=\"3\"/></td>\n";
+    print "</tr><tr>\n";
+    print "<td colspan=\"2\" style=\"text-align: center\"><input type=\"checkbox\" id=\"collected\"> Do you collect these in class?</td>\n";
+    print "</tr><tr>\n";
+    print "<td colspan=\"2\" style=\"text-align: center\"><a href=\"javascript:void(0)\" id=\"new_weight_submit\">Add This Grade Weight</a></td>\n";
+    print "</tr></table></div> <!-- div#new_grade_weight -->\n";
+
+    print "<p><b>Textbooks</p>\n";
+    print "<div id=\"textbooks\"></div>\n";
+
+	print "<p><a href=\"javascript:void(0)\" class=\"hide_course_details\">Hide</a></p>\n";
+
+	print "</form>\n";
+    
+?>
+
+<script type="text/javascript">
+$(document).ready(function(){
+    $.post( 'course_textbooks.php',
+        { course: "<?php echo $_POST[ 'id' ]; ?>" },
+        function(data){
+            $("div#textbooks").html(data);
+        }
+    );
+
+    $("div#new_weight").slider({
+        value: 20,
+        min: 0,
+        max: 100,
+        step: 5,
+        slide: function(event, ui){
+            $("input#new_weight_amount").val(ui.value + '%');
+        }
+    });
+    
+    $("input#new_weight_amount").val($("div#new_weight").slider("value") + '%');
+    
+    $("div#new_grade_weight a#new_weight_submit").click(function(){
+        var grade_type = $("select#grade_type").val();
+        var grade_weight = $("input#new_weight_amount").val();
+        var id = "<?php echo $_POST[ 'id' ]; ?>";
+        var collected = 0;
+        if( $("input#collected").attr("checked") == true ) {
+            collected = 1;
+        }
+        
+        $.post( 'course_details.php',
+        { id: id, type: grade_type, weight: grade_weight, collected: collected },
+        function(data){
+            $("div.course_details").html(data);
+        })
+    })
+    
+    $("a.remove_grade_weight").click(function(){
+        var id = "<?php echo $_POST[ 'id' ]; ?>";
+        var remove_id = $(this).attr("id");
+        
+        $.post( 'course_details.php',
+        { id: id, remove_id: remove_id },
+        function(data){
+            $("div.course_details").html(data);
+        })
+    })
+
+  	
+})
+</script>
+
+<?php
+}
+?>
+

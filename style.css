@@ -1,0 +1,886 @@
+@import "calendar.css";
+@import "del.icio.us.css";
+@import "clockpick.css";
+@import url("css/custom-theme/jquery-ui-1.7.1.custom.css");
+@import url("markitup/markitup/skins/markitup/style.css");
+@import url("markitup/markitup/sets/html/style.css" );
+@import url("highlighter/styles/shCore.css" );
+@import url("highlighter/styles/shThemeDefault.css" );
+@import url("uploadify/uploadify.css");
+
+@media screen {
+* {
+	margin: 0;
+}
+
+html {
+	height: 100%;
+    font-size: 0.8em;
+}
+
+body {
+	background-color: #1e273e;
+/*    background-image: url( images/stripe.png ); */
+	font-family: "Lucida Grande", Helvetica, Arial, sans-serif;
+	height: 100%;
+    padding: 1em 0 0 0;
+}
+
+.text_error {
+    background-color: #f30;
+    color: white;
+}
+
+div#wrapper {
+	background-color: #1e273e;
+	width: 950px;
+	min-height: 100%;
+	height: auto !important;
+	height: 100%;
+	margin: 0 auto -60px;
+}
+
+div#wrapper_content {
+	min-height: 100%;
+	height: auto !important;
+	height: 100%;
+	margin-left: 5px;
+	margin-right: 5px;
+	background-color: #1e273e;
+    display: none;
+}
+
+div#top {
+	min-height: 80px;
+	padding: 0;
+    margin: 0 auto;
+	color: #c7c6bf;
+	font-size: small;
+    background-color: #1e273e;
+}
+
+div#top p#name {
+    color: #5d562c;
+}
+
+div#top a {
+    color: #c7c6bf;
+}
+
+div#top a:hover {
+    background-color: #5d562c;
+}
+
+div#top div#links {
+    height: 20px;
+    width: 100%;
+    clear: both;
+}
+
+div#top div#links ul {
+    margin: 0 auto;
+    padding: 0.5em 0 0 0;
+    line-height: 20px;
+    white-space: nowrap;
+    font-weight: bold;
+}
+
+div#top div#links li {
+    border: 1px solid black;
+    display: inline;
+    float: left;
+    width: 32.75%;
+    margin: 0;
+    padding: 0;
+}
+
+div#top div#links li a {
+    display: block;
+    text-align: center;
+    text-transform: uppercase;
+    font-size: small;
+    width: 100%;
+    padding: 0.5em;
+    margin: 0;
+    text-decoration: none;
+    background-color: #aaabaf;
+    color: #5d562c;
+}
+
+div#top div#links li a:hover {
+    color: #aaabaf;
+    background-color: #5d562c;
+}
+
+div#top div#pic {
+	margin: 5px;
+	width: 80px;
+	float: right;
+}
+
+div#top div#prof {
+	margin: 0 80px;
+	font-size: small;
+	text-align: center;
+}
+
+div#top p#name {
+	font-size: x-large;
+	font-weight: bold;
+}
+
+div#middle {
+	margin-bottom: 1em;
+	padding-bottom: 1em;
+}
+
+div#middle a {
+    color: #c7c6bf;
+}
+
+div#middle a:hover {
+    background-color: #5d562c;
+}
+
+div#middle div.dialog {
+    display: none;
+    text-align: center;
+}
+
+div#middle div#left {
+    padding-top: 1em;
+    width: 35%;
+    float: left;
+    border-right: 1px dotted #c7c6bf;
+}
+
+div#middle div#calendars {
+	margin: 5px;
+	padding: 0.5em;
+    border-bottom: 1px dotted #c7c6bf;
+}
+
+div#middle div#calendars div#time {
+	color: #c7c6bf;
+	font-size: small;
+	text-align: center;
+}
+
+div#phprof_logo {
+    border-top: 1px dotted #c7c6bf;
+    padding: 0.5em 0 0 0;
+    text-align: center;
+}
+
+div#phprof_logo img {
+    border: 0;
+}
+
+div#middle div#main {
+	margin: 5px 0 5px 5px;
+	width: 63%;
+	float: left;
+}
+
+div#middle div#main div#show_left {
+    background-color: #5d562c;
+    color: #aaacab;
+    text-align: center;
+}
+
+div#middle div#not_logged_in, div#middle div#login_error {
+	margin: 0 0 1em 0;
+	padding: 1em;
+	background-color: #1e273e;
+	color: #c7c4c1;
+	font-size: small;
+	text-align: center;
+    display: none;
+    border-bottom: 1px dotted #c7c6bf;
+}
+
+div#middle div#not_logged_in {
+    background-color: #5d562c;
+    border: 1px solid;
+}
+
+div#middle div#no_admin, div#middle div#no_student {
+    background-color: #999;
+    color: red;
+    text-align: center;
+    font-weight: bold;
+    border: 1px solid #f00;
+    padding: 1em;
+}
+
+div#middle div#create_account {
+	margin: 1em 0;
+	padding: 1em;
+	background-color: #007d48;
+	color: #80ffc9;
+	font-size: small;
+    display: none;
+}
+
+div#middle div#create_account h2 {
+    text-align: center;
+}
+
+div#middle div#create_account p {
+	text-align: center;
+}
+
+div#middle div#create_account a {
+	color: #80ffc9;
+}
+
+div#middle div#create_account .required {
+	font-weight: bold;
+	font-size: x-large;
+	color: #bfffe4;
+}
+
+div#middle div#create_account div#create_account_form table th {
+	font-size: large;
+	text-align: center;
+	font-weight: bold;
+}
+
+div#middle div#create_account div#create_account_form table#typing {
+/*	float: left; */
+	width: 49%;
+}
+
+div#middle div#create_account div#create_account_form table#clicking {
+	float: right;
+	width: 49%;
+}
+
+div#middle div#create_account div#create_account_form {
+}
+
+div#middle div#admin, div#middle div#student {
+    background-color: #1e273e;
+    color: #c7c4c1;
+    padding: 0 1em 0.5em 0;
+    margin: 0 0 1em 0;
+    text-align: justify;
+    font-size: small;
+    display: none;
+    border-bottom: 1px dotted #c7c6bf;
+}
+
+div#middle div#admin_top, div#middle div#student_top {
+    text-align: center;
+}
+
+div#middle div#admin_details, div#middle div#student_details {
+    padding-bottom: 0.5em;
+}
+
+div#middle div#admin_bottom, div#middle div#student_bottom {
+    text-align: center;
+    font-size: small;
+    clear: both;
+    border-top: 1px solid black;
+    padding-top: 0.5em;
+    margin-top: 0.5em;
+}
+
+div#middle div#admin p, div#middle div#student p {
+	margin: 0.5em 0;
+}
+
+div#middle div#admin p.top, div#middle div#student p.top {
+	margin: 0;
+	text-align: center;
+}
+
+div#middle div#admin h2, div#middle div#student h2 {
+	margin: 0.5em 0;
+	text-align: center;
+    border-bottom: 2px solid #5d562c;
+}
+
+div#middle div#admin div#semester_dates {
+    text-align: center;
+}
+
+div#middle div#admin ul.section_tasks {
+    display: none;
+}
+
+div#middle div#unverified {
+    text-align: center;
+    font-weight: bold;
+    padding: 1em;
+    border: 1px solid;
+    background-color: #5d562c;
+    margin-bottom: 1em;
+}
+
+div#middle a.icon:hover {
+    background-color: #1e273e;
+}
+
+div#middle ul.meetings {
+    margin: 0.5em 0;
+}
+
+div#middle div.section_meetings {
+    display: none;
+}
+
+div#content div#add_section_form {
+    display: none;
+}
+
+div#middle div#content {
+	background-color: #1e273e;
+    color: white;
+	padding: 1em;
+	text-align: justify;
+}
+
+div#middle div#content h1 {
+	margin: 0 0 1em 0;
+	text-align: center;
+	color: #c7c6bf;
+	border-bottom: 3px solid #5d562c;
+}
+
+div#middle div#content h2 {
+	margin: 0.5em 0;
+	text-align: center;
+	color: #c7c6bf;
+	border-bottom: 2px solid #5d562c;
+}
+
+div#middle div#content h3 {
+	margin: 0.5em 0;
+	text-align: center;
+	color: #5d562c;
+	border-bottom: 1px solid #5d562c;
+}
+
+div#middle div#content ul {
+	list-style: none;
+}
+
+div#middle div#content ul.meetings li {
+    list-style-position: outside;
+}
+
+div#middle div#content ul li:before {
+	content: "\00BB \0020";
+}
+
+div#middle div#content p {
+	margin: 0.5em 0;
+}
+
+div#middle div#content p.centered {
+	text-align: center;
+}
+
+div#middle div#content div#create_page {
+    text-align: center;
+}
+
+div.meeting {
+    text-align: center;
+}
+
+div.meeting span.time {
+    font-weight: bold;
+}
+
+div.meeting span.course {
+    color: #5d562c;
+}
+
+div.success {
+	padding: 1em;
+    margin: 1em;
+	background-color: #c7c6c0;
+	color: #1e273e;
+	font-weight: bold;
+	text-align: center;
+    border: 1px solid #5d562c;
+    display: none;
+}
+
+div.success h2 {
+    color: #1e273e;
+}
+
+div.failure {
+	padding: 1em;
+    margin: 1em;
+	background-color: #f30;
+	color: #fff;
+	font-weight: bold;
+	text-align: center;
+	display: none;
+}
+
+div#middle div#content div.course_details {
+    font-size: small;
+    padding: 0.5em;
+    margin: 0.5em 0;
+}
+
+div#middle div#content a.next_author {
+	font-size: small;
+}
+
+div#middle div#content a img {
+    border: 0;
+    background-color: #1e273e;
+}
+
+div#middle div#content span.title, div#middle div#content span.subtitle {
+	font-weight: bold;
+}
+
+div#middle div#content table#roster_table tr.active > td {
+    background-color: #fff;
+}
+
+div#middle div#content table#roster_table tr.not_active > td {
+    background-color: #999;
+}
+
+div#middle div#content div.student_section {
+    display: none;
+}
+
+div#middle div#content div.attendance {
+    display: none;
+}
+
+div#middle div#content div.grades {
+    display: none;
+}
+
+div#middle div#content div.logins {
+    display: none;
+}
+
+div#middle div#content div.student_account_actions {
+    display: none;
+}
+
+div#all_assignments p {
+    text-align: center;
+}
+
+div#middle div#assignment div#title {
+    font-weight: bold;
+    text-align: center;
+    font-size: large;
+}
+
+div#middle div#assignment {
+    margin: 1em;
+}
+
+table.tablesorter {
+	font-family:arial;
+	background-color: #ffffff;
+	margin:10px 0pt 15px;
+	width: 100%;
+	text-align: left;
+}
+
+table.tablesorter thead th.header {
+    background-image: url("tablesorter/up-down-white.png");
+    background-repeat: no-repeat;
+    background-position: center right;
+    background-color: #1e273e;
+    border-left: 1px solid #1e273e;
+    border-right: 1px solid #000;
+    border-top: 1px solid #FFF;
+    padding: 4px;
+    height: auto;
+	cursor: pointer;
+}
+
+table.tablesorter thead th.headerSortUp {
+    background-image: url( "tablesorter/asc-white.png" );
+    background-repeat: no-repeat;
+    background-position: center right;
+    background-color: #5d562c;
+    margin-left: 1em;
+}
+
+table.tablesorter thead th.headerSortDown {
+    background-image: url( "tablesorter/desc-white.png" );
+    background-repeat: no-repeat;
+    background-position: center right;
+    background-color: #5d562c;
+    margin-left: 1em;
+}
+
+table.tablesorter tbody tr td  {
+    padding: 2px 5px;
+}
+
+/*
+table#prof_details {
+    font-size: medium;
+}
+*/
+
+table#prof_details td {
+    padding: 0 1em;
+}
+
+table#prof_details td.label {
+    text-align: right;
+}
+
+span.wrong_total {
+    color: #f00;
+}
+
+div.textbook {
+    padding: 0 0 0.5em 0;
+}
+
+div#add_new_textbook table, div#add_new_author table {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+div.holiday span.description {
+    font-weight: bold;
+}
+
+#fileUploader {
+	background-color: #1e273e;
+    padding: 0;
+    margin: 0;
+}
+
+div#existing_files {
+    margin: 1em;
+}
+
+div#existing_files ul li {
+    margin: 0;
+    padding: 0;
+    text-indent: -3em;
+}
+
+table.attendance th {
+    text-align: center;
+    background-color: #5d562c;
+    border: 1px solid;
+    padding: 0.25em;
+}
+
+table.attendance td {
+    border: 1px solid;
+    padding: 0.25em;
+}
+
+table.attendance td.name {
+    text-align: right;
+}
+
+table.attendance td.attendance {
+    text-align: center;
+}
+
+table.attendance td.attendance span {
+    width: 100%;
+}
+
+p.email {
+    padding: 1em;
+    border: 1px solid;
+}
+
+table.sign_in {
+    border: 0;
+}
+
+table.sign_in td {
+    padding: 1em 0;
+    width: auto;
+}
+
+table.sign_in td.sign_here {
+    width: 70%;
+    border-bottom: 1px solid;
+}
+
+div.prof_comment {
+    border: 1px solid;
+    margin: 0 0 1em 0;
+}
+
+div.prof_comment div.who {
+    font-size: small;
+    background-color: #5d562c;
+    text-align: center;
+    font-weight: bold;
+}
+
+div.prof_comment div.when {
+    font-size: smaller;
+    background-color: #5d562c;
+    text-align: center;
+    border-bottom: 1px solid;
+}
+
+div.prof_comment div.comment {
+    padding: 0.5em 0.25em;
+    background-color: #aaabaf;
+    color: #1e273e;
+}
+
+div.student_comment {
+    border: 1px solid;
+    margin: 0 0 1em 0;
+}
+
+div.student_comment div.who {
+    font-size: small;
+    background-color: #5d562c;
+    text-align: center;
+    font-weight: bold;
+}
+
+div.student_comment div.when {
+    font-size: smaller;
+    background-color: #5d562c;
+    text-align: center;
+    border-bottom: 1px solid;
+}
+
+div.student_comment div.comment {
+    padding: 0.5em 0.25em;
+}
+
+div.available {
+    border: 1px solid;
+    background-color: #5d562c;
+    padding: 0.5em;
+}
+
+div.unavailable {
+    border: 1px solid;
+    background: #aaabac;
+    padding: 0.5em;
+}
+
+div.late, span.late {
+    color: #f44;
+}
+
+table#admin_grades {
+    border-collapse: collapse;
+    empty-cells: show;
+    border: 2px solid;
+    margin: auto;
+}
+
+table#admin_grades tr#dates td {
+    background-color: #5d562c;
+    font-weight: bold;
+}
+
+table#admin_grades td {
+    border-collapse: collapse;
+    border: 1px solid;
+    padding: 0.5em;
+    text-align: center;
+}
+
+div.attendance_table {
+    display: none;
+}
+
+/*****************************************************/
+/* Student-specific stuff */
+/*****************************************************/
+
+div.assignment {
+    text-align: center;
+    border-bottom: 1px solid;
+    padding: 0.5em 0;
+}
+
+div.assignment div.date {
+    font-weight: bold;
+    text-align: center;
+}
+
+div.average {
+    font-weight: bold;
+    text-align: center;
+    padding: 0.5em 0;
+}
+
+div#class_average {
+    text-align: center;
+    font-size: 1.5em;
+    font-weight: bold;
+    padding: 0.5em;
+}
+
+span#class_average.passing {
+    color: green;
+}
+
+span#class_average.failing {
+    color: red;
+}
+
+div.homework div.title {
+    font-weight: bold;
+    text-align: center;
+}
+
+div.homework div.due_date {
+    text-align: center;
+    border-bottom: 1px solid;
+    margin-bottom: 1em;
+}
+
+div.submission {
+    margin-top: 1em;
+    border: 1px solid;
+    margin: 1em 0;
+    padding: 1em;
+}
+
+div.submission_details p {
+    border: 1px solid;
+    padding: 0.5em 1em;
+}
+
+/*
+div.submission p {
+    padding: 0.5em 1em;
+    border: 1px solid;
+}
+
+div#future div.edit_submission {
+    padding: 0.5em 1em;
+    border: 1px solid;
+    margin: 1em 0;
+}
+*/
+
+div#attendance_summary {
+    text-align: center;
+}
+
+div.project div.title {
+    font-weight: bold;
+    text-align: center;
+}
+
+/*****************************************************/
+
+div#push {
+	height: 60px;
+}
+
+div#bottom {
+	margin: 0 auto;
+	clear: both;
+	background-color: #5d562c;
+	color: #c7c6c1;
+	font-size: smaller;
+	padding: 0.5em 0.5em 0.25em 0.5em;
+	text-align: center;
+}
+
+div#bottom div#current_time {
+    display: none;
+}
+
+div#bottom div#qotd {
+    text-align: center;
+}
+
+div#bottom div#qotd span#quote {
+    font-weight: bold;
+}
+
+div#bottom div#qotd span#attribution {
+    font-style: italic;
+}
+
+} /* @media screen */
+
+@media print {
+    div#top {
+        display: none;
+    }
+    
+    div#middle div#left {
+        display: none;
+    }
+    
+    div#middle div#content h1 {
+        text-align: center;
+        font-size: 1.5em;
+        border-bottom: 1px solid black;
+    }
+
+    div#middle div#content ul {
+    	list-style: none;
+    }
+
+    div#middle div#content ul li:before {
+    	content: "\00BB \0020";
+    }
+
+    div#bottom {
+        text-align: center;
+        font-size: small;
+        border-top: 1px solid black;
+    }
+    
+    div#bottom div#qotd {
+        display: none;
+    }
+
+    div#bottom div#current_time {
+        font-size: small;
+        text-align: center;
+    }
+    
+    table.sign_in {
+        border-collapse: collapse;
+    }
+    
+    table.sign_in td {
+        padding: 1em 0;
+        width: auto;
+        vertical-align: text-bottom;
+    }
+    
+    table.sign_in td.sign_here {
+        width: 70%;
+        border-bottom: 1px solid;
+    }
+
+    .noprint {
+        display: none;
+    }
+    
+    a {
+        color: blue;
+    }
+    
+    a.visited {
+        color: blue;
+    }
+
+}

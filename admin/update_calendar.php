@@ -1,0 +1,43 @@
+<?php
+
+$no_header = 1;
+require_once( '../_header.inc' );
+
+if( $_SESSION[ 'admin' ] == 1 ) {
+    
+    // Changing semester name
+    if( isset( $_POST[ 'update_value' ] ) ) {
+    
+    	if( trim( $_POST[ 'update_value' ] ) != trim( $_POST[ 'original_html' ] ) ) {
+            $update_query = "update semester set name = "
+                . '"' . htmlentities( trim( $_POST[ 'update_value' ] ) ) . '"';
+            $update_result = $db->query( $update_query );
+    
+            $select_query = 'select name from semester';
+            $select_result = $db->query( $select_query );
+            $select_row = $select_result->fetch_assoc( );
+            $select_result->close( );
+            print $select_row[ 'name' ];
+
+    	} else {
+    		print $_POST[ 'original_html' ];
+    	}
+    	
+	// Changing semester start and end dates
+    } else {
+        preg_match( "/^semester_(.*)$/", $_POST[ 'column' ], $matches );
+        $column = $matches[ 1 ];
+        $update_query = "update semester set $column = \""
+            . date( 'Y-m-d', strtotime( $_POST[ 'date' ] ) ) . "\"";
+        $update_result = $db->query( $update_query );
+        $update_result->close( );
+        
+        $select_query = "select $column from semester";
+        $select_result = $db->query( $select_query );
+        $select_row = $select_result->fetch_assoc( );
+        $select_result->close( );
+        print date( 'l, F j, Y', strtotime( $select_row[ $column ] ) );
+    }
+}
+
+?>

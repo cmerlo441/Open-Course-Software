@@ -1,0 +1,75 @@
+div.calendar {
+	background-color: #1e273e;
+	color: #c7c6c1;
+	width: 75%;
+	margin: 0 auto;
+	margin-top: 5px;
+	margin-bottom: 5px;
+	padding: 0;
+}
+
+div.calendar table {
+	width: 100%;
+	border-collapse: collapse;
+	padding: 2px 3px;
+}
+
+div.calendar tr {
+	padding: 1px 2px;
+}
+
+div.calendar tr.head {
+	text-align: center;
+	font-size: large;
+	color: #5d562c;
+	background-color: #1e273e;
+    border-bottom: 1px solid #5d562c;
+}
+
+div.calendar tr.cal_row {
+	text-align: right;
+	font-size: small;
+/*    border-bottom: 1px dotted #5c5d60; */
+}
+
+div.calendar td {
+	margin: 1px;
+	padding: 1px 2px;
+    width: 15%;
+    vertical-align: top;
+}
+
+div.calendar td.weekend {
+    color: #5c5d60;
+	padding: 0;
+	margin: 0;
+    width: 10%;
+}
+
+div.calendar td.holiday {
+    color: #5d552c;
+    font-weight: bold;
+    border: 1px solid #5d552c;
+}
+
+div.calendar td.today {
+	background-color: #5d562c;
+	color: #c7c6bf;
+}
+
+div.calendar td.absent {
+    background-color: #5d562c;
+    border: 1px solid #5d562c;
+    font-weight: bold;
+}
+
+div.calendar td.present {
+    border: 1px solid #5d562c;
+    font-weight: bold;
+}
+
+div.calendar td.excused {
+    background-color: #5c5d60;
+    border: 1px solid #5c5d60;
+    font-weight: bold;
+}

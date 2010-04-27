@@ -1,0 +1,53 @@
+.delicious-posts {
+	margin: 0 auto;
+	padding: 0.5em;
+	background-color: #1e273e;
+    color: #5d562c;
+    text-align: center;
+    width: 75%;
+}
+
+.delicious-posts h2 {
+    text-align: center;
+    border-bottom: 1px solid #5d562c;
+}
+
+.delicious-posts h2 a {
+    color: #5d562c;
+}
+
+.delicious-banner {
+	font-size: small;
+}
+
+.delicious-posts ul, .delicious-posts li, .delicious-banner {
+	margin: 0;
+	padding: 0;
+}
+
+.delicious-posts li {
+    list-style-type: none;
+}
+
+.delicious-post {
+	padding: 0.5em;
+	font-size: 80%;
+}
+
+.delicious-posts a {
+	text-decoration: none;
+	color: #c7c6c1;
+	display: inline;
+	padding: 0.3em;
+}
+
+.delicious-post a {
+	display: block;
+    text-align: center;
+	color: #c7c6c1;
+}
+
+.delicious-post a:hover {
+    background-color: #5c5d60;
+	text-decoration: underline;
+}

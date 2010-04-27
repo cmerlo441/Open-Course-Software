@@ -1,0 +1,10 @@
+# mod_rewrite rule for PHProf pages
+
+RewriteEngine on
+#RewriteRule ^pages/(.*) http://torvalds.matcmp.ncc.edu/~cmerlo/pages.php?slug=$1
+RewriteRule ^pages/(.*) http://%{SERVER_NAME}/~cmerlo/pages.php?slug=$1
+
+<Files *.inc>
+  order allow,deny
+  deny from all
+</Files>
