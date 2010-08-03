@@ -56,7 +56,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 $(document).ready(function(){
     $('table.tablesorter').tablesorter( {
         sortList: [ [ 1, 0 ], [ 0, 0 ] ],
-        widgets: [ 'phprof', 'clickable_rows' ]
+        widgets: [ 'ocsw', 'clickable_rows' ]
     } );
     
     $('table.tablesorter tr').click(function(){

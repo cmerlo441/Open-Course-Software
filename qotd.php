@@ -3,7 +3,7 @@
 $no_header = 1;
 require_once( './_header.inc' );
    
-$qotd_query = 'select v from phprof where k = "qotd"';
+$qotd_query = 'select v from ocsw where k = "qotd"';
 $qotd_result = $db->query( $qotd_query );
 $qotd = $qotd_result->fetch_assoc( );
 if( $qotd[ 'v' ] == 1 ) {

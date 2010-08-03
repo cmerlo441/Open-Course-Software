@@ -193,7 +193,7 @@ class Calendar {
         if( $this->login_type > 0 ) {
         $events_query = "select id, short_description as sd, "
             . "section, unix_timestamp( start ) as start "
-            . "from cmerlo.events where ";
+            . "from events where ";
         if( $this->login_type == $login_types[ 'student' ] ) {
             $events_query .= "section = $this->login_section and ";
         }

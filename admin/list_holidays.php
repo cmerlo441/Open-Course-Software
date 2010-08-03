@@ -1,7 +1,7 @@
 <?php
 
-require_once( '/home/cmerlo/.htpasswd' );
-session_start( );
+$no_header = 1;
+require_once( '../_header.inc' );
 
 if( $_SESSION[ 'admin' ] == 1 ) {
     $holidays_query = 'select * from holidays order by date, description';

@@ -31,7 +31,8 @@ if( $_SESSION[ 'admin' ] == 1 ) {
              . ( $when == 'Due Already' ? '<' : '>=' )
              . ' "' . date( 'Y-m-d H:i:s' ) . '" '
              . 'order by due_date, posted_date';
-         $previous_assignments_result = $db->query( $previous_assignments_query );
+         $previous_assignments_result =
+	     $db->query( $previous_assignments_query );
          if( $previous_assignments_result->num_rows == 0 ) {
              print "<p>None assigned.</p>\n";
          } else {
@@ -39,12 +40,19 @@ if( $_SESSION[ 'admin' ] == 1 ) {
                 $sequence_query = 'select * from assignments '
                     . "where section = \"$section\" "
                     . "and grade_type = \"$grade_type\" "
-                    . 'and due_date < "' . date( 'Y-m-d H:i:s', strtotime( $a[ 'due_date' ] ) ) . '"';
+                    . 'and due_date < "'
+		    . date( 'Y-m-d H:i:s', strtotime( $a[ 'due_date' ] ) )
+		    . '"';
                 $sequence_result = $db->query( $sequence_query );
                 $sequence = $sequence_result->num_rows + 1;
                 
-                print "<p><a href=\"$admin/assignment.php?assignment={$a[ 'id' ]}\">"
-                    . "<b>{$grade_type_row[ 'grade_type' ]} #$sequence: ";
+                print "<p><a href=\"$admin/assignment.php?"
+		    . "assignment={$a[ 'id' ]}\">"
+                    . "<b>{$grade_type_row[ 'grade_type' ]}";
+		if( $previous_assignments_result->num_rows > 1 ) {
+		    print " #$sequence";
+		}
+		print ": ";
                 if( isset( $a[ 'title' ] ) and $a[ 'title' ] != '' ) {
                     print "{$a[ 'title' ]}: ";
                 }
@@ -65,27 +73,59 @@ if( $_SESSION[ 'admin' ] == 1 ) {
                             print 'No submissions.';
                         } else {
                             $row = $uploads_result->fetch_assoc( );
-                            print "$num submission" . ( $num == 1 ? '' : 's' ) . '.  '
+                            print "$num submission"
+				. ( $num == 1 ? '' : 's' ) . '.  '
                                 . 'Last one on '
-                                . date( 'l, M j \a\t g:i a', strtotime( $row[ 'datetime' ] ) )
-                                . ".</p>\n";
+                                . date( 'l, M j \a\t g:i a',
+					strtotime( $row[ 'datetime' ] ) )
+				. '.';
                         }
                     } else {
-                        $submissions_query = 'select * from assignment_submissions '
-                            . "where assignment = {$a[ 'id' ]} order by time desc";
+                        $submissions_query =
+			    'select * from assignment_submissions '
+                            . "where assignment = {$a[ 'id' ]} "
+			    . 'order by time desc';
                         $submissions_result = $db->query( $submissions_query );
                         $num = $submissions_result->num_rows;
                         if( $num == 0 ) {
                             print "No submissions.</p>\n";
                         } else {
                             $row = $submissions_result->fetch_assoc( );
-                            print "$num submission" . ( $num == 1 ? '' : 's' ) . ".  "
-                                . "Last one on "
-                                . date( 'l, M j \a\t g:i a', strtotime( $row[ 'time' ] ) )
-                                . ".</p>\n";
+                            print "$num submission" . ( $num == 1 ? '' : 's' )
+				. ".  Last one on "
+                                . date( 'l, M j \a\t g:i a',
+					strtotime( $row[ 'time' ] ) ) . '.';
                         }
                     }
+
+		    // Were they graded yet?
+
+		    $event_query = 'select id from grade_events '
+			. "where assignment = {$a[ 'id' ]}";
+		    $event_result = $db->query( $event_query );
+		    if( $event_result->num_rows == 1 ) {
+			$event_row = $event_result->fetch_assoc( );
+			$event = $event_row[ 'id' ];
+
+			$grades_query = 'select grade from grades '
+			    . "where grade_event = $event";
+			$grades_result = $db->query( $grades_query );
+			if( $grades_result->num_rows > 0 ) {
+			    $count = 0;
+			    $sum = 0;
+			    while( $grade_row =
+				   $grades_result->fetch_assoc( ) ) {
+				$grade = $grade_row[ 'grade' ];
+				$sum += ( $grade * 1.0 );
+				$count++;
+			    }
+			    print "<br />Average grade "
+				. number_format( $sum / $count, 2 ) . ".";
+			}
+		    }
+
                 } // if these are collected
+		print "</p>\n";
              }
          }
     }

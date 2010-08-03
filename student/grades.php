@@ -39,12 +39,12 @@ if( $_SESSION[ 'student' ] > 0 ) {
     
     print "</div>  <!-- div#grades -->\n";
     
-    $passing_color_query = 'select v from phprof where k = "passing_green"';
+    $passing_color_query = 'select v from ocsw where k = "passing_green"';
     $passing_color_result = $db->query( $passing_color_query );
     $passing_color_row = $passing_color_result->fetch_assoc( );
     $passing_color = $passing_color_row[ 'v' ];
 
-    $failing_color_query = 'select v from phprof where k = "failing_red"';
+    $failing_color_query = 'select v from ocsw where k = "failing_red"';
     $failing_color_result = $db->query( $failing_color_query );
     $failing_color_row = $failing_color_result->fetch_assoc( );
     $failing_color = $failing_color_row[ 'v' ];

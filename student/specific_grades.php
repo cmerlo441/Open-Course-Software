@@ -80,10 +80,26 @@ if( $_SESSION[ 'student' ] > 0 ) {
 		  // The submission was graded
                     
 		  $graded++;
-		  $grade = $grade_result->fetch_assoc( );
+		  $grade_row = $grade_result->fetch_assoc( );
+		  $grade = $grade_row[ 'grade' ];
+
+		  // Is there a curve?
+
+		  $curve_query = 'select * from curves '
+		    . "where grade_event = {$event[ 'id' ]} ";
+		  $curve_result = $db->query( $curve_query );
+		  if( $curve_result->num_rows == 1 ) {
+		    $curve_row = $curve_result->fetch_assoc( );
+		    if( $curve_row[ 'points' ] > 0 ) {
+		      $grade += $curve_row[ 'points' ];
+		    } else {
+		      $grade *= ( 1 + $curve_row[ 'percent' ] * 0.01 );
+		    }
+		  }
+
 		  print "<div class=\"grade\">Grade: "
-		    . "<span class=\"grade\">{$grade[ 'grade' ]}</span>.</div>\n";
-		  $sum += $grade[ 'grade' ];
+		    . "<span class=\"grade\">$grade</span>.</div>\n";
+		  $sum += $grade;
 		} else {
 		  print 'Not graded yet.';
 		}

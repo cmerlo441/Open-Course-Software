@@ -29,6 +29,14 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     $type_result = $db->query( $type_query );
     $type_row = $type_result->fetch_assoc( );
     $type = $type_row[ 'grade_type' ];
+
+    // How many have there been?
+    $count_query = 'select count( id ) as count from assignments '
+        . "where section = {$assignment_row[ 'section' ]} "
+	. "and grade_type = {$assignment_row[ 'grade_type' ]}";
+    $count_result = $db->query( $count_query );
+    $count_row = $count_result->fetch_assoc( );
+    $count = $count_row[ 'count' ];
     
     // Which # assignment is this?
         
@@ -40,7 +48,11 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     $sequence_row = $sequence_result->fetch_assoc( );
     $sequence = $sequence_row[ 'amount' ];
     
-    print "<h2>$type #{$sequence}: Due "
+    print "<h2>$type";
+    if( $count > 1 ) {
+	print " #{$sequence}";
+    }
+    print ": Due "
         . date( 'l, M j', strtotime( $assignment_row[ 'due_date' ] ) )
         . " </h2>\n";
     
@@ -73,6 +85,10 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     $event = $event_row[ 'id' ];
                 
     print "<div id=\"stats\"></div>\n";
+
+    print "<h3>Curve</h3>\n";
+    print "<div id=\"curve\">\n";
+    print "</div>  <!-- div#curve -->\n";
     
     // Do these get collected?
     
@@ -212,7 +228,12 @@ if( $_SESSION[ 'admin' ] == 1 ) {
                         . "</a></h3>\n";
                     print "<div class=\"submission\" id=\"{$submission[ 'sub_id' ]}\">\n";
                     print "<h2>Submission</h2>\n";
-                    print "<p>" . wordwrap( nl2br( stripslashes( $submission[ 'submission' ] ) ) ) . "</p>\n";
+		    if( preg_match( "/<html>/i", $submission[ 'submission' ] ) == 0 ) {
+			print "<p>" . wordwrap( nl2br( stripslashes( $submission[ 'submission' ] ) ) ) . "</p>\n";
+		    } else {
+			print "<pre>" . htmlentities( str_replace( "<br />", "", $submission[ 'submission' ] ) ) . "</pre>\n";
+		    }
+
                     
                     // See if a grade has been posted
     
@@ -226,9 +247,11 @@ if( $_SESSION[ 'admin' ] == 1 ) {
                         $sum += $grade;
                     }
                     
+		    print "<div class=\"grade\">\n";
                     print "Grade: "
                         . "<span class=\"grade\" id=\"{$submission[ 'student_id' ]}\" size=\"4\" "
                         . "id=\"{$submission[ 'sub_id' ]}\">$grade</span>\n";
+		    print "</div>  <!-- div.grade -->\n";
     
                     print "<div class=\"comments\" id=\"{$submission[ 'sub_id' ]}\">\n";
                     print "<h2>Comments</h2>\n";
@@ -298,6 +321,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
         print "  <tr>\n";
         print "    <th>Student</th>\n";
         print "    <th>Grade</th>\n";
+	print "    <th>Curved grade</td>\n";
         print "  </tr>\n";
         print "</thead>\n\n";
         
@@ -305,12 +329,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
         
         while( $student = $student_result->fetch_assoc( ) ) {
             unset( $grade );
-            $name = $student[ 'last' ] . ', ' . $student[ 'first' ];
-            if( $student[ 'middle' ] != '' ) {
-                $name .= ' ' . $student[ 'middle' ];
-            }
-
-            print "  <tr>\n    <td>" . ucwords( $name ) . "</td>\n";
+	    print "  <tr>\n    <td>" . lastfirst( $student ) . "</td>\n";
             
             // See if a grade has been posted
             $grade_query = 'select * from grades '
@@ -323,11 +342,30 @@ if( $_SESSION[ 'admin' ] == 1 ) {
                 $sum += $grade;
             }
             
-            print "    <td class=\"grade\" align=\"right\">";
+            print "    <td class=\"grade\" id=\"{$student[ 'student_id' ]}\" "
+	      . "align=\"right\">";
             print "<span class=\"grade\" "
                 . "id=\"{$student[ 'student_id' ]}\" size=\"4\">$grade</span>";
             print "</td>\n";
             $count++;
+
+	    // Is there a curve?
+
+	    $curved_grade = ( isset( $grade ) ? $grade : '--' );
+	    $curve_query = "select * from curves "
+	      . "where grade_event = {$student[ 'event_id' ]}";
+	    $curve_result = $db->query( $curve_query );
+	    if( $curve_result->num_rows == 1 and isset( $grade ) ) {
+	      $curve_row = $curve_result->fetch_assoc( );
+	      if( $curve_row[ 'points' ] > 0 ) {
+		$curved_grade += $curve_row[ 'points' ];
+	      } else {
+		$curved_grade = number_format( $grade * ( 1 + 0.01 * $curve_row[ 'percent' ] ) );
+	      }
+	    }
+	    print "    <td class=\"curved\" id=\"{$student[ 'student_id' ]}\" "
+	      . "align=\"right\">$curved_grade</td>\n";
+
             print "  </tr>\n\n";
         }
         print "</tbody>\n</table>\n";
@@ -348,11 +386,11 @@ $(document).ready(function(){
     
     $('table#grades').tablesorter({
         sortList: [ [ 0, 0 ] ],
-        widgets: [ 'phprof' ]
+        widgets: [ 'ocsw' ]
     });
     
     $('table#submissions_table').tablesorter({
-        sortList: [ [ 0, 0 ] ], widgets: [ 'phprof' ]
+        sortList: [ [ 0, 0 ] ], widgets: [ 'ocsw' ]
     })
     
     $.post( 'list_assignment_documents.php',
@@ -375,7 +413,13 @@ $(document).ready(function(){
     });
     
     $.post( 'assignment_statistics.php',
-        { event: "<?php echo $event; ?>" },
+	    {
+	        event: "<?php echo $event; ?>",
+		date: "<?php echo $assignment_row[ 'due_date' ]; ?>",
+		type: "<?php echo $type; ?>",
+		sequence: "<?php echo $sequence; ?>",
+		course_name: "<?php echo $course_name; ?>"
+	    },
         function( data ) {
             $('div#stats').html(data);
         }
@@ -433,6 +477,17 @@ $(document).ready(function(){
             $('div#upload_requirements').html(data);
         }
     )
+
+    
+    $.post( 'curve.php',
+      {
+	grade_event: "<?php echo $event; ?>"
+      },
+      function( data ) {
+        $('div#curve').html(data);
+      }
+    )
+    
 })
 </script>
 

@@ -48,6 +48,25 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     $grades = array( );
 
     $event = $db->real_escape_string( $_POST[ 'event' ] );
+    $date = date( 'n/j/Y',
+		  strtotime( $db->real_escape_string( $_POST[ 'date' ] ) ) );
+    $type = $db->real_escape_string( $_POST[ 'type' ] );
+    $sequence = $db->real_escape_string( $_POST[ 'sequence' ] );
+    $course_name = $db->real_escape_string( $_POST[ 'course_name' ] );
+
+    $section_query = 'select section, grade_type from grade_events '
+	. "where id = $event";
+    $section_result = $db->query( $section_query );
+    $section_row = $section_result->fetch_assoc( );
+    $section = $section_row[ 'section' ];
+    $grade_type = $section_row[ 'grade_type' ];
+
+    $count_query = 'select count( id ) as count from grade_events '
+	. "where section = $section "
+	. "and grade_type = $grade_type";
+    $count_result = $db->query( $count_query );
+    $count_row = $count_result->fetch_assoc( );
+    $count = $count_row[ 'count' ];
 
     $grades_query = 'select grade from grades '
         . "where grade_event = $event";
@@ -76,9 +95,81 @@ if( $_SESSION[ 'admin' ] == 1 ) {
         print 'Mean grade: ' . number_format( $mean, 2 ) . ".<br />\n";
         print "Median grade: $median.<br />\n";
         print 'Mode: ' . mode( $grades ) . ".<br />\n";
+
+	$twitter_query = 'select twitter_username as u, twitter_password as p '
+	  . 'from prof';
+	$twitter_result = $db->query( $twitter_query );
+	if( $twitter_result->num_rows == 1 ) {
+	  $tweeted_query = 'select a.id as a_id, a.grade_summary_tweeted as t '
+	    . 'from assignments as a, grade_events as e '
+	    . 'where e.assignment = a.id '
+	    . "and e.id = $event";
+	  $tweeted_result = $db->query( $tweeted_query );
+	  $tweeted = $tweeted_result->fetch_assoc( );
+	  if( $tweeted[ 't' ] == 0 ) {
+	    // Provide tweeting links
+
+	    print "<div id=\"tweet_links\">\n";
+
+	    $message = "Grades posted for $course_name $type";
+	    if( $count > 1 ) {
+		$message .= " $sequence";
+	    }
+	    $message .= " ($date).";
+	    $mean_message = $message . '  Mean grade ' . number_format( $mean, 2 ) . '.';
+	    print "<ul>\n";
+	    print "<li><a class=\"tweet\" href=\"javascript:void( 0 )\">"
+	      . "Tweet \"$message\"</a></li>\n";
+	    print "<li><a class=\"tweet_with_mean\" href=\"javascript:void( 0 )\">"
+	      . "Tweet \"$mean_message\"</a></li>\n";
+	    print "</ul>\n";
+
+	    print "</div> <!-- div#tweet_links -->\n";
+	  } // if not tweeted yet
+	} // if the prof has twitter
     } else {
         print 'No grades recorded.';
     }
+
+?>
+
+<script type="text/javascript">
+
+$(document).ready(function(){
+  $('a.tweet').click(function(){
+      $.post( 'tweet.php',
+	{
+	  update_string: "<?php echo $message; ?>"
+	 },
+	 function( data ) {
+	   $('div#tweet_links').slideUp();
+	 });
+
+      $.post( 'tweeted_grade.php',
+	{
+	  assignment: "<?php echo $tweeted[ 'a_id' ]; ?>"
+	 });
+   })
+
+  $('a.tweet_with_mean').click(function(){
+      $.post( 'tweet.php',
+	{
+	  update_string: "<?php echo $mean_message; ?>"
+	 },
+	 function( data ) {
+	   $('div#tweet_links').slideUp();
+	 });
+
+      $.post( 'tweeted_grade.php',
+	{
+	  assignment: "<?php echo $tweeted[ 'a_id' ]; ?>"
+	 });
+   })
+})
+</script>
+
+<?php
+
 }
 
 ?>

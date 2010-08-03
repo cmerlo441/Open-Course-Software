@@ -1,12 +1,12 @@
 <?php
 
-$title_stub = 'About PHProf';
+$title_stub = 'About OCSW';
 require_once( './_header.inc' );
    
 ?>
 
-<p>PHProf was written by
-<?php print_link( 'http://turing.matcmp.ncc.edu/~cmerlo/',
+<p>OCSW was written by
+<?php print_link( 'http://www.matcmp.ncc.edu/~cmerlo/',
                   'Prof. Christopher R. Merlo' ); ?> at
 <?php print_link( 'http://www.ncc.edu/', 'Nassau Community College' ); ?>, using
 the following technologies:</p>
@@ -28,8 +28,8 @@ the following technologies:</p>
     turns an HTML element into an in-place editor</li>
 </ul>
 
-<p>PHProf can be downloaded from
-<?php print_link( 'http://turing.matcmp.ncc.edu/PHProf/', 'the PHProf site' ); ?>.</p>
+<p>OCSW can be downloaded from
+<?php print_link( 'http://www.ocsw.net/', 'the OCSW site' ); ?>.</p>
 
 <?php
 

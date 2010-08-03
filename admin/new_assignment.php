@@ -36,9 +36,10 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     $db->query( 'lock tables assignments, grade_events' );
     
     $assignment_query = 'insert into assignments '
-        . '( id, grade_type, section, posted_date, due_date, title, description ) '
+        . '( id, grade_type, section, posted_date, due_date, title, description, '
+        . 'grade_summary_tweeted ) '
         . "values( null, $grade_type, $section, \"$posted_date\", \"$due_date\", "
-        . "\"$title\", \"$description\" )";
+        . "\"$title\", \"$description\", 0 )";
 
     print $assignment_query;
 

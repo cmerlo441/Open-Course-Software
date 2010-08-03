@@ -44,7 +44,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
             $student_list .= $student[ 'last' ] . '" <' . $student[ 'email' ] . '>';
         }
         $headers = "From: {$prof[ 'name' ]} <{$prof[ 'email' ]}>\n"
-            . "X-Mailer: PHProf Version {$phprof[ 'version' ]}\n"
+            . "X-Mailer: OCSW Version {$ocsw[ 'version' ]}\n"
             . "Bcc: $student_list\n";
 
         mail( "$section_name Students <{$prof[ 'email' ]}>", $send[ 'subject' ],

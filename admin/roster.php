@@ -5,7 +5,7 @@ require_once( '../_header.inc' );
 
 if( $_SESSION[ 'admin' ] == 1 ) {
 
-  $wf_query = 'select v from phprof where k = "wf"';
+  $wf_query = 'select v from ocsw where k = "wf"';
   $wf_result = $db->query( $wf_query );
   $wf_row = $wf_result->fetch_assoc( );
   $wf_result->close( );
@@ -120,7 +120,7 @@ $(document).ready(function(){
 
     $("#roster_table").tablesorter({
         sortList: [ [4,0], [2,0], [0,0], [1,0] ],
-        widgets: [ 'phprof', 'clickable_rows' ],
+        widgets: [ 'ocsw', 'clickable_rows' ],
         headers: {
             4: { sorter: 'active' }
         }
@@ -168,7 +168,7 @@ $(document).ready(function(){
                 }
                 $("#roster_table").tablesorter({
                     sortList: [ [4,0], [2,0], [0,0], [1,0] ],
-                    widgets: [ 'phprof', 'clickable_rows' ],
+                    widgets: [ 'ocsw', 'clickable_rows' ],
                     headers: {
                         4: { sorter: 'active' }
                     }

@@ -23,9 +23,16 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     $details_result->close( );
 
 	print "<form class=\"course_details_form\" id=\"{$row[ 'id' ]}\">\n";
+
 	print "<h3><span class=\"dept\" id=\"{$row[ 'id' ]}\">{$row[ 'dept' ]}</span> "
 		. "<span class=\"course\" id=\"{$row[ 'id' ]}\">{$row[ 'course' ]}</span>: "
 		. "<span class=\"long_name\" id=\"{$row[ 'id' ]}\">{$row[ 'long_name' ]}</span></h3>\n";
+
+	print '<p style="text-align: center;">';
+	print_link( "./syllabus.php?course={$row[ 'id' ]}",
+		    "View the {$row[ 'dept' ]} {$row[ 'course' ]} Syllabus" );
+	print "</p>\n";
+
 	print "<p><b>Short Name</b>: <span class=\"short_name\" id=\"{$row[ 'id' ]}\">"
 		. "{$row[ 'short_name' ]}</span></p>\n";
 	print "<p><b>Prerequisite</b>: <span class=\"prereq\" id=\"{$row[ 'id' ]}\">"

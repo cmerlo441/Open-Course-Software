@@ -3,24 +3,32 @@
 $title_stub = 'About You';
 require_once( '../_header.inc' );
 
-function display( $field ) {
+function display( $field, $password = 0 ) {
     if( trim( $field ) == '' or trim( $field ) == '0' ) {
         print '(Click here to add)';
     } else {
+      if( $password == 1 ) {
+	for( $i = 0; $i < strlen( $field ); $i++ ) {
+	  print "&bull;";
+	}
+      } else {
         print $field;
+      }
     }
 }
 
-if( $prof[ 'suffix' ] > 0 ) {
+if( $_SESSION[ 'admin' ] == 1 ) {
+
+  if( $prof[ 'suffix' ] > 0 ) {
     $suffix_query = "select suffix from suffixes where id = {$prof[ 'suffix' ]}";
     $suffix_result = $db->query( $suffix_query );
     $suffix_row = $suffix_result->fetch_assoc( );
     $suffix = $suffix_row[ 'suffix' ];
-} else {
+  } else {
     $suffix = '';
-}
+  }
 
-if( $_SESSION[ 'admin' ] == 1 ) {
+  if( $_SESSION[ 'admin' ] == 1 ) {
     print "<p>Click on a field to edit it.</p>\n";
 ?>
 
@@ -52,6 +60,19 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     <tr>
         <td class="label">Your title:</td>
         <td><span class="editInPlace" id="title"><?php display( $prof[ 'title' ] ); ?></span></td>
+    </tr>
+
+    <tr>
+        <td>&nbsp;</td>
+    </tr>
+
+    <tr>
+        <td class="label">Your Twitter username:</td>
+        <td><span class="editInPlace" id="twitter_username"><?php display( $prof[ 'twitter_username' ] ); ?></span></td>
+    </tr>
+    <tr>
+        <td class="label">Your Twitter password:</td>
+	<td><span class="editInPlace" id="twitter_password"><?php display( $prof[ 'twitter_password' ], 1 ); ?></span></td>
     </tr>
     
     <tr>
@@ -107,6 +128,10 @@ $(document).ready(function(){
 </script>
 
 <?php
+    }
+
+} else {
+  print $no_admin;
 }
 
 ?>

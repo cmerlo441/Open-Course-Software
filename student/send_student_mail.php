@@ -17,7 +17,7 @@ if( $_SESSION[ 'student' ] > 0 ) {
     $student_name .= $_SESSION[ 'last' ];
 
     $headers = "From: $student_name <{$_SESSION[ 'email' ]}>\n"
-        . "X-Mailer: PHProf Version {$phprof[ 'version' ]}\n";
+        . "X-Mailer: OCSW Version {$ocsw[ 'version' ]}\n";
     
     if( $send[ 'replyto' ] == 'ncc' ) {
         $headers .= "Reply-To: "
@@ -30,9 +30,9 @@ if( $_SESSION[ 'student' ] > 0 ) {
           "{$send[ 'section_name' ]}: {$send[ 'subject' ]}",
           $send[ 'message' ], $headers );
     
-    $mobile_query = 'select phprof.v, prof.mobile_email '
-        .'from phprof, prof '
-        . 'where phprof.k = "mobile_email"';
+    $mobile_query = 'select ocsw.v, prof.mobile_email '
+        .'from ocsw, prof '
+        . 'where ocsw.k = "mobile_email"';
     $mobile_result = $db->query( $mobile_query );
     $mobile_row = $mobile_result->fetch_assoc( );
     $mobile = $mobile_row[ 'v' ];

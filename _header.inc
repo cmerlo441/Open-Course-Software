@@ -133,16 +133,22 @@ require_once( '/home/faculty/cmerlo/.htpasswd' );
 // DB connection has been made.  Let's get some initial info:
 
 // Version Information
-$version_query = 'select version from phprof_version';
+$version_query = 'select version from ocsw_version';
 $version_result = $db->query( $version_query );
 $version_row = $version_result->fetch_assoc( );
-$phprof[ 'version' ] = $version_row[ 'version' ];
+$ocsw[ 'version' ] = $version_row[ 'version' ];
 $version_result->free( );
 unset( $version_query, $version_result, $version_row );
 
 // Professor information
 $prof_query = 'select * from prof';
 $prof_result = $db->query( $prof_query );
+
+if( $prof_result->num_rows == 0 ) {
+    header( 'Location: install.php' );
+    die( );
+}
+
 $prof = $prof_result->fetch_assoc( );
 $prof[ 'name' ] = $prof[ 'first' ] . ' ';
 if( trim( $prof[ 'middle' ] ) != '' ) {
@@ -159,13 +165,13 @@ if( $prof[ 'suffix' ] != 0 ) {
 }
 $prof_result->close();
 
-$docroot_query = "select v from phprof where k = 'docroot'";
+$docroot_query = "select v from ocsw where k = 'docroot'";
 $docroot_result = $db->query( $docroot_query );
 $docroot_row = $docroot_result->fetch_assoc( );
 $docroot_result->close();
 $docroot = $docroot_row[ 'v' ];
 
-$fileroot_query = "select v from phprof where k = 'fileroot'";
+$fileroot_query = "select v from ocsw where k = 'fileroot'";
 $fileroot_result = $db->query( $fileroot_query );
 $fileroot_row = $fileroot_result->fetch_assoc( );
 $fileroot_result->close();
@@ -186,7 +192,7 @@ function letter_grade( $grade ) {
 
 // Snow
 $snow = 0;
-$snow_query = 'select v from phprof where k = "snow"';
+$snow_query = 'select v from ocsw where k = "snow"';
 $snow_result = $db->query( $snow_query );
 $snow_row = $snow_result->fetch_assoc( );
 $snow_result->close( );
@@ -196,7 +202,7 @@ $snow = $snow_row[ 'v' ];
 
 /* Updated: It doesn't work on IE 8, either.  */
 
-$ie_query = 'select v from phprof where k = "block_ie"';
+$ie_query = 'select v from ocsw where k = "block_ie"';
 $ie_result = $db->query( $ie_query );
 $block_ie = $ie_result->fetch_assoc( );
  
@@ -332,7 +338,7 @@ $no_student = "<div class=\"ui-state-error ui-corner-all\" id=\"no_student\">\n"
 
 /*
  * Figure this out someday
-session_name( "phprof_{$prof[ 'last' ]}_{$prof[ 'first' ]}" );
+session_name( "ocsw_{$prof[ 'last' ]}_{$prof[ 'first' ]}" );
 */
 session_start( );
 
@@ -449,7 +455,7 @@ if( $no_header != 1 ) {
 </script>
 
 <link rel="stylesheet" href="<?php echo $docroot ?>/style.css" type="text/css" />
-<link rel="icon" type="image/png" href="<?php echo $docroot ?>/images/PHProf.favicon.png" />
+<link rel="icon" type="image/png" href="<?php echo $docroot ?>/images/ocsw.favicon.png" />
 </head>
 
 
@@ -546,17 +552,29 @@ $next_month->disp( );
 
 </div> <!-- div#calendars -->
 
+<?php
+
+$delicious_query = 'select delicious from prof';
+$delicious_result = $db->query( $delicious_query );
+$delicious_row = $delicious_result->fetch_assoc( );
+if( trim( $delicious_row[ 'delicious' ] ) != '' ) {
+    $del = $delicious_row[ 'delicious' ];
+?>
 <div id="delicious">
 <script type="text/javascript"
-  src="http://del.icio.us/feeds/js/cmerlo?count=5;title=My%20Bookmarks;icon=s;name"></script>
-<noscript><a href="http://del.icio.us/cmerlo">my del.icio.us</a></noscript>
+  src="http://del.icio.us/feeds/js/<?php echo $del; ?>?count=5;title=My%20Bookmarks;icon=s;name"></script>
+<noscript><a href="http://del.icio.us/<?php echo $del; ?>">my del.icio.us</a></noscript>
 </div> <!-- div#delicious -->
 
-<div id="phprof_logo">
+<?php
+} // if delicious username is set
+?>
+
+<div id="ocsw_logo">
     <?php print_link( "http://www.ocsw.net/",
                       "<img src=\"$docroot/images/blackboard-100x50.png\" "
                       . "height=\"50\" width=\"100\" />" ); ?>
-</div> <!-- div#phprof_logo -->
+</div> <!-- div#ocsw_logo -->
 
 </div> <!-- div#left -->
 

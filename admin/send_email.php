@@ -9,12 +9,12 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     $subject = stripslashes( trim( $_POST[ 'subject' ] ) );
     $message = stripslashes( trim( wordwrap( $_POST[ 'message' ] ) ) );
     
-    $cc_query = 'select v from phprof where k = "cc"';
+    $cc_query = 'select v from ocsw where k = "cc"';
     $cc_result = $db->query( $cc_query );
     $cc_row = $cc_result->fetch_assoc( );
     $cc = $cc_row[ 'v' ];
     
-    $qotd_query = 'select v from phprof where k = "qotd-email"';
+    $qotd_query = 'select v from ocsw where k = "qotd-email"';
     $qotd_result = $db->query( $qotd_query );
     $qotd_row = $qotd_result->fetch_assoc( );
     $qotd = $qotd_row[ 'v' ];
@@ -23,7 +23,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     if( $cc == 1 ) {
         $headers .= "Bcc: $from\n";
     }
-    $headers .= "Reply-To: $from\nX-Mailer: PHProf Version {$phprof[ 'version' ]}\n";
+    $headers .= "Reply-To: $from\nX-Mailer: OCSW Version {$ocsw[ 'version' ]}\n";
     
     if( $qotd == 1 ) {
         $qotd_query = 'select * from quotes order by rand() limit 1';

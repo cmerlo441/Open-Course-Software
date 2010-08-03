@@ -178,10 +178,29 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     
     // Get all the grades from the DB and put them in an array.
     
-    $grades_query = 'select student, grade_event, grade from grades';
+    $grades_query = 'select x.section, g.student, g.grade_event, g.grade '
+      . 'from student_x_section as x, grades as g '
+      . 'where x.student = g.student '
+      . "and x.section = $section";
     $grades_result = $db->query( $grades_query );
     while( $grade = $grades_result->fetch_assoc( ) ) {
         $grades[ $grade[ 'student' ] ][ $grade[ 'grade_event' ] ] = $grade[ 'grade' ];
+
+	// Is there a curve?
+	if( trim( $grade[ 'grade' ] ) != '' and $grade[ 'grade' ] > 0 ) {
+	  $curve_query = "select * from curves "
+	    . "where grade_event = {$grade[ 'grade_event' ]}";
+	  $curve_result = $db->query( $curve_query );
+
+	  if( $curve_result->num_rows == 1 ) {
+	    $curve = $curve_result->fetch_assoc( );
+	    if( $curve[ 'points' ] > 0 ) {
+	      $grades[ $grade[ 'student' ] ][ $grade[ 'grade_event' ] ] += $curve[ 'points' ];
+	    } else {
+	      $grades[ $grade[ 'student' ] ][ $grade[ 'grade_event' ] ] *= ( 1 + $curve[ 'percent' ] * 0.01 );
+	    }
+	  }
+	}
     }
     
     $row = 7;

@@ -86,9 +86,9 @@ function print_authors( $db, $authors_result ) {
         if( $a2[ 'url' ] != '' ) {
             print "<a href=\"{$author[ 'url' ]}\">";
         }
-        print $a2[ 'first' ];
+        print $a2[ 'first' ] . ' ';
         if( $a2[ 'middle' ] != '' ) {
-            print ' ' . $a2[ 'middle' ];
+            print $a2[ 'middle' ] . ' ';
         }
         print $a2[ 'last' ];
         if( $a2[ 'url' ] != '' ) {
@@ -130,9 +130,9 @@ function print_authors( $db, $authors_result ) {
         if( $a2[ 'url' ] != '' ) {
             print "<a href=\"{$author[ 'url' ]}\">";
         }
-        print $a2[ 'first' ];
+        print $a2[ 'first' ] . ' ';
         if( $a2[ 'middle' ] != '' ) {
-            print ' ' . $a2[ 'middle' ];
+            print $a2[ 'middle' ] . ' ';
         }
         print $a2[ 'last' ];
         if( $a2[ 'url' ] != '' ) {
@@ -149,9 +149,9 @@ function print_authors( $db, $authors_result ) {
         if( $a3[ 'url' ] != '' ) {
             print "<a href=\"{$author[ 'url' ]}\">";
         }
-        print $a3[ 'first' ];
+        print $a3[ 'first' ] . ' ';
         if( $a3[ 'middle' ] != '' ) {
-            print ' ' . $a3[ 'middle' ];
+            print $a3[ 'middle' ] . ' ';
         }
         print $a3[ 'last' ];
         if( $a3[ 'url' ] != '' ) {
@@ -166,10 +166,13 @@ function print_authors( $db, $authors_result ) {
     }
 }   // print_authors
 
-$course_id = $_POST[ 'course' ] == '' ? 0 :
- $db->real_escape_string( $_POST[ 'course' ] );
-$section_id = $_POST[ 'section' ] == '' ? 0 :
- $db->real_escape_string( $_POST[ 'section' ] );
+$course_id = $_REQUEST[ 'course' ] == ''
+  ? 0
+  : $db->real_escape_string( $_REQUEST[ 'course' ] );
+
+$section_id = $_REQUEST[ 'section' ] == ''
+  ? 0
+  : $db->real_escape_string( $_REQUEST[ 'section' ] );
 
 if( $section_id > 0 ) {
     $course_query = 'select c.id as course_id, c.dept, c.course, c.credits, '
@@ -257,7 +260,8 @@ while( $row = $section_result->fetch_assoc( ) ) {
         print "<p id=\"prereq\"><b>Prerequisite:</b> {$course_row[ 'prereq' ]}</p>\n";
     }
 
-    else if( $section_id > 0 and $field == 'Schedule' ) {
+    else if( $field == 'Schedule' ) {
+      if( $section_id > 0 ) {
         print "<p id=\"schedule\"><b>Schedule:</b></p>\n";
         print "<ul>\n";
         
@@ -275,6 +279,7 @@ while( $row = $section_result->fetch_assoc( ) ) {
                 . "{$schedule_row[ 'building' ]} {$schedule_row[ 'room' ]}</li>\n";
         }
         print "</ul>\n";
+      } // if there's a section
     }
     
     else if( $field == 'Textbooks' ) {
@@ -299,6 +304,28 @@ while( $row = $section_result->fetch_assoc( ) ) {
         print "<p id=\"course_outline\"><b>Course Outline:</b></br>\n";
         print wordwrap( html_entity_decode( $course_row[ 'outline' ] ) ) . "</p>\n";
     }
+
+	else if( $field == 'Twitter' ) {
+		$twitter_query = 'select twitter_username as u from prof';
+		$twitter_result = $db->query( $twitter_query );
+		if( $twitter_result->num_rows == 1 ) {
+			$twitter_row = $twitter_result->fetch_assoc( );
+			if( $twitter_row[ 'u' ] != '' ) {
+				print "<p id=\"twitter\"><b>Twitter:</b>  The professor maintains a ";
+				print_link( 'http://www.twitter.com/', 'Twitter' );
+				print ' account with the username ';
+				print_link( "http://www.twitter.com/{$twitter_row[ 'u' ]}",
+							"@{$twitter_row[ 'u' ]}" );
+				print ', to which important information will be posted from '
+					. 'time to time, such as new assignments, upcoming exams, '
+					. 'etc.  You may create a Twitter account and follow ';
+				print_link( "http://www.twitter.com/{$twitter_row[ 'u' ]}",
+							"@{$twitter_row[ 'u' ]}" );
+				print ' to receive these updates on your mobile phone.  ';
+				print "</p>\n";
+			}
+		}
+	}
     
     else {
         $p_id = strtolower( str_replace( ' ', '_', $field ) );

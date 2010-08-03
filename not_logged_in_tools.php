@@ -64,6 +64,9 @@ $(document).ready(function(){
                                     $("div#admin").html(data).fadeIn(500);
                                 }
                             )
+		        } else if( data == 'inactive' ) {
+			    $("input[id=username]").select();
+			    $("div#login_error").fadeIn(500);
                         } else if( data == 'student' ) {
                             $("div#login_dialog").dialog('destroy');
                             $.post( 'student_tools.php',
@@ -75,6 +78,7 @@ $(document).ready(function(){
                         } // else...
                         else if( data == 'none' ) {
                             $("input[id=username]").select();
+			    $("span#error_message").html("You are not active in any classes.");
                             $("div#login_error").fadeIn(500);
                         }
                     })

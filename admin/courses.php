@@ -10,7 +10,7 @@ require_once( '../_header.inc' );
   	
   	$("div#admin_details").hide();
   	
-	$("#courses_table").tablesorter( { sortList: [ [0,0], [1,0] ], widgets: [ 'phprof', 'clickable_rows' ] } );
+	$("#courses_table").tablesorter( { sortList: [ [0,0], [1,0] ], widgets: [ 'ocsw', 'clickable_rows' ] } );
   	
   	$("div#new_course").hide();
   	
@@ -175,7 +175,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 <div id="new_course">
 
 <div id="new_course_failure" class="failure">
-<p>There was a problem adding your new class to PHProf.</p>
+<p>There was a problem adding your new class to OCSW.</p>
 </div> <!-- #new_course_failure -->
 
 <form id="new_course_form">

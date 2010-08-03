@@ -38,7 +38,23 @@ if( $_SESSION[ 'student' ] > 0 ) {
                 $grade_result = $db->query( $grade_query );
                 if( $grade_result->num_rows == 1 ) {
                     $grade_row = $grade_result->fetch_assoc( );
-                    $local_sum += $grade_row[ 'grade' ];
+		    $grade = $grade_row[ 'grade' ];
+
+		    // Is there a curve?
+
+		    $curve_query = 'select * from curves '
+		      . "where grade_event = {$event[ 'id' ]} ";
+		    $curve_result = $db->query( $curve_query );
+		    if( $curve_result->num_rows == 1 ) {
+		      $curve_row = $curve_result->fetch_assoc( );
+		      if( $curve_row[ 'points' ] > 0 ) {
+			$grade += $curve_row[ 'points' ];
+		      } else {
+			$grade *= ( 1 + $curve_row[ 'percent' ] * 0.01 );
+		      }
+		    }
+
+                    $local_sum += $grade;
                 }
             }
         }

@@ -33,11 +33,48 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     
     print "<div class=\"dialog\" id=\"send_email_dialog\" title=\"Send E-Mail\">\n";
     print "</div>  <!-- div#send_email_dialog -->\n";
+
+    print "<div class=\"dialog\" id=\"sent_email_dialog\" "
+	. "title=\"E-Mail You Sent To $student_name\">\n";
+    print 'foo';
+    print "</div>  <!-- div#sent_email_dialog -->\n";
+    
+    print "<div class=\"dialog\" id=\"received_email_dialog\" "
+	. "title=\"E-Mail $student_name Sent You\">\n";
+    print 'foo';
+    print "</div>  <!-- div#received_email_dialog -->\n";
     
     print "<ul>\n";
     print "<li><a href=\"javascript:void(0)\" class=\"send_email\" id=\"$student_id\">Send {$student_row[ 'first' ]} an e-mail</a></li>\n";
-    print "<li><a href=\"javascript:void(0)\" class=\"sent_email\" id=\"$student_id\">Read e-mail you have sent to {$student_row[ 'first' ]}</a></li>\n";
-    print "<li><a href=\"javascript:void(0)\" class=\"received_email\" id=\"$student_id\">Read e-mail {$student_row[ 'first' ]} has sent you</a></li>\n";
+
+    $sent_mail_query = 'select m.id '
+	. 'from mail_to_students as m, student_x_section as x '
+	. "where x.student = $student_id "
+	. "and x.section = $section "
+	. 'and m.student_x_section = x.id';
+    $sent_mail_result = $db->query( $sent_mail_query );
+    if( $sent_mail_result->num_rows > 0 ) {
+	print "<li><a href=\"javascript:void(0)\" class=\"sent_email\" "
+	    . "id=\"$student_id\">Read e-mail you have sent to "
+	    . "{$student_row[ 'first' ]}</a></li>\n";
+    } else {
+	print "<li>You have not sent any e-mail to {$student_row[ 'first' ]}."
+	    . "</li>\n";
+    }
+
+    $received_mail_query = 'select m.id '
+	. 'from mail_from_students as m, student_x_section as x '
+	. "where x.student = $student_id "
+	. "and x.section = $section "
+	. 'and m.student_x_section = x.id';
+    $received_mail_result = $db->query( $received_mail_query );
+    if( $received_mail_result->num_rows > 0 ) {
+	print "<li><a href=\"javascript:void(0)\" class=\"received_email\" "
+	    . "id=\"$student_id\">Read e-mail {$student_row[ 'first' ]} has "
+	    . "sent you</a></li>\n";
+    } else {
+	print "<li>{$student_row[ 'first' ]} has not sent you any e-mail.</li>\n";
+    }
     
     print "</ul>\n";
     print "</div>  <!-- div#email -->\n";
@@ -170,9 +207,10 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 <script type="text/javascript">
 $(document).ready(function(){
     var student = "<?php echo $student_id; ?>";
+    var student_name = "<?php echo $student_name; ?>";
     var section = "<?php echo $_POST[ 'section' ]; ?>";
     
-    $('#logins').tablesorter({ sortList: [ [0,0] ], widgets: [ 'phprof' ] });
+    $('#logins').tablesorter({ sortList: [ [0,0] ], widgets: [ 'ocsw' ] });
     
     $('div#middle div#content table#logins tr.no_logins > td').css('background-color', '#444');
     $('div#middle div#content table#logins tr.no_logins > td').css('text-align', 'center');
@@ -202,15 +240,57 @@ $(document).ready(function(){
                                     message: $('textarea#message').val()
                                 }
                             );
-                            $(this).dialog('destroy');
+                            $('div#send_email_dialog').dialog('destroy');
                         },
                         'Cancel': function(){
-                            $(this).dialog('destroy');
+                            $('div#send_email_dialog').dialog('destroy');
                         }
                     }
                 })
             }
         )
+    })
+
+	$('a.sent_email').click(function(){
+            $.post( 'list_email_to_student.php',
+	    { student: student, section: section },
+            function( data ) {
+                $('div#sent_email_dialog').html(data).dialog({
+		    title: "E-Mail You Sent to " + student_name,
+		    autoOpen: true,
+		    hide: 'puff',
+		    modal: true,
+		    position: 'center',
+		    width: 700,
+		    buttons: {
+		        'OK': function(){
+			    $('div#sent_email_dialog').dialog('destroy');
+			}
+		    }
+		})
+	    }
+	    )
+	})
+
+	$('a.received_email').click(function(){
+        $.post( 'list_email_from_student.php',
+	    { student: student, section: section },
+            function( data ) {
+                $('div#received_email_dialog').html(data).dialog({
+		    title: "E-Mail " + student_name + " Sent You",
+		    autoOpen: true,
+		    hide: 'puff',
+		    modal: true,
+		    position: 'center',
+		    width: 700,
+		    buttons: {
+		        'OK': function(){
+			    $('div#received_email_dialog').dialog('destroy');
+			}
+		    }
+		})
+	    }
+	)
     })
     
     $.post( 'calculate_student_average.php',

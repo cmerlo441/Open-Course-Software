@@ -4,21 +4,25 @@ $no_header = 1;
 require_once( '../_header.inc' );
 
 if( $_SESSION[ 'admin' ] == 1 ) {
-    if( trim( $_POST[ 'update_value' ] != trim( $_POST[ 'original_html' ] ) ) ) {
-        $update_value = trim( $_POST[ 'update_value' ] );
-        if( $_POST[ 'element_id' ] == 'college_url' or $_POST[ 'element_id' ] == 'department_url' ) {
+    $update_value = $db->real_escape_string( $_POST[ 'update_value' ] );
+    $original_html = $db->real_escape_string( $_POST[ 'original_html' ] );
+    $element_id = $db->real_escape_string( $_POST[ 'element_id' ] );
+
+    if( trim( $update_value != trim( $original_html ) ) ) {
+        $update_value = trim( $update_value );
+        if( $element_id == 'college_url' or $element_id == 'department_url' ) {
             if( substr( $update_value, 0, 7 ) != 'http://' ) {
                 $update_value = 'http://' . $update_value;
             }
         }
-        $update_query = "update prof set {$_POST[ 'element_id' ]} = \"$update_value\"";
+        $update_query = "update prof set {$element_id} = \"$update_value\"";
         $update_result = $db->query( $update_query );
         if( $db->affected_rows == 1 ) {
-            if( $_POST[ 'element_id' ] == 'suffix' ) {
+            if( $element_id == 'suffix' ) {
                 if( $update_value == 0 ) {
                     print '(Click here to add)';
                 } else {
-                    $suffix_query = "select suffix from suffixes where id = {$_POST[ 'update_value' ]}";
+                    $suffix_query = "select suffix from suffixes where id = $update_value";
                     $suffix_result = $db->query( $suffix_query );
                     $suffix_row = $suffix_result->fetch_assoc();
                     print $suffix_row[ 'suffix' ];
@@ -27,9 +31,15 @@ if( $_SESSION[ 'admin' ] == 1 ) {
                 if( $update_value == '' ) {
                     print '(Click here to add)';
                 } else {
-                    print $update_value;
-                }
-            }
+		    if( preg_match( '/password/', $element_id ) == 1 ) {
+		        for( $i = 0; $i < strlen( $update_value ); $i++ ) {
+		            print "&bull;";
+		        }
+		    } else {
+		      print $update_value;
+		    }
+		}
+	    }
 
             $prof_query = 'select * from prof';
             $prof_result = $db->query( $prof_query );
@@ -52,7 +62,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 
 <script type="text/javascript">
 $(document).ready(function(){
-    var field = "<?php echo $_POST[ 'element_id' ]; ?>";
+    var field = "<?php echo $element_id; ?>";
     if( field == 'first' || field == 'middle' || field == 'last' || field == 'suffix' ) {
         $("div#top div#prof p#name").html("<?php echo $prof[ 'name' ]; ?>");
     } else if( field == 'title' ) {
@@ -82,10 +92,10 @@ $(document).ready(function(){
 
 <?php
         } else {
-            print ( trim( $_POST[ 'original_html' ] ) == '' ? '(Click here to add)' : trim( $_POST[ 'original_html' ] ) );
+            print ( trim( $original_html ) == '' ? '(Click here to add)' : trim( $original_html ) );
         }
     } else {
-        print ( trim( $_POST[ 'original_html' ] ) == '' ? '(Click here to add)' : trim( $_POST[ 'original_html' ] ) );        
+        print ( trim( $original_html ) == '' ? '(Click here to add)' : trim( $original_html ) );        
     }
 }
 

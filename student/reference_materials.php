@@ -65,7 +65,7 @@ $(document).ready(function(){
         headers: { 1: { sorter: 'digit' },
                    2: { sorter: 'date' } },
         sortList: [ [2,1], [0,0] ],
-        widgets: [ 'phprof', 'clickable_rows' ]
+        widgets: [ 'ocsw', 'clickable_rows' ]
     });
     
     $('#reference tr').click(function(){

@@ -851,7 +851,7 @@
 	});	
     
     ts.addWidget({
-        id: "phprof",
+        id: "ocsw",
         format: function(table){
             $("tr td",table).css({
                 "background-color": "#1e273e",

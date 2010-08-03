@@ -23,8 +23,6 @@ if( $_FILES[ 'file' ][ 'error' ] == 0 ) {
         . "\"$section\", \"" . date( 'Y-m-d H:i:s' ) . "\", 1, \"$file\" )";
     $insert_result = $db->query( $insert_query );
 
-    // mail( "cmerlo@ncc.edu", "Reference Upload", "query is $insert_query; result is $insert_result" );
-
     print 'Done.';
 } else {
     print 'Error.';

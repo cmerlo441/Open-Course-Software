@@ -95,7 +95,27 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     
                 print "    <td><span class=\"grade\" "
                     . "id=\"$student:{$data[ 'assignment' ]}\">"
-                    . "{$data[ 'grade' ]}</span></td>\n";
+                    . "{$data[ 'grade' ]}</span>\n";
+
+		// Is there a curve?
+		// Only do this if there's a grade to curve from!
+		$curve_query = 'select * from curves '
+		  . "where grade_event = {$data[ 'id' ]}";
+		$curve_result = $db->query( $curve_query );
+		if( $curve_result->num_rows == 1 and
+		    $data[ 'grade' ] != 'No Grade' ) {
+		  $curve_row = $curve_result->fetch_assoc( );
+		  if( $curve_row[ 'points' ] > 0 ) {
+		    $curved_grade = $data[ 'grade' ] + $curve_row[ 'points' ];
+		  } else {
+		    $curved_grade = $data[ 'grade' ] *
+		      ( 1 + $curve_row[ 'percent' ] * 0.01 );
+		  }
+		  print " &rarr; $curved_grade";
+		}
+
+		print "</td>\n";
+
             }
             print "</tr>\n";
             print "</table>\n\n";

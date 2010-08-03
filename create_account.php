@@ -11,7 +11,7 @@ $banner = $db->real_escape_string( trim( strtoupper( $_POST[ 'banner' ] ) ) );
 $sections = preg_replace( '/(.*),/', '$1', $_POST[ 'sections' ] );
 
 /*
-$words_query = 'select v from phprof where k = "words"';
+$words_query = 'select v from ocsw where k = "words"';
 $words_result = $db->query( $words_query );
 if( $words_result->num_rows == 1 ) {
     $words_row = $words_result->fetch_assoc( );

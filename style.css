@@ -166,13 +166,13 @@ div#middle div#calendars div#time {
 	text-align: center;
 }
 
-div#phprof_logo {
+div#ocsw_logo {
     border-top: 1px dotted #c7c6bf;
     padding: 0.5em 0 0 0;
     text-align: center;
 }
 
-div#phprof_logo img {
+div#ocsw_logo img {
     border: 0;
 }
 
@@ -614,6 +614,14 @@ table.sign_in td {
 table.sign_in td.sign_here {
     width: 70%;
     border-bottom: 1px solid;
+}
+
+div.grade {
+    border: 3px solid #5d562c;
+    padding: 1em;
+    margin: 1em;
+    text-align: center;
+    font-weight: bold;
 }
 
 div.prof_comment {

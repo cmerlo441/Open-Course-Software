@@ -109,7 +109,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 </ul>
 </div>  <!-- div#courses -->
 
-<h3><a href="#">PHProf Configuration</a></h3>
+<h3><a href="#">OCSW Configuration</a></h3>
 <div id="semester">
 <ul>
     <li><?php print_link( "$admin/prof_details.php", 'About You' ); ?></li>
@@ -118,7 +118,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     <li><?php print_link( "$admin/pages.php", 'Static Pages' ); ?></li>
     <li><?php print_link( "$admin/syllabus_editor.php", 'Syllabus Editor' ); ?></li>
     <li><?php print_link( "$admin/end_of_semester.php", 'End-of-Semester Clean Up' ); ?></li>
-    <li><?php print_link( "$admin/phprof.php", 'PHProf Configuration Options' ); ?></li>
+    <li><?php print_link( "$admin/ocsw.php", 'OCSW Configuration Options' ); ?></li>
 </ul>
 </div>  <!-- div#semester -->
 

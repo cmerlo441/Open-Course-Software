@@ -18,6 +18,18 @@ $student_result = $db->query( $student_query );
 
 if( $student_result->num_rows == 1 ) {
     $student_row = $student_result->fetch_assoc( );
+
+    // If student is not active in any classes, don't log him/her in
+
+    $x_query = 'select * from student_x_section '
+      . "where student = {$student_row[ 'id' ]} "
+      . 'and active = 1';
+    $x_result = $db->query( $x_query );
+    if( $x_result->num_rows == 0 ) {
+      print 'inactive';
+      die( );
+    }
+
     $_SESSION[ 'student' ] = $student_row[ 'id' ];
     foreach( explode( ' ', 'first last email banner' ) as $field ) {
         $_SESSION[ $field ] = $student_row[ $field ];
