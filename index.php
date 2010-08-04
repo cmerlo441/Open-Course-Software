@@ -8,6 +8,10 @@ print wordwrap( "<p>Welcome to my web site.  Students, be sure to create an "
 		. "stay in contact with me outside of class.  Make sure to "
 		. "keep your personal information up to date.</p>\n" );
 
+print "<p>View this semester's ";
+print_link( "$docroot/graphs/", "login statistics" );
+print ".</p>\n";
+
 $pages_query = 'select * from pages order by title';
 $pages_result = $db->query( $pages_query );
 if( $pages_result->num_rows > 0 ) {
