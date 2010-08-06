@@ -12,6 +12,13 @@ if( $_SESSION[ 'admin' ] == 1 ) {
             . "{$_POST[ 'day' ]}, {$_POST[ 'evening' ]} )";
         $insert_result = $db->query( $insert_query );
     }
+
+    else if( isset( $_POST[ 'remove' ] ) ) {
+	$id = $db->real_escape_string( $_POST[ 'remove' ] );
+	$remove_query = 'delete from holidays '
+	    . "where id = $id";
+	$remove_result = $db->query( $remove_query );
+    }
     
     $holidays_query = 'select * from holidays '
         . "where date >= \"" . date( 'Y-m-d', strtotime( $semester_start ) ) . '" '
@@ -42,6 +49,23 @@ if( $_SESSION[ 'admin' ] == 1 ) {
             print 'classes canceled.';
         }
     }
+?>
+
+<script type="text/javascript">
+$(document).ready(function(){
+    $('div.holiday span.remove a').click(function(){
+        var id = $(this).attr('id');
+	$.post( 'holidays.php', { remove: id },
+            function(data) {
+                $('div#holidays').html(data);
+	    }
+        )
+    })
+})
+</script>
+
+<?php
+
 }
 
 ?>

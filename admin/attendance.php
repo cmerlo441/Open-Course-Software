@@ -45,9 +45,9 @@ if( $_SESSION[ 'admin' ] == 1 ) {
             $days[ ] = $days_row[ 'day' ];
         }
         
-        /* $meetings will contain $month=>$day, one for each meeting of this class
-         * between the start of the semester and now/end of semester, whichever
-         * is earlier
+        /* $meetings will contain $month=>$day, one for each meeting
+	 * of this class between the start of the semester and now/end
+	 * of semester, whichever is earlier
          */
         
         $meetings = array( );

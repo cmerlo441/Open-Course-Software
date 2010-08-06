@@ -5,7 +5,7 @@ require_once( '../_header.inc' );
 
 if( $_SESSION[ 'admin' ] == 1 ) {
     $section = $db->real_escape_string( $_GET[ 'section' ] );
-    $section_query = 'select c.dept, c.course, s.section '
+    $section_query = 'select c.dept, c.course, s.section, s.day '
         . 'from courses as c, sections as s '
         . 'where s.course = c.id '
         . "and s.id = $section";
@@ -44,13 +44,30 @@ if( $_SESSION[ 'admin' ] == 1 ) {
                            date( 'n', strtotime( $date ) ), date( 'j', strtotime( $date ) ) + 1, date( 'Y' ) ) ) )
         {
             $day = date( 'w', strtotime( $date ) );
+            $resched_query = 'select follow from rescheduled_days '
+                . "where date=\"$date\" "
+                . 'and ' . ( $section_row[ 'day' ] == 1 ? 'day' : 'evening' ) . ' = 1';
+            $resched_result = $db->query( $resched_query );
+            if( $resched_result->num_rows == 1 ) {
+                $row = $resched_result->fetch_assoc( );
+                $day = $row[ 'follow' ];
+            }
+            
+            $holiday_query = 'select '
+                . ( $section_row[ 'day' ] == 1 ? 'day' : 'evening' )
+                . ' from holidays '
+                . "where date = \"$date\"";
+            $holiday_result = $db->query( $holiday_query );
+            if( $holiday_result->num_rows == 1 ) {
+                $day = -1;
+            }
+            
             if( in_array( $day, $days ) ) {
                 $meetings[ date( 'n', strtotime( $date ) ) ][ date( 'j', strtotime( $date ) ) ] = 1;
             }
         }
         
         print "<p class=\"noprint\">Create sign-in sheet for: <select id=\"date\">\n";
-        print "<option value=\"0\">Choose a date</option>\n";
         foreach( $meetings as $month=>$days ) {
             foreach( $days as $day=>$ignore ) {
                 $date = date( 'Y-m-d', strtotime( date( 'Y' ) . "-$month-$day" ) );
@@ -77,6 +94,15 @@ $(document).ready(function(){
     $("h1").html( $("h1").html() + " for <?php echo $section_name; ?>" );
     
     var section = "<?php echo $section; ?>";
+
+    var date = $('select#date').val();
+    var dateString = $('select#date :selected').text();
+    $.post( 'sign_in_list.php',
+            { section: section, date: date },
+            function( data ) {
+                $('div#sign_in_list').html(data);
+            }
+    )
 
     $('select#date').change(function(){
         var date = $(this).val();
