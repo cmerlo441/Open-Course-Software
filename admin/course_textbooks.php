@@ -142,7 +142,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 $(document).ready(function(){
     $("a.remove").click(function(){
         var textbook = $(this).attr("id");
-        var course = "<?php echo $_POST[ 'course' ]; ?>";
+        var course = "<?php echo $db->real_escape_string( $_POST[ 'course' ] ); ?>";
         $.post( 'course_textbooks.php',
             { course: course, remove: textbook },
             function(data){
@@ -153,7 +153,7 @@ $(document).ready(function(){
 
     $("select#new_textbook").change(function(){
         var textbook = $(this).val();
-        var course = "<?php echo $_POST[ 'course' ]; ?>";
+        var course = "<?php echo $db->real_escape_string( $_POST[ 'course' ] ); ?>";
         $.post( 'course_textbooks.php',
             { course: course, textbook: textbook },
             function(data){

@@ -17,7 +17,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     </li>
     <li>Grades</li>
     <li>Holidays and rescheduled days</li>
-    <li>Send and received e-mail</li>
+    <li>Sent and received e-mail</li>
     <li>Current sections</li>
     <li>All student information</li>
 </ul>

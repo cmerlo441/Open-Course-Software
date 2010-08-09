@@ -7,7 +7,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 
     $student = $db->real_escape_string( $_POST[ 'student' ] );
     $section = $db->real_escape_string( $_POST[ 'section' ] );
-    $id = $db->real_escape_string( $_POST[ 'id' ] );
+    $id      = $db->real_escape_string( $_POST[ 'id' ] );
 
     $student_query = 'select first, middle, last, email from students '
 	. "where id = $student";

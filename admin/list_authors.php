@@ -11,7 +11,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
         $insert_query = 'insert into authors( id, first, middle, last, email, url ) '
             . 'values ( null, ';
         foreach( explode( ' ', 'first middle last email url' ) as $field ) {
-            $safe[ $field ] = htmlentities( trim( $_POST[ $field ] ) );
+            $safe[ $field ] = $db->real_escape_string( $_POST[ $field ] );
             if( $field == 'first' or $field == 'middle' or $field == 'last' ) {
                 $safe[ $field ] = ucwords( $safe[ $field ] );
             }
@@ -27,7 +27,8 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     
     // Was an author deleted?
     if( isset( $_POST[ 'delete_author' ] ) ) {
-        $db->query( "delete from authors where id = \"{$_POST[ 'delete_author' ]}\"" );
+	$id = $db->real_escape_string( $_POST[ 'delete_author' ] );
+        $db->query( "delete from authors where id = \"$id\"" );
     }
     
     $authors_query = 'select * from authors order by last, first, middle';

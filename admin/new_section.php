@@ -7,7 +7,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     $values = array();
     
     if( $_POST[ 'course' ] != 'null' ) {
-        $values[ 'course' ] = $_POST[ 'course' ];
+        $values[ 'course' ] = $db->real_escape_string( $_POST[ 'course' ] );
     } else {
         print "Invalid request: course";
         die();
@@ -57,11 +57,13 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 
     $id = 1;
     while( isset( $_POST[ "meeting{$id}day" ] ) ) {
-        $day = $_POST[ "meeting{$id}day" ];
-        $start = date( 'H:i:s', strtotime( trim( htmlentities( $_POST[ "meeting{$id}start" ] ) ) ) );
-        $end = date( 'H:i:s', strtotime( trim( htmlentities( $_POST[ "meeting{$id}end" ] ) ) ) );
-        $building = trim( htmlentities( $_POST[ "meeting{$id}building" ] ) );
-        $room = trim( htmlentities( $_POST[ "meeting{$id}room" ] ) );
+        $day        = $db->real_escape_string( $_POST[ "meeting{$id}day" ] );
+	$post_start = trim( $db->real_escape_string( $_POST[ "meeting{$id}start" ] ) );
+	$post_end   = trim( $db->real_escape_string( $_POST[ "meeting{$id}end" ] ) );
+        $start      = date( 'H:i:s', strtotime( $post_start ) );
+        $end        = date( 'H:i:s', strtotime( $post_end ) );
+        $building   = $db->real_escape_string( $_POST[ "meeting{$id}building" ] );
+        $room       = $db->real_escape_string( $_POST[ "meeting{$id}room" ] );
         
         $insert_query = 'insert into section_meetings '
             . '( id, section, day, start, end, building, room ) values '

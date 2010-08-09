@@ -26,15 +26,17 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     
     // Was a page deleted?
     if( isset( $_POST[ 'delete_id' ] ) ) {
-        $db->query( "delete from pages where id = {$_POST[ 'delete_id' ]}" );
+	$id = $db->real_escape_string( $_POST[ 'delete_id' ] );
+        $db->query( "delete from pages where id = $id" );
     }
     
     // Was a page edited?
     if( isset( $_POST[ 'edit' ] ) ) {
+	$edit = $db->real_escape_string( $_POST[ 'edit' ] );
         $safe_text = $db->real_escape_string( trim( $_POST[ 'text' ] ) );
         $update_query = "update pages set text = \"$safe_text\", "
             . 'last_modified = "' . date( 'Y-m-d H:i:s' ) . '" '
-            . "where id = {$_POST[ 'edit' ]}";
+            . "where id = $edit";
         $update_result = $db->query( $update_query );
     }
     

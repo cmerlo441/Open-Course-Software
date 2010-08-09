@@ -4,11 +4,14 @@ $no_header = 1;
 require_once( '../_header.inc' );
 
 if( $_SESSION[ 'admin' ] == 1 ) {
+
+    $date        = $db->real_escape_string( $_POST[ 'date' ] );
+    $description = $db->real_escape_string( $_POST[ 'description' ] );
+    $day         = $db->real_escape_string( $_POST[ 'day' ] );
+    $evening     = $db->real_escape_string( $_POST[ 'evening' ] );
+
     $insert_query = 'insert into holidays ( date, description, day, evening ) values '
-        . '( "' . htmlentities( trim( $_POST[ 'date' ] ) ) . '", '
-        . '"' . htmlentities( trim( $_POST[ 'description' ] ) ) . '", '
-        . "{$_POST[ 'day' ]}, {$_POST[ 'evening' ]} )";
-    print "<script type=\"text/javascript\">alert( $insert_query )</script>\n";
+        . "( \"$date\", \"$description\", \"$day\", \"$evening\" )";
     $insert_result = $db->query( $insert_query );
     
     if( $db->affected_rows == 1 ) {

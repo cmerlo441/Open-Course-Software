@@ -4,8 +4,12 @@ $no_header = 1;
 require_once( '../_header.inc' );
 
 if( $_SESSION[ 'admin' ] == 1 ) {
+
+    $student_id = $db->real_escape_string( $_POST[ 'student' ] );
+    $section = $db->real_escape_string( $_POST[ 'section' ] );
+
     $student_query = 'select * from students '
-        . 'where id = ' . $db->real_escape_string( $_POST[ 'student' ] );
+        . "where id = $student_id";
     $student_result = $db->query( $student_query );
     $student = $student_result->fetch_assoc( );
     $student_name = $student[ 'first' ] . ' ';
@@ -17,7 +21,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     $section_query = 'select c.dept, c.course, s.section '
         . 'from courses as c, sections as s '
         . 'where s.course = c.id '
-        . "and s.id = {$_POST[ 'section' ]}";
+        . "and s.id = $section";
     $section_result = $db->query( $section_query );
     $section_row = $section_result->fetch_assoc( );
     $section = $section_row[ 'dept' ] . ' ' . $section_row[ 'course' ]

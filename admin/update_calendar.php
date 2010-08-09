@@ -10,7 +10,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     
     	if( trim( $_POST[ 'update_value' ] ) != trim( $_POST[ 'original_html' ] ) ) {
             $update_query = "update semester set name = "
-                . '"' . htmlentities( trim( $_POST[ 'update_value' ] ) ) . '"';
+                . '"' . $db->real_escape_string( $_POST[ 'update_value' ] ) . '"';
             $update_result = $db->query( $update_query );
     
             $select_query = 'select name from semester';
@@ -25,10 +25,13 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     	
 	// Changing semester start and end dates
     } else {
-        preg_match( "/^semester_(.*)$/", $_POST[ 'column' ], $matches );
+        preg_match( "/^semester_(.*)$/",
+		    $db->real_escape_string( $_POST[ 'column' ] ),
+		    $matches );
         $column = $matches[ 1 ];
         $update_query = "update semester set $column = \""
-            . date( 'Y-m-d', strtotime( $_POST[ 'date' ] ) ) . "\"";
+            . date( 'Y-m-d',
+		    strtotime( $db->real_escape_string( $_POST[ 'date' ] ) ) ) . "\"";
         $update_result = $db->query( $update_query );
         $update_result->close( );
         

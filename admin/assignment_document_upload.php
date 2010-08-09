@@ -15,9 +15,11 @@ if( $_FILES[ 'file' ][ 'error' ] == 0 ) {
     
     $file = $db->real_escape_string( $file );
 
+    $assignment = $db->real_escape_string( $_POST[ 'assignment' ] );
+
     $insert_query = 'insert into assignment_documents '
         . '( id, assignment, type, name, size, file ) values '
-        . "( null, \"{$_POST[ 'assignment' ]}\", \"{$_FILES[ 'file' ][ 'type' ]}\", "
+        . "( null, \"$assignment\", \"{$_FILES[ 'file' ][ 'type' ]}\", "
         . "\"{$_FILES[ 'file' ][ 'name' ]}\", \"{$_FILES[ 'file' ][ 'size' ]}\", "
         . "\"$file\" )";
     $insert_result = $db->query( $insert_query );

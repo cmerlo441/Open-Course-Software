@@ -7,8 +7,12 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     
     // Was an author added to a textbook?
     if( isset( $_POST[ 'textbook' ] ) and isset( $_POST[ 'new_author' ] ) ) {
+
+	$textbook   = $db->real_escape_string( $_POST[ 'textbook' ] );
+	$new_author = $db->real_escape_string( $_POST[ 'new_author' ] );
+
         $last_sequence_query = 'select sequence from textbook_x_author '
-            . "where textbook = {$_POST[ 'textbook' ]} "
+            . "where textbook = $textbook "
             . 'order by sequence desc';
         $last_sequence_result = $db->query( $last_sequence_query );
         if( $last_sequence_result->num_rows == 0 ) {
@@ -18,14 +22,16 @@ if( $_SESSION[ 'admin' ] == 1 ) {
             $sequence = $row[ 'sequence' ] + 1;
         }
         $insert_query = 'insert into textbook_x_author( id, textbook, author, sequence ) '
-            . "values( null, {$_POST[ 'textbook' ]}, {$_POST[ 'new_author' ]}, $sequence )";
+            . "values( null, $textbook, $new_author, $sequence )";
         $insert_result = $db->query( $insert_query );
     }
     
     // Was an author removed from a textbook?
     if( isset( $_POST[ 'remove_author' ] ) ) {
+	$id = $db->real_escape_string( $_POST[ 'remove_author' ] );
+
         $remove_query = 'delete from textbook_x_author '
-            . "where id = {$_POST[ 'remove_author' ]}";
+            . "where id = $id";
         $remove_result = $db->query( $remove_query );
     }
     
@@ -42,8 +48,11 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     
     // Was an author moved?
     if( isset( $_POST[ 'move' ] ) ) {
+	$move   = $db->real_escape_string( $_POST[ 'move' ] );
+	$author = $db->real_escape_string( $_POST[ 'author' ] );
+
         $moving_author_query = 'select * from textbook_x_author '
-            . "where id = {$_POST[ 'author' ]}";
+            . "where id = $author";
         $moving_author_result = $db->query( $moving_author_query );
         $moving_author_row = $moving_author_result->fetch_assoc( );
         $m_sequence = $moving_author_row[ 'sequence' ];
@@ -51,7 +60,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
         $displaced_author_query = 'select * from textbook_x_author '
             . "where textbook = {$moving_author_row[ 'textbook' ]} "
             . 'and sequence = '
-            . ( $_POST[ 'move' ] == 'up' ? $m_sequence - 1 : $m_sequence + 1 );
+            . ( $move == 'up' ? $m_sequence - 1 : $m_sequence + 1 );
         $displaced_author_result = $db->query( $displaced_author_query );
         $displaced_author_row = $displaced_author_result->fetch_assoc( );
         $d_sequence = $displaced_author_row[ 'sequence' ];
@@ -66,19 +75,25 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     
     // Was a new textbook created?
     if( isset( $_POST[ 'title' ] ) ) {
-        $title = $db->real_escape_string( trim( $_POST[ 'title' ] ) );
-        $subtitle = $db->real_escape_string( trim( $_POST[ 'subtitle' ] ) );
-        $isbn = $db->real_escape_string( trim( $_POST[ 'isbn' ] ) );
-        $new_textbook_query = 'insert into textbooks( id, title, subtitle, edition, year, isbn, publisher ) '
-            . "values( null, \"$title\", \"$subtitle\", {$_POST[ 'edition' ]}, {$_POST[ 'year' ]}, "
-            . "\"$isbn\", {$_POST[ 'publisher' ]} )";
+        $title     = $db->real_escape_string( trim( $_POST[ 'title' ] ) );
+        $subtitle  = $db->real_escape_string( trim( $_POST[ 'subtitle' ] ) );
+        $isbn      = $db->real_escape_string( trim( $_POST[ 'isbn' ] ) );
+	$edition   = $db->real_escape_string( $_POST[ 'edition' ] );
+	$year      = $db->real_escape_string( $_POST[ 'year' ] );
+	$publisher = $db->real_escape_string( $_POST[ 'publisher' ] );
+
+        $new_textbook_query = 'insert into textbooks'
+	    . '( id, title, subtitle, edition, year, isbn, publisher ) '
+            . "values( null, \"$title\", \"$subtitle\", $edition, $year, "
+            . "\"$isbn\", $publisher )";
         $db->query( $new_textbook_query );
     }
     
     // Was a textbook deleted?
     if( isset( $_POST[ 'remove_textbook' ] ) ) {
-        $db->query( "delete from textbook_x_author where textbook = {$_POST[ 'remove_textbook' ]}" );
-        $db->query( "delete from textbooks where id = {$_POST[ 'remove_textbook' ]}" );
+	$id = $db->real_escape_string( $_POST[ 'remove_textbook' ] );
+        $db->query( "delete from textbook_x_author where textbook = $id" );
+        $db->query( "delete from textbooks where id = $id" );
     }
     
     $textbook_query = 'select t.id, t.title, t.subtitle, t.edition, t.year, t.isbn, '
@@ -91,11 +106,15 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     
     // Was something edited in place?
     if( isset( $_POST[ 'column' ] ) ) {
-	    if( trim( $_POST[ 'update_value' ] ) != trim( $_POST[ 'original_html' ] ) ) {
-    		$update_query = "update textbooks set {$_POST[ 'column' ]} = \""
-    			. htmlentities( trim( $_POST[ 'update_value' ] ) )
-    			. "\" where id = \"{$_POST[ 'element_id' ]}\"";
-    		$update_result = $db->query( $update_query );
+	$column       = $db->real_escape_string( $_POST[ 'column' ] );
+	$update_value = $db->real_escape_string( $_POST[ 'update_value' ] );
+	$element_id   = $db->real_escape_string( $_POST[ 'element_id' ] );
+
+	if( trim( $_POST[ 'update_value' ] ) !=
+	    trim( $_POST[ 'original_html' ] ) ) {
+	    $update_query = "update textbooks set $column = \"$update_value\" "
+		. "where id = \"$element_id\"";
+	    $update_result = $db->query( $update_query );
         }
     }
     
@@ -204,7 +223,8 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 
 $(document).ready(function(){
     $("div#textbooks").accordion({
-        active: <?php echo isset( $_POST[ 'accordion' ] ) ? $_POST[ 'accordion' ] : 'false'; ?>,
+        active: <?php echo isset( $_POST[ 'accordion' ] ) ?
+	    $db->real_escape_string( $_POST[ 'accordion' ] ) : 'false'; ?>,
         autoHeight: false,
         collapsible: true
     });

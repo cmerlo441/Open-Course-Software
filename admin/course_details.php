@@ -6,27 +6,36 @@ require_once( '../_header.inc' );
 if( $_SESSION[ 'admin' ] == 1 ) {
     
     if( isset( $_POST[ 'type' ] ) and isset( $_POST[ 'weight' ] ) and $_POST[ 'type' ] > 0 ) {
-        $weight = substr( $_POST[ 'weight' ], 0, strlen( $_POST[ 'weight' ] ) - 1 );
-        $insert_query = 'insert into grade_weights( id, course, grade_type, grade_weight, collected ) '
-            . "values( null, {$_POST[ 'id' ]}, {$_POST[ 'type' ]}, $weight, {$_POST[ 'collected' ]} )";
+	$post_weight = $db->real_escape_string( $_POST[ 'weight' ] );
+        $weight = substr( $post_weight, 0, strlen( $post_weight ) - 1 );
+	$id = $db->real_escape_string( $_POST[ 'id' ] );
+	$type = $db->real_escape_string( $_POST[ 'type' ] );
+	$collected = $db->real_escape_string( $_POST[ 'collected' ] );
+
+        $insert_query = 'insert into grade_weights( id, course, grade_type, '
+	    . 'grade_weight, collected ) '
+            . "values( null, $id, $type, $weight, $collected )";
         $insert_result = $db->query( $insert_query );
     } else if( isset( $_POST[ 'remove_id' ] ) ) {
+	$id = $db->real_escape_string( $_POST[ 'remove_id' ] );
         $remove_query = 'delete from grade_weights '
-            . "where id = {$_POST[ 'remove_id' ]}";
+            . "where id = $id";
         $remove_result = $db->query( $remove_query );
     }
     
-    $details_query = 'select id, dept, course, short_name, long_name, prereq, catalog, outline from courses '
-        . "where id = {$_POST[ 'id' ]}";
+    $id = $db->real_escape_string( $_POST[ 'id' ] );
+    $details_query = 'select id, dept, course, short_name, long_name, prereq, '
+	. 'catalog, outline from courses '
+        . "where id = $id";
 	$details_result = $db->query( $details_query );
 	$row = $details_result->fetch_assoc( );
-    $details_result->close( );
+	$details_result->close( );
 
 	print "<form class=\"course_details_form\" id=\"{$row[ 'id' ]}\">\n";
 
 	print "<h3><span class=\"dept\" id=\"{$row[ 'id' ]}\">{$row[ 'dept' ]}</span> "
-		. "<span class=\"course\" id=\"{$row[ 'id' ]}\">{$row[ 'course' ]}</span>: "
-		. "<span class=\"long_name\" id=\"{$row[ 'id' ]}\">{$row[ 'long_name' ]}</span></h3>\n";
+	    . "<span class=\"course\" id=\"{$row[ 'id' ]}\">{$row[ 'course' ]}</span>: "
+	    . "<span class=\"long_name\" id=\"{$row[ 'id' ]}\">{$row[ 'long_name' ]}</span></h3>\n";
 
 	print '<p style="text-align: center;">';
 	print_link( "./syllabus.php?course={$row[ 'id' ]}",
@@ -34,17 +43,17 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 	print "</p>\n";
 
 	print "<p><b>Short Name</b>: <span class=\"short_name\" id=\"{$row[ 'id' ]}\">"
-		. "{$row[ 'short_name' ]}</span></p>\n";
+	    . "{$row[ 'short_name' ]}</span></p>\n";
 	print "<p><b>Prerequisite</b>: <span class=\"prereq\" id=\"{$row[ 'id' ]}\">"
-		. "{$row[ 'prereq' ]}</span></p>\n";
+	    . "{$row[ 'prereq' ]}</span></p>\n";
 	print "<p><b>Catalog Description</b>:<br />"
-		. "<span class=\"catalog\" id=\"{$row[ 'id' ]}\">{$row[ 'catalog' ]}</p>\n";
+	    . "<span class=\"catalog\" id=\"{$row[ 'id' ]}\">{$row[ 'catalog' ]}</p>\n";
 	print "<p><b>Course Outline</b>:<br />"
-	  . "<span class=\"outline\" id=\"{$row[ 'id' ]}\">{$row[ 'outline' ]}</p>\n";
+	    . "<span class=\"outline\" id=\"{$row[ 'id' ]}\">{$row[ 'outline' ]}</p>\n";
     
-    $weights_query = 'select w.id, t.grade_type as t, w.grade_weight as w, collected as c '
-        . 'from grade_types as t, grade_weights as w '
-        . "where w.course = {$_POST[ 'id' ]} "
+	$weights_query = 'select w.id, t.grade_type as t, w.grade_weight as w, collected as c '
+	    . 'from grade_types as t, grade_weights as w '
+        . "where w.course = $id "
         . 'and w.grade_type = t.id '
         . 'order by w.grade_weight desc, t.grade_type';
     $weights_result = $db->query( $weights_query );
@@ -108,7 +117,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 <script type="text/javascript">
 $(document).ready(function(){
     $.post( 'course_textbooks.php',
-        { course: "<?php echo $_POST[ 'id' ]; ?>" },
+        { course: "<?php echo $id; ?>" },
         function(data){
             $("div#textbooks").html(data);
         }
@@ -129,7 +138,7 @@ $(document).ready(function(){
     $("div#new_grade_weight a#new_weight_submit").click(function(){
         var grade_type = $("select#grade_type").val();
         var grade_weight = $("input#new_weight_amount").val();
-        var id = "<?php echo $_POST[ 'id' ]; ?>";
+        var id = "<?php echo $id; ?>";
         var collected = 0;
         if( $("input#collected").attr("checked") == true ) {
             collected = 1;
@@ -143,7 +152,7 @@ $(document).ready(function(){
     })
     
     $("a.remove_grade_weight").click(function(){
-        var id = "<?php echo $_POST[ 'id' ]; ?>";
+        var id = "<?php echo $id; ?>";
         var remove_id = $(this).attr("id");
         
         $.post( 'course_details.php',

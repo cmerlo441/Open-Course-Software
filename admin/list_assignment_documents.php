@@ -6,13 +6,16 @@ require_once( '../_header.inc' );
 if( $_SESSION[ 'admin' ] == 1 ) {
     
     if( isset( $_POST[ 'id_to_delete' ] ) ) {
+	$id = $db->real_escape_string( $_POST[ 'id_to_delete' ] );
         $delete_query = 'delete from assignment_documents '
-            . "where id = {$_POST[ 'id_to_delete' ]}";
+            . "where id = $id";
         $delete_result = $db->query( $delete_query );
     }
+
+    $assignment = $db->real_escape_string( $_POST[ 'assignment' ] );
     
     $files_query = 'select * from assignment_documents '
-        . "where assignment = \"{$_POST[ 'assignment' ]}\" "
+        . "where assignment = \"$assignment\" "
         . 'order by name';
     $files_result = $db->query( $files_query );
     if( $files_result->num_rows == 0 ) {
@@ -34,7 +37,7 @@ $(document).ready(function(){
     $('a.delete').click(function(){
         var id = $(this).attr('id');
         $.post( 'list_assignment_documents.php',
-            { id_to_delete: id, assignment: "<?php echo $_POST[ 'assignment' ]; ?>" },
+            { id_to_delete: id, assignment: "<?php echo $assignment; ?>" },
             function( data ) {
                 $('div#existing_files').html(data);
             }

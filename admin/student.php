@@ -5,11 +5,13 @@ require_once( '../_header.inc' );
 
 if( $_SESSION[ 'admin' ] == 1 ) {
     $student_id = $db->real_escape_string( $_POST[ 'student' ] );
+    $section    = $db->real_escape_string( $_POST[ 'section' ] );
+
     $student_query = 'select s.id, s.first, s.middle, s.last, s.email, x.active '
         . 'from students as s, student_x_section as x '
         . "where s.id = $student_id "
         . 'and x.student = s.id '
-        . "and x.section = {$_POST[ 'section' ]}";
+        . "and x.section = $section";
     $student_result = $db->query( $student_query );
     $student_row = $student_result->fetch_assoc( );
     
@@ -18,8 +20,6 @@ if( $_SESSION[ 'admin' ] == 1 ) {
         $student_name .= $student_row[ 'middle' ] . ' ';
     }
     $student_name .= $student_row[ 'last' ];
-    
-    $section = $db->real_escape_string( $_POST[ 'section' ] );
     
     print "<h2>$student_name</h2>\n";
     
@@ -208,7 +208,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 $(document).ready(function(){
     var student = "<?php echo $student_id; ?>";
     var student_name = "<?php echo $student_name; ?>";
-    var section = "<?php echo $_POST[ 'section' ]; ?>";
+    var section = "<?php echo $section; ?>";
     
     $('#logins').tablesorter({ sortList: [ [0,0] ], widgets: [ 'ocsw' ] });
     

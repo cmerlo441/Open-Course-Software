@@ -4,18 +4,24 @@ $no_header = 1;
 require_once( '../_header.inc' );
 
 if( $_SESSION[ 'admin' ] == 1 ) {
+
+    $new_type        =
+	trim( $db->real_escape_string( $_POST[ 'new_type' ] ) );
+    $new_type_plural = 
+	trim( $db->real_escape_string( $_POST[ 'new_type_plural' ] ) );
     
-    if( trim( $_POST[ 'new_type' ] != '' ) && trim( $_POST[ 'new_type_plural' ] ) ) {
+    if( trim( $new_type != '' ) && trim( $new_type_plural ) ) {
         $insert_query = 'insert into grade_types ( id, grade_type, plural ) '
-            . "values ( null, \"" . htmlentities( trim( $_POST[ 'new_type' ] ) ) . "\", "
-            . "\"" . htmlentities( trim( $_POST[ 'new_type_plural' ] ) ) . "\" )";
+            . "values ( null, \"$new_type\", $new_type_plural\" )";
         $insert_result = $db->query( $insert_query );
         $error = ( $db->affected_rows == 0 );
     }
     
     if( isset( $_POST[ 'id_to_remove' ] ) ) {
+	$id_to_remove = 
+	    trim( $db->real_escape_string( $_POST[ 'id_to_remove' ] ) );
         $delete_query = 'delete from grade_types '
-            . "where id = {$_POST[ 'id_to_remove' ]}";
+            . "where id = $id_to_remove";
         $delete_result = $db->query( $delete_query );
     }
     

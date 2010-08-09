@@ -17,11 +17,11 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     $section = $db->real_escape_string( $_POST[ 'section' ] );
     
     if( isset( $_POST[ 'day' ] ) ) {
-        $day = $db->real_escape_string( $_POST[ 'day' ] );
-        $start = $db->real_escape_string( $_POST[ 'start' ] );
-        $end = $db->real_escape_string( $_POST[ 'end' ] );
+        $day      = $db->real_escape_string( $_POST[ 'day' ] );
+        $start    = $db->real_escape_string( $_POST[ 'start' ] );
+        $end      = $db->real_escape_string( $_POST[ 'end' ] );
         $building = $db->real_escape_string( $_POST[ 'building' ] );
-        $room = $db->real_escape_string( $_POST[ 'room' ] );
+        $room     = $db->real_escape_string( $_POST[ 'room' ] );
         
         $insert_query = 'insert into section_meetings '
             . '( id, section, day, start, end, building, room ) '
@@ -38,7 +38,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
             . "where id = $id";
         $remove_result = $db->query( $remove_query );
     }
-    
+
     print "<ul class=\"section_meetings\">\n";
     $meetings_query = "select * from section_meetings where section = $section "
         . "order by day, start";
@@ -57,10 +57,10 @@ if( $_SESSION[ 'admin' ] == 1 ) {
         print "</li>\n";
     }
     $meetings_result->close( );
-    print "<li><a href=\"javascript:void(0)\" class=\"add_meeting\" id=\"{$_POST[ 'section' ]}\">"
+    print "<li><a href=\"javascript:void(0)\" class=\"add_meeting\" id=\"$section\">"
         . "<img src=\"$docroot/images/add_16.png\" height=\"16\" width=\"16\" "
         . "title=\"Add new meeting\" /></a>\n";
-    print " <a href=\"javascript:void(0)\" class=\"add_meeting\" id=\"{$_POST[ 'section' ]}\">"
+    print " <a href=\"javascript:void(0)\" class=\"add_meeting\" id=\"$section\">"
         . "Add new meeting</a></li>\n";
     print "</ul>\n";
     
