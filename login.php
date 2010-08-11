@@ -1,7 +1,7 @@
 <?php
 
-require_once( "/home/faculty/cmerlo/.htpasswd" );
-session_start();
+$no_header = 1;
+require_once( './_header.inc' );
 
 $admin_query = 'select * from prof '
   . 'where username = "' . $db->real_escape_string( $_POST[ 'username' ] ) . '" '

@@ -132,14 +132,6 @@ require_once( '/home/faculty/cmerlo/.htpasswd' );
 
 // DB connection has been made.  Let's get some initial info:
 
-// Version Information
-$version_query = 'select version from ocsw_version';
-$version_result = $db->query( $version_query );
-$version_row = $version_result->fetch_assoc( );
-$ocsw[ 'version' ] = $version_row[ 'version' ];
-$version_result->free( );
-unset( $version_query, $version_result, $version_row );
-
 // Professor information
 $prof_query = 'select * from prof';
 $prof_result = $db->query( $prof_query );
@@ -179,6 +171,11 @@ $fileroot = $fileroot_row[ 'v' ];
 
 $admin = "$docroot/admin";
 $student = "$docroot/student";
+
+// Version Information
+$version_fh = fopen( "$fileroot/version.txt", 'r' );
+$ocsw_version = trim( fgets( $version_fh ) );
+fclose( $version_fh );
 
 // Letter grades
 function letter_grade( $grade ) {

@@ -13,7 +13,8 @@
 <div id="bottom">
 <?php
 
-print "<div id=\"last_edited\">This page was last edited on " . date( 'l, F j, Y \\a\\t g:i a', $lastmod )
+print "<div id=\"last_edited\">This page was last edited on "
+    . date( 'l, F j, Y \\a\\t g:i a', $lastmod )
     . ".</div>\n";
 print '<div id="current_time">This page was printed on ' . date( 'l, F j, Y \\a\\t g:i a' );
 if( $_SESSION[ 'student' ] > 0 ) {
@@ -23,6 +24,9 @@ if( $_SESSION[ 'student' ] > 0 ) {
 }
 print ".</div>\n";
 print "<div id=\"qotd\">\n</div> <!-- div#qotd -->\n";
+
+print "<div id=\"version\">OCSW Version {$ocsw_version}.  &copy; 2002-"
+    . date( 'Y' ) . ".  Some rights reserved.</div>\n";
 
 $db->close( );
 
