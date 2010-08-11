@@ -11,9 +11,12 @@ require_once( '../_header.inc' );
 print "<div id=\"syllabus_details\"></div>\n";
 
 if( $_SESSION[ 'student' ] > 0 and isset( $_GET[ 'section' ] ) ) {
+
+    $section = $db->real_escape_string( $_GET[ 'section' ] );
+
     $right_section_query = 'select * from student_x_section '
         . "where student = " . $db->real_escape_string( $_SESSION[ 'student' ] )
-        . " and section = " . $db->real_escape_string( $_GET[ 'section' ] );
+        . " and section = $section";
     $right_section_result = $db->query( $right_section_query );
     if( $right_section_result->num_rows == 1 ) {
 
@@ -23,7 +26,7 @@ if( $_SESSION[ 'student' ] > 0 and isset( $_GET[ 'section' ] ) ) {
 <script type="text/javascript">
 $(document).ready(function(){
     $.post( "<?php echo $docroot; ?>/syllabus_details.php",
-        { section: "<?php echo $_GET[ 'section' ]; ?>",
+        { section: "<?php echo $section; ?>",
           student: 1 },
         function( data ) {
             $("div#syllabus_details").html( data );

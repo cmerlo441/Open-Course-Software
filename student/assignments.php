@@ -5,8 +5,6 @@ require_once( '../_header.inc' );
 
 if( $_SESSION[ 'student' ] > 0 ) {
     
-    print_r( $_GET );
-    
     $type = 'homework';
     if( isset( $_POST[ 'type' ] ) ) {
         $type = $db->real_escape_string( $_POST[ 'type' ] );
@@ -24,7 +22,8 @@ if( $_SESSION[ 'student' ] > 0 ) {
     $type_id = $type_id_row[ 'id' ];
     
     $section_id = $db->real_escape_string( $_GET[ 'section' ] );
-    $sections_query = 'select s.id, c.id as course_id, c.dept, c.course, s.section '
+    $sections_query = 'select s.id, c.id as course_id, c.dept, c.course, '
+	. 's.section '
         . 'from courses as c, sections as s, student_x_section as x '
         . "where x.student = {$_SESSION[ 'student' ]} "
         . "and x.section = $section_id "
@@ -36,7 +35,7 @@ if( $_SESSION[ 'student' ] > 0 ) {
     $sections_result = $db->query( $sections_query );
     $section_row = $sections_result->fetch_assoc( );
     $section = $section_row[ 'dept' ] . ' ' . $section_row[ 'course' ]
-          . ' ' . $section_row[ 'section' ];
+	. ' ' . $section_row[ 'section' ];
     
     $sequence = 1;
     
@@ -59,17 +58,21 @@ if( $_SESSION[ 'student' ] > 0 ) {
             print "<div class=\"$l_type\" id=\"{$assignment[ 'id' ]}\">\n\n";
 
             if( isset( $assignment[ 'title' ] ) ) {
-                print "<div class=\"title\">{$assignment[ 'title' ]}</div>\n\n";
+                print "<div class=\"title\">{$assignment[ 'title' ]}"
+		    . "</div>\n\n";
             }
             
             print "<div class=\"due_date\">\n";
             print "Due \n"
-                . date( 'l, F j \a\t g:i a', strtotime( $assignment[ 'due_date' ] ) )
+                . date( 'l, F j \a\t g:i a',
+			strtotime( $assignment[ 'due_date' ] ) )
                 . "</div>\n\n";
             
             if( isset( $assignment[ 'description' ] ) ) {
                 print "<h2>Assignment</h2>\n";
-                print stripslashes( nl2br(  "<div class=\"description\">{$assignment[ 'description' ]}</div>\n\n" ) );
+                print stripslashes( nl2br(  "<div class=\"description\">"
+					    . "{$assignment[ 'description' ]}"
+					    . "</div>\n\n" ) );
             }
             
             $docs_query = 'select * from assignment_documents '
@@ -81,8 +84,11 @@ if( $_SESSION[ 'student' ] > 0 ) {
                 print "Related Files:\n";
                 print "<ul>\n";
                 while( $doc = $docs_result->fetch_assoc( ) ) {
-                    print "<li><a href=\"$docroot/download_assignment_document.php?id={$doc[ 'id' ]}\">"
-                        . "{$doc[ 'name' ]} ({$doc[ 'size' ]} bytes)</a></li>\n";
+                    print "<li>"
+			. "<a href=\"$docroot/download_assignment_document.php"
+			. "?id={$doc[ 'id' ]}\">"
+                        . "{$doc[ 'name' ]} ({$doc[ 'size' ]} bytes)"
+			. "</a></li>\n";
                 }
                 print "</ul></div>\n\n";
             }
@@ -99,7 +105,8 @@ if( $_SESSION[ 'student' ] > 0 ) {
             if( $collected_row[ 'collected' ] ) {
             
                 print "<div class=\"submission_details\">\n";
-                $sub_query = 'select id, time, submission from assignment_submissions '
+                $sub_query = 'select id, time, submission '
+		    . 'from assignment_submissions '
                     . "where assignment = {$assignment[ 'id' ]} "
                     . "and student = {$_SESSION[ 'student' ]}";
 
@@ -110,11 +117,13 @@ if( $_SESSION[ 'student' ] > 0 ) {
                     print "<h2>Your Submission</h2>\n";
                     $sub_row = $sub_result->fetch_assoc( );
                     print 'Your submission was accepted on '
-                        . date( 'l, F j \a\t g:i a', strtotime( $sub_row[ 'time' ] ) )
+                        . date( 'l, F j \a\t g:i a',
+				strtotime( $sub_row[ 'time' ] ) )
                         . ":<br />\n";
                     if( trim( $sub_row[ 'submission' ] ) != '' ) {
                         print "<p class=\"submission\">"
-                            . stripslashes( $sub_row[ 'submission' ] ) . "</p>\n";
+                            . stripslashes( $sub_row[ 'submission' ] )
+			    . "</p>\n";
                     }
                 }
                 print "</div>  <!-- div.submission_details -->\n\n";
@@ -147,7 +156,8 @@ if( $_SESSION[ 'student' ] > 0 ) {
                 
                 // Comments
 
-                print "<div class=\"comments\" id=\"{$sub_row[ 'sub_id' ]}\">\n";
+                print "<div class=\"comments\" "
+		    . "id=\"{$sub_row[ 'sub_id' ]}\">\n";
                 print "<h2>Comments</h2>\n";
 
                 print "<div id=\"current_comments\">\n";                
@@ -159,29 +169,41 @@ if( $_SESSION[ 'student' ] > 0 ) {
                     print "None.\n";
                 } else {
                     while( $comment_row = $comments_result->fetch_assoc( ) ) {
-                        $whose_comment = $comment_row[ 'who' ] == 0 ? 'prof' : 'student';
-                        print "<div class=\"{$whose_comment}_comment\" id=\"{$comment_row[ 'id' ]}\">";
+                        $whose_comment = $comment_row[ 'who' ] == 0 ?
+			    'prof' :
+			    'student';
+                        print "<div class=\"{$whose_comment}_comment\" "
+			    . "id=\"{$comment_row[ 'id' ]}\">";
                         print "<div class=\"who\">By "
-                            . ( $whose_comment == 'prof' ? "Prof. {$prof[ 'last' ]}" : $_SESSION[ 'name' ] )
+                            . ( $whose_comment == 'prof' ?
+				"Prof. {$prof[ 'last' ]}" :
+				$_SESSION[ 'name' ] )
                             . "</div>\n";
                         print "<div class=\"when\">On "
-                            . date( 'l, F j \a\t g:i a', strtotime( $comment_row[ 'when' ] ) )
+                            . date( 'l, F j \a\t g:i a',
+				    strtotime( $comment_row[ 'when' ] ) )
                             . "</div>\n";
                         print "<div class=\"comment\">"
-                            . wordwrap( nl2br( stripslashes( $comment_row[ 'comment' ] ) ) )
-                            . "</div>  <!-- div.{$whose_comment}_comment -->\n";
+                            . wordwrap
+			    ( nl2br( stripslashes
+				     ( $comment_row[ 'comment' ] ) ) )
+                            . "</div>  "
+			    . "<!-- div.{$whose_comment}_comment -->\n";
                         print "</div>\n";
                     }
                 }
                 print "</div>  <!-- div#current_comments -->\n";
                 print "<p>Add a comment:</p>\n";
-                print "<p><textarea class=\"comment\" id=\"{$sub_row[ 'id' ]}\" "
+                print "<p><textarea class=\"comment\" "
+		    . "id=\"{$sub_row[ 'id' ]}\" "
                     . "cols=\"40\" rows=\"5\">"
                     . "</textarea></p>\n";
                 print "<input type=\"submit\" class=\"submit_comment\" "
-                    . "value=\"Enter Comment\" id=\"{$sub_row[ 'id' ]}\" />\n";
+                    . "value=\"Enter Comment\" "
+		    . "id=\"{$sub_row[ 'id' ]}\" />\n";
                 
-                print "</div>  <!-- div.comments#{$sub_row[ 'student_id' ]} -->\n";
+                print "</div>  "
+		    . "<!-- div.comments#{$sub_row[ 'student_id' ]} -->\n";
 
             } // if these assignments are collected
 
@@ -193,7 +215,8 @@ if( $_SESSION[ 'student' ] > 0 ) {
 
     print "<h2>Future Assignments</h2>\n";
     
-    $future_query = 'select a.id, a.grade_type, a.posted_date, a.due_date, a.title, a.description '
+    $future_query = 'select a.id, a.grade_type, a.posted_date, a.due_date, '
+	. 'a.title, a.description '
         . 'from assignments as a, grade_types as g '
         . 'where g.grade_type = "Homework" '
         . 'and a.grade_type = g.id '
@@ -210,16 +233,21 @@ if( $_SESSION[ 'student' ] > 0 ) {
             print "<div class=\"homework\" id=\"{$assignment[ 'id' ]}\">\n\n";
 
             if( isset( $assignment[ 'title' ] ) ) {
-                print "<div class=\"title\">{$assignment[ 'title' ]}</div>\n\n";
+                print "<div class=\"title\">{$assignment[ 'title' ]}"
+		    . "</div>\n\n";
             }
             
             print "<div class=\"due_date\">\n";
             print "Due \n"
-                . date( 'l, F j \a\t g:i a', strtotime( $assignment[ 'due_date' ] ) )
+                . date( 'l, F j \a\t g:i a',
+			strtotime( $assignment[ 'due_date' ] ) )
                 . "</div>\n\n";
             
             if( isset( $assignment[ 'description' ] ) ) {
-                print stripslashes( nl2br( "<div class=\"description\">Assignment: {$assignment[ 'description' ]}</div>\n\n" ) );
+                print stripslashes( nl2br( "<div class=\"description\">"
+					   . "Assignment: "
+					   . "{$assignment[ 'description' ]}"
+					   . "</div>\n\n" ) );
             }
             
             $docs_query = 'select * from assignment_documents '
@@ -231,8 +259,11 @@ if( $_SESSION[ 'student' ] > 0 ) {
                 print "Related Files:\n";
                 print "<ul>\n";
                 while( $doc = $docs_result->fetch_assoc( ) ) {
-                    print "<li><a href=\"$docroot/download_assignment_document.php?id={$doc[ 'id' ]}\">"
-                        . "{$doc[ 'name' ]} ({$doc[ 'size' ]} bytes)</a></li>\n";
+                    print "<li>"
+			. "<a href=\"$docroot/download_assignment_document.php"
+			. "?id={$doc[ 'id' ]}\">"
+                        . "{$doc[ 'name' ]} "
+			. "({$doc[ 'size' ]} bytes)</a></li>\n";
                 }
                 print "</ul></div>\n\n";
             }
@@ -247,18 +278,23 @@ if( $_SESSION[ 'student' ] > 0 ) {
             $collected_row = $collected_result->fetch_assoc( );
             if( $collected_row[ 'collected' ] ) {
                 print "<div class=\"submission_details\">\n";
-                $sub_query = 'select id, time, submission from assignment_submissions '
+                $sub_query = 'select id, time, submission '
+		    . 'from assignment_submissions '
                     . "where assignment = {$assignment[ 'id' ]} "
                     . "and student = {$_SESSION[ 'student' ]}";
                 $sub_result = $db->query( $sub_query );
                 if( $sub_result->num_rows == 0 ) {
-                    print "<div class=\"submission\" id=\"{$assignment[ 'id' ]}\">You did not "
-                        . "submit this assignment.  Click here to submit now; click away when you're done.</div>";
+                    print "<div class=\"submission\" "
+			. "id=\"{$assignment[ 'id' ]}\">You did not "
+                        . "submit this assignment.  Click here to submit now; "
+			. "click away when you're done.</div>";
                 } else {
                     $sub_row = $sub_result->fetch_assoc( );
                     print 'Your submission was accepted on '
-                        . date( 'l, F j \a\t g:i a', strtotime( $sub_row[ 'time' ] ) )
-                        . ".  Click on it to edit it; click away when done.<br />\n";
+                        . date( 'l, F j \a\t g:i a',
+				strtotime( $sub_row[ 'time' ] ) )
+                        . ".  Click on it to edit it; click away when done."
+			. "<br />\n";
                     if( trim( $sub_row[ 'submission' ] ) != '' ) {
                         print "<div class=\"submission\" "
                             . "id=\"{$assignment[ 'id' ]}\">"

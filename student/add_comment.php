@@ -25,15 +25,20 @@ if( $_SESSION[ 'student' ] > 0 ) {
     } else {
         while( $comment_row = $comments_result->fetch_assoc( ) ) {
             $whose_comment = $comment_row[ 'who' ] == 0 ? 'prof' : 'student';
-            print "<div class=\"{$whose_comment}_comment\" id=\"{$comment_row[ 'id' ]}\">";
+            print "<div class=\"{$whose_comment}_comment\" "
+		. "id=\"{$comment_row[ 'id' ]}\">";
             print "<div class=\"who\">By "
-                . ( $whose_comment == 'prof' ? "Prof. {$prof[ 'last' ]}" : $_SESSION[ 'name' ] )
+                . ( $whose_comment == 'prof' ?
+		    "Prof. {$prof[ 'last' ]}" :
+		    $_SESSION[ 'name' ] )
                 . "</div>\n";
             print "<div class=\"when\">On "
-                . date( 'l, F j \a\t g:i a', strtotime( $comment_row[ 'when' ] ) )
+                . date( 'l, F j \a\t g:i a',
+			strtotime( $comment_row[ 'when' ] ) )
                 . "</div>\n";
             print "<div class=\"comment\">"
-                . wordwrap( nl2br( stripslashes( $comment_row[ 'comment' ] ) ) )
+                . wordwrap( nl2br( stripslashes
+				   ( $comment_row[ 'comment' ] ) ) )
                 . "</div>  <!-- div.{$whose_comment}_comment -->\n";
             print "</div>\n";
         }
