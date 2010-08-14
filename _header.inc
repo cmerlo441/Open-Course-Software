@@ -4,10 +4,6 @@
  * sure we connect to the database, set up any variables that will be
  * needed later, and display the top of the page (unless told not to).
  */
- 
-/* Right now, this location of .htpasswd must be set by hand.
- * TO DO:  Make an install script that sets this up.
- */
 
 function array_debug( $array ) {
     print "<pre>";
@@ -128,8 +124,17 @@ function os( $os ) {
     }
 }
 
-// Replace XXXXXX with the user's username
-require_once( '/home/faculty/XXXXXX/.htpasswd' );
+$cwd = getcwd( );
+if( preg_match( '|^(/home/faculty/)(.+)/public_html|', $cwd, $matches ) ) {
+    $home_directory = $matches[ 1 ] . $matches[ 2 ];
+    $username = $matches[ 2 ];
+}
+require_once( "$home_directory/.htpasswd" );
+$docroot = "/~{$username}";
+$fileroot = "$home_directory/public_html";
+$admin = "$docroot/admin";
+$student = "$docroot/student";
+
 
 // DB connection has been made.  Let's get some initial info:
 
@@ -157,21 +162,6 @@ if( $prof[ 'suffix' ] != 0 ) {
   $prof[ 'name' ] .= ', ' . $suffix_row[ 'suffix' ];
 }
 $prof_result->close();
-
-$docroot_query = "select v from ocsw where k = 'docroot'";
-$docroot_result = $db->query( $docroot_query );
-$docroot_row = $docroot_result->fetch_assoc( );
-$docroot_result->close();
-$docroot = $docroot_row[ 'v' ];
-
-$fileroot_query = "select v from ocsw where k = 'fileroot'";
-$fileroot_result = $db->query( $fileroot_query );
-$fileroot_row = $fileroot_result->fetch_assoc( );
-$fileroot_result->close();
-$fileroot = $fileroot_row[ 'v' ];
-
-$admin = "$docroot/admin";
-$student = "$docroot/student";
 
 // Version Information
 $version_fh = fopen( "$fileroot/version.txt", 'r' );
