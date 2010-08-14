@@ -128,7 +128,8 @@ function os( $os ) {
     }
 }
 
-require_once( '/home/faculty/cmerlo/.htpasswd' );
+// Replace XXXXXX with the user's username
+require_once( '/home/faculty/XXXXXX/.htpasswd' );
 
 // DB connection has been made.  Let's get some initial info:
 

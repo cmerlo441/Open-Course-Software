@@ -29,13 +29,17 @@ if( $pages_result->num_rows > 0 ) {
 }
 
 // Does this professor have a Twitter account?
-$twitter = null;
-$twitter_enabled_query = 'select twitter_username as u '
-    . 'from prof';
+
+$twitter_enabled_query = 'select count( * ) as c from prof '
+    . 'where twitter_username is not null';
 $twitter_enabled_result = $db->query( $twitter_enabled_query );
-if( $twitter_enabled_result->num_rows > 0 ) {
-    $twitter_creds_row = $twitter_enabled_result->fetch_assoc( );
-    $u = $twitter_creds_row[ 'u' ];
+$twitter_enabled = $twitter_enabled_result->fetch_assoc( );
+if( $twitter_enabled[ 'c' ] == 1 ) {
+    $twitter_username_query = 'select twitter_username as u '
+	. 'from prof';
+    $twitter_username_result = $db->query( $twitter_username_query );
+    $twitter_username_row = $twitter_username_result->fetch_assoc( );
+    $u = $twitter_username_row[ 'u' ];
 
     if( $u != '' and $u != 'NULL' ) {
 

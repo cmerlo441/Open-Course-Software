@@ -1,6 +1,6 @@
 <?php
 
-require_once( '/home/faculty/ocswdemo/.htpasswd' );
+require_once( '../.htpasswd' );
 
 $prof_query = 'select * from prof';
 $prof_result = $db->query( $prof_query );
