@@ -60,7 +60,8 @@ if( $well_formed_banner == 0 ) {
         
         $student_query = 'insert into students( id, first, middle, last, email, banner, password, verified ) '
             . 'values( null, "' . $first . '", "' . $middle . '", '
-            . '"' . $last . '", "' . $email . '", "' . $banner . '", null, 0 )';
+            . '"' . $last . '", "' . $email . '", "' . $banner . '", "Fake Password", 0 )';
+	//	print "<pre>$student_query;</pre>\n";
         $student_result = $db->query( $student_query );
         $student_id = $db->insert_id;
         

@@ -121,7 +121,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
             print "<a href=\"javascript:void(0)\" class=\"deny\" id=\"{$row[ 'id' ]}\">"
                 . "<img src=\"$docroot/images/silk_icons/cancel.png\" height=\"16\" "
                 . "width=\"16\" title=\"Deny $name\" /></a>\n";
-            print "$name ";
+            print "{$row[ 'banner' ]}: $name ";
             
             $sections_query = 'select c.dept, c.course, s.section '
                 . 'from courses as c, sections as s, student_x_section as x '
