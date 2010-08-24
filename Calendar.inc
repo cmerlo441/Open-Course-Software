@@ -33,7 +33,12 @@ class Calendar {
         
         $holiday_result = $db->query( $holiday_query );
         while( $row = $holiday_result->fetch_assoc( ) ) {
-            $this->holidays[ date( "j", strtotime( $row[ 'date' ] ) ) ] = $row[ 'description' ];
+            $this->holidays[ date( "j", strtotime( $row[ 'date' ] ) ) ]
+		[ 'description' ] = $row[ 'description' ];
+	    $this->holidays[ date( "j", strtotime( $row[ 'date' ] ) ) ]
+		[ 'day' ] = $row[ 'day' ];
+	    $this->holidays[ date( "j", strtotime( $row[ 'date' ] ) ) ]
+		[ 'evening' ] = $row[ 'evening' ];
             
             
             /* DEBUG */
@@ -88,7 +93,18 @@ class Calendar {
             } else if( $this->attendance[ $date ] == 'Excused' ) {
                 print "class=\"excused\">";
             } else if( $this->holidays[ $date ] != '' ) {
-                print "class=\"holiday\">";
+                print "class=\"holiday\" title=\""
+		    . $this->holidays[ $date ][ 'description' ]
+		    . '.  ';
+		if( $this->holidays[ $date ][ 'day' ] == 1 ) {
+		    print 'Day ';
+		    if( $this->holidays[ $date ][ 'evening' ] == 1 ) {
+			print 'and evening ';
+		    }
+		} else {
+		    print 'Evening ';
+		}
+		print "classes canceled.\">";
             } else {
                 print "class=\"date\">";
             }
