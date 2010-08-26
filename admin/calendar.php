@@ -5,6 +5,10 @@ require_once( '../_header.inc' );
 
 if( $_SESSION[ 'admin' ] == 1 ) {
 
+    // Prepopulate text fields with something useful, so we don't have to search
+    // from December 1969
+    $start = $end = date( 'l, F j, Y' );
+
     $semester_query = 'select * from semester';
     $semester_result = $db->query( $semester_query );
     $semester_row = $semester_result->fetch_assoc( );
@@ -95,7 +99,9 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 
 <script type="text/javascript">
 $(document).ready(function(){
-    $(document).attr('title', $(document).attr('title') + ' :: <?php echo $semester; ?>');
+    $(document).attr('title',
+		     $(document).attr('title') +
+		     ' :: <?php echo $semester; ?>' );
     
     $.post( 'holidays.php',
         function(data){
