@@ -10,9 +10,9 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     $new_type_plural = 
 	trim( $db->real_escape_string( $_POST[ 'new_type_plural' ] ) );
     
-    if( trim( $new_type != '' ) && trim( $new_type_plural ) ) {
+    if( $new_type != '' ) {
         $insert_query = 'insert into grade_types ( id, grade_type, plural ) '
-            . "values ( null, \"$new_type\", $new_type_plural\" )";
+            . "values ( null, \"$new_type\", \"$new_type_plural\" )";
         $insert_result = $db->query( $insert_query );
         $error = ( $db->affected_rows == 0 );
     }
