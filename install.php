@@ -21,7 +21,7 @@ if( isset( $_POST[ 'username' ] ) and isset( $_POST[ 'password' ] ) ) {
 if( $prof_result->num_rows == 0 ) {
 
     print "<html><head><title>OCSW Installation</title>\n";
-    print "<link rel=\"favicon\" type=\"image/png\" "
+    print "<link rel=\"icon\" type=\"image/png\" "
       . "href=\"images/ocsw.favicon.png\" />\n";
     print "<script type=\"text/javascript\" "
       . "src=\"jquery-1.4.2.min.js\"></script>\n";
