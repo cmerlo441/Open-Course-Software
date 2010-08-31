@@ -42,78 +42,83 @@ if( $_SESSION[ 'student' ] > 0 ) {
 	    // See if they've been graded
                 
 	    $graded_query = 'select * from grades '
-	      . "where grade_event = \"{$event[ 'id' ]}\"";
+		. "where grade_event = \"{$event[ 'id' ]}\"";
 	    $graded_result = $db->query( $graded_query );
 	    $graded_yet = ( $graded_result->num_rows );
 	    if( $graded_yet > 0 ) {
 
-	      // See if this student submitted
+		// See if this student submitted
 
-	      // What kind of assignment?
+		// What kind of assignment?
 
-	      $project_query = 'select * from grade_types '
-		. "where id = $grade_type and grade_type = 'project'";
-	      $project_result = $db->query( $project_query );
-	      if( $project_result->num_rows == 1 ) {
-		$submission_query = 'select u.id '
-		  . 'from assignment_uploads as u, grade_events as e '
-		  . 'where u.assignment = e.assignment '
-		  . "and u.student = {$_SESSION[ 'student' ]}";
-	      } else {
-
-		$submission_query = 'select s.id '
-		  . 'from assignment_submissions as s, grade_events as e '
-		  . "where e.assignment = s.assignment "
-		  . "and s.student = {$_SESSION[ 'student' ]}";
-	      }
-	      $submission_result = $db->query( $submission_query );
-	      if( $submission_result->num_rows > 0 ) {
-
-		// The student submitted
-                
-		$grade_query = 'select id, grade from grades '
-		  . "where student = {$_SESSION[ 'student' ]} "
-		  . "and grade_event = {$event[ 'id' ]}";
-		$grade_result = $db->query( $grade_query );
-		if( $grade_result->num_rows == 1 ) {
-                    
-		  // The submission was graded
-                    
-		  $graded++;
-		  $grade_row = $grade_result->fetch_assoc( );
-		  $grade = $grade_row[ 'grade' ];
-
-		  // Is there a curve?
-
-		  $curve_query = 'select * from curves '
-		    . "where grade_event = {$event[ 'id' ]} ";
-		  $curve_result = $db->query( $curve_query );
-		  if( $curve_result->num_rows == 1 ) {
-		    $curve_row = $curve_result->fetch_assoc( );
-		    if( $curve_row[ 'points' ] > 0 ) {
-		      $grade += $curve_row[ 'points' ];
-		    } else {
-		      $grade *= ( 1 + $curve_row[ 'percent' ] * 0.01 );
-		    }
-		  }
-
-		  print "<div class=\"grade\">Grade: "
-		    . "<span class=\"grade\">$grade</span>.</div>\n";
-		  $sum += $grade;
+		$project_query = 'select * from grade_types '
+		    . "where id = $grade_type and grade_type = 'project'";
+		$project_result = $db->query( $project_query );
+		if( $project_result->num_rows == 1 ) {
+		    $submission_query = 'select u.id '
+			. 'from assignment_uploads as u, grade_events as e '
+			. 'where u.assignment = e.assignment '
+			. "and u.student = {$_SESSION[ 'student' ]}";
 		} else {
-		  print 'Not graded yet.';
-		}
-	      } else {
 
-		// The student has not submitted
-                    
-		print 'Not submitted.';
-		if( $graded_result->num_rows == 1 ) {
-		  $graded++;
+		    $submission_query = 'select s.id '
+			. 'from assignment_submissions as s, grade_events as e '
+			. "where e.assignment = s.assignment "
+			. "and e.id = {$event[ 'id' ]} "
+			. "and s.student = {$_SESSION[ 'student' ]}";
 		}
-	      }
+		$submission_result = $db->query( $submission_query );
+		if( $submission_result->num_rows > 0 ) {
+
+		    // The student submitted
+                
+		    $grade_query = 'select id, grade from grades '
+			. "where student = {$_SESSION[ 'student' ]} "
+			. "and grade_event = {$event[ 'id' ]}";
+		    $grade_result = $db->query( $grade_query );
+		    if( $grade_result->num_rows == 1 ) {
+                    
+			// The submission was graded
+                    
+			$graded++;
+			$grade_row = $grade_result->fetch_assoc( );
+			$grade = $grade_row[ 'grade' ];
+
+			// Is there a curve?
+
+			$curve_query = 'select * from curves '
+			    . "where grade_event = {$event[ 'id' ]} ";
+			$curve_result = $db->query( $curve_query );
+			if( $curve_result->num_rows == 1 ) {
+			    $curve_row = $curve_result->fetch_assoc( );
+			    if( $curve_row[ 'points' ] > 0 ) {
+				$grade += $curve_row[ 'points' ];
+			    } else {
+				$grade *= ( 1 + $curve_row[ 'percent' ] * 0.01 );
+			    }
+			}
+
+			print "<div class=\"grade\">Grade: "
+			    . "<span class=\"grade\">$grade</span>.</div>\n";
+			$sum += $grade;
+		    } else {
+			print 'Not graded yet.';
+		    }
+		} else {
+
+		    // The student has not submitted
+
+		    if( $collected == 1 ) {
+			print 'Not submitted.';
+		    } else {
+			print 'No grade.';
+		    }
+		    if( $graded_result->num_rows == 1 ) {
+			$graded++;
+		    }
+		}
 	    } else {
-	      print 'Not graded yet.';
+		print 'Not graded yet.';
 	    }
 
             print "</div>  <!--div.assignment#{$events[ 'id' ]} -->\n";
@@ -123,6 +128,6 @@ if( $_SESSION[ 'student' ] > 0 ) {
         print "<div class=\"average\">Average grade: "
             . number_format( $average, 2 ) . ".</div>\n";
     }
-}
+ }
    
 ?>

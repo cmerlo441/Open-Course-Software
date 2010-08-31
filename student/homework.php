@@ -235,10 +235,44 @@ if( $_SESSION[ 'student' ] > 0 ) {
                             . "</div>\n";
                     }
                 }
-                
-                // Do something here about file uploads!
-                
+                                
                 print "</div> <!-- div.submission_details -->\n\n";
+
+		// If a file upload is desired/required, ask for it here
+
+		$upload_query = 'select * '
+		    . 'from assignment_upload_requirements '
+		    . "where assignment = {$hw[ 'id' ]} "
+		    . 'order by filename';
+		$upload_result = $db->query( $upload_query );
+		$amount = $upload_result->num_rows;
+		if( $amount > 0 ) {
+		    print '<p>Please upload the following ';
+		    if( $amount > 1 ) {
+			print $amount . ' ';
+		    }
+		    print 'file';
+		    if( $amount > 1 ) {
+			print 's';
+		    }
+		    print ":</p>\n";
+		    print "<ul>\n";
+		    while( $upload_row = $upload_result->fetch_assoc( ) ) {
+			print "<li>{$upload_row[ 'filename' ]}";
+
+			print "<div class=\"upload_container\" "
+			    . "id=\"{$upload_row[ 'id' ]}\">\n";
+			print "<div class=\"fileUpload\" "
+			    . "id=\"{$upload_row[ 'id' ]}\"></div> "
+			    . "<!-- fileUpload -->\n";
+			print "</div>  <!-- "
+			    . "upload_container#{$upload_row[ 'id' ]} -->\n";
+			print "</li>\n";
+		    }
+		    print "</ul>\n";
+
+		} // if file uploads are required
+
             } // if homework is collected in this class
 
             print "</div>  <!-- div.homework#{$hw[ 'id' ]} -->\n";
@@ -252,6 +286,9 @@ if( $_SESSION[ 'student' ] > 0 ) {
 
 <script type="text/javascript">
 $(document).ready(function(){
+
+    var student = "<?php echo $_SESSION[ 'student' ];?>";
+
     $('div.assignments').accordion({
         active: false,
         autoHeight: false,
@@ -262,8 +299,8 @@ $(document).ready(function(){
         url: 'submit_homework.php',
         params: 'ajax=yes',
         field_type: "textarea",
-		textarea_rows: "5",
-		textarea_cols: "40",
+	textarea_rows: "5",
+	textarea_cols: "40",
         saving_image: "<?php echo $docroot; ?>/images/ajax-loader.gif"
     })
 
@@ -278,6 +315,41 @@ $(document).ready(function(){
             }
         )
     })
+
+    $('div.upload_container').each(function(){
+        var id = $(this).attr('id');
+
+	$(this).children('.fileUpload').uploadify({
+	    'uploader': '../uploadify/uploadify.swf',
+	    'script': './assignment_document_upload.php',
+            'cancelImg': '../uploadify/cancel.png',
+            'auto': 'true',
+            'folder': './uploads',
+            'buttonText': 'Browse',
+            'wmode': 'transparent',
+            'sizeLimit': '500000',
+            'scriptData': {
+                'requirement': id,
+                'student': student
+            },
+            'fileDataName': 'file',
+            'onComplete': function(a,b,c,d,e){
+                alert( 'foo' );
+                $.pnotify({
+                    pnotify_title: 'File Uploaded',
+                    pnotify_text: 'Your file has been uploaded.',
+                    pnotify_shadow: true
+		})
+            },
+            'onError': function( a, b, c, d ){
+                if( d.info == 404 )
+                    alert( 'Can not find upload script' );
+                else
+                    alert( 'error ' + d.type + ": " + d.info );
+            }
+        })
+    })
+	
 })
 </script>
 

@@ -7,6 +7,7 @@
 @import url("highlighter/styles/shCore.css" );
 @import url("highlighter/styles/shThemeDefault.css" );
 @import url("uploadify/uploadify.css");
+@import url("css/jquery.pnotify.default.css");
 
 @media screen {
 * {

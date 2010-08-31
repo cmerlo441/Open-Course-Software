@@ -134,6 +134,7 @@ $docroot = "/~{$username}";
 $fileroot = "$home_directory/public_html";
 $admin = "$docroot/admin";
 $student = "$docroot/student";
+$url = "http://{$_SERVER[ 'SERVER_NAME' ]}{$docroot}/";
 
 
 // DB connection has been made.  Let's get some initial info:
@@ -353,7 +354,7 @@ if( $no_header != 1 ) {
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html><head><title><?= $title ?></title>
 <meta http-equiv="Content-type" content="text/html; charset=iso-8859-1" />
-<script type="text/javascript" src="<?php echo $docroot ?>/js/jquery-1.3.2.min.js"></script>
+<script type="text/javascript" src="<?php echo $docroot ?>/js/jquery-1.4.2.min.js"></script>
 <script type="text/javascript" src="<?php echo $docroot ?>/js/jquery-ui-1.7.1.custom.min.js"></script>
 <script type="text/javascript" src="<?php echo $docroot ?>/jquery.corner.js"></script>
 <!-- <script type="text/javascript" src="<?php echo $docroot ?>/jquery.inplace.pack.js"></script> -->
@@ -370,7 +371,9 @@ if( $no_header != 1 ) {
 <script type="text/javascript" src="<?php echo $docroot ?>/highlighter/scripts/shBrushPlain.js"></script>
 <script type="text/javascript" src="<?php echo $docroot ?>/js/jquery.uploadify.v2.0.3.min.js"></script>
 <script type="text/javascript" src="<?php echo $docroot ?>/js/swfobject.js"></script>
-<script type="text/javascript" src="<?php echo $docroot ?>/snow.js"></script> 
+<script type="text/javascript" src="<?php echo $docroot ?>/snow.js"></script>
+<script type="text/javascript" src="<?php echo $docroot ?>/js/jquery.pnotify.min.js"></script>
+<script type="text/javascript" src="<?php echo $docroot ?>/js/jquery.pnotify.default.css"></script>
 <script type="text/javascript">
 		SyntaxHighlighter.config.clipboardSwf = "<?php echo $docroot ?>/highlighter/scripts/clipboard.swf";
 		SyntaxHighlighter.all();
