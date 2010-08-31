@@ -59,7 +59,7 @@ $(document).ready(function(){
 
     $('input#install').attr('disabled','true');
 
-    $('input:pw2').keyup(function(e){
+    $('input#pw2').keyup(function(e){
         var username =   $('input#username').val();
         var p1 =         $('input#pw1').val();
         var p2 =         $('input#pw2').val();
