@@ -22,9 +22,9 @@ if( $prof_result->num_rows == 0 ) {
 
     print "<html><head><title>OCSW Installation</title>\n";
     print "<link rel=\"favicon\" type=\"image/png\" "
-      . "href=\"ocsw.favicon.png\" />\n";
+      . "href=\"images/ocsw.favicon.png\" />\n";
     print "<script type=\"text/javascript\" "
-      . "src=\"js/jquery-1.4.2.min.js\"></script>\n";
+      . "src=\"jquery-1.4.2.min.js\"></script>\n";
     print "</head>\n\n";
 
     print "<body>\n";
