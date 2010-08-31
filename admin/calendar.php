@@ -5,17 +5,20 @@ require_once( '../_header.inc' );
 
 if( $_SESSION[ 'admin' ] == 1 ) {
 
-    // Prepopulate text fields with something useful, so we don't have to search
-    // from December 1969
-    $start = $end = date( 'l, F j, Y' );
+    /* Prepopulate text fields with something useful, so we don't have
+     * to search from December 1969
+     */
 
+    $start = $end = date( 'l, F j, Y' );
     $semester_query = 'select * from semester';
     $semester_result = $db->query( $semester_query );
-    $semester_row = $semester_result->fetch_assoc( );
-    $semester_result->close( );
-    $semester = $semester_row[ 'name' ];
-    $start = date( 'l, F j, Y', strtotime( $semester_row[ 'start' ] ) );
-    $end = date( 'l, F j, Y', strtotime( $semester_row[ 'end' ] ) );
+    if( $semester_result->num_rows == 1 ) {
+      $semester_row = $semester_result->fetch_assoc( );
+      $semester_result->close( );
+      $semester = $semester_row[ 'name' ];
+      $start = date( 'l, F j, Y', strtotime( $semester_row[ 'start' ] ) );
+      $end = date( 'l, F j, Y', strtotime( $semester_row[ 'end' ] ) );
+    }
 
     $days = array( 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday',
 		   'Friday', 'Saturday' );

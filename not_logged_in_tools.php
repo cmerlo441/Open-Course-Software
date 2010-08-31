@@ -52,8 +52,8 @@ $(document).ready(function(){
                 'Log In': function(){
                     $.post( 'login.php', 
                     {
-                        username: $("div#login_dialog input:username").val(),
-                        password: $("div#login_dialog input:password").val()
+                        username: $("div#login_dialog input#username").val(),
+                        password: $("div#login_dialog input#password").val()
                     },
                     function(data){
                         if( data == 'admin' ) {
