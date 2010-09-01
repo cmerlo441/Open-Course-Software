@@ -1,30 +1,20 @@
 <?php
 
-require_once( '../.htpasswd' );
+$cwd = getcwd( );
+if( preg_match( '|^(/home/faculty/)(.+)/public_html|', $cwd, $matches ) ) {
+    $home_directory = $matches[ 1 ] . $matches[ 2 ];
+    $username = $matches[ 2 ];
+}
+require_once( "$home_directory/.htpasswd" );
 
 $prof_query = 'select * from prof';
 $prof_result = $db->query( $prof_query );
 
-if( isset( $_POST[ 'username' ] ) and isset( $_POST[ 'password' ] ) ) {
-    $username = $db->real_escape_string( $_POST[ 'username' ] );
-    $password = $db->real_escape_string( $_POST[ 'password' ] );
-    $user_query = 'insert into prof( id, username, password ) '
-      . "values( null, \"$username\", md5( \"$password\" ) )";
-    $user_result = $db->query( $user_query );
-
-    if( $db->affected_rows == 1 ) {
-        header( 'Location: index.php' );
-        die( );
-    }
-}
-
 if( $prof_result->num_rows == 0 ) {
 
     print "<html><head><title>OCSW Installation</title>\n";
-    print "<link rel=\"icon\" type=\"image/png\" "
-      . "href=\"images/ocsw.favicon.png\" />\n";
     print "<script type=\"text/javascript\" "
-      . "src=\"jquery-1.4.2.min.js\"></script>\n";
+      . "src=\"js/jquery-1.3.2.min.js\"></script>\n";
     print "</head>\n\n";
 
     print "<body>\n";
@@ -83,7 +73,7 @@ $(document).ready(function(){
 	p1 = $('input#pw1').val();
 	p2 = $('input#pw2').val();
 
-	$.post( 'install.php',
+	$.post( 'install2.php',
 	    { username: username, password: p1 }
 	);
    })
