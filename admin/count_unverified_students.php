@@ -6,7 +6,7 @@ require_once( '../_header.inc' );
 if( $_SESSION[ 'admin' ] == 1 ) {
 
     $student_query = 'select * from students '
-        . 'where verified = 0 and password is not null '
+        . 'where verified = 0 and password != "Fake Password" '
         . 'order by last, first, middle';
     $student_result = $db->query( $student_query );
     $count = $student_result->num_rows;

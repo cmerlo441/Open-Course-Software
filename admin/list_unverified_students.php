@@ -33,13 +33,14 @@ if( $_SESSION[ 'admin' ] == 1 ) {
         $name = $student[ 'last' ];
         $message = wordwrap( "Hello, {$student[ 'first' ]}.  "
             . "Your account has been finalized, and you can now log in.  "
-            . "Just visit $docroot/ and click on \"Log in now\".  Have a great "
+            . "Just visit $url and click on \"Log in now\".  Have a great "
             . "semester!" );
 
         $headers = "From: {$prof[ 'name' ]} <{$prof[ 'email' ]}>\n";
 
-        mail( "$name <{$student[ 'email' ]}>", 'Your Account Has Been Finalized',
-            $message, $headers );
+        mail( "$name <{$student[ 'email' ]}>",
+	      'Your Account Has Been Finalized',
+	      $message, $headers );
             
         // Remove any unfinished accounts with same Banner ID
         
@@ -101,7 +102,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     }
     
     $student_query = 'select * from students '
-        . 'where verified = 0 and password is not null '
+        . 'where verified = 0 and password != "Fake Password" '
         . 'order by last, first, middle';
     $student_result = $db->query( $student_query );
     $count = $student_result->num_rows;
