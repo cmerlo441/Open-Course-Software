@@ -4,8 +4,9 @@ $no_header = 1;
 require_once( "../_header.inc" );
 
 if( $_SESSION[ 'admin' ] == 1 ) {
-    
+
     if( isset( $_POST[ 'verify' ] ) ) {
+
         $id = $db->real_escape_string( $_POST[ 'verify' ] );
         
         // Verify student in the database
@@ -26,11 +27,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
             . "where id = $id";
         $student_result = $db->query( $student_query );
         $student = $student_result->fetch_assoc( );
-        $name = $student[ 'first' ] . ' ';
-        if( $student[ 'middle' ] != '' ) {
-            $name .= $student[ 'middle' ] . ' ';
-        }
-        $name = $student[ 'last' ];
+        $name = name( $student );
         $message = wordwrap( "Hello, {$student[ 'first' ]}.  "
             . "Your account has been finalized, and you can now log in.  "
             . "Just visit $url and click on \"Log in now\".  Have a great "
@@ -41,16 +38,16 @@ if( $_SESSION[ 'admin' ] == 1 ) {
         mail( "$name <{$student[ 'email' ]}>",
 	      'Your Account Has Been Finalized',
 	      $message, $headers );
-            
+
         // Remove any unfinished accounts with same Banner ID
-        
+
         $banner_query = 'select banner from students '
             . "where id = $id";
         $banner_result = $db->query( $banner_query );
         $banner_row = $banner_result->fetch_assoc( );
         $banner = $banner_row[ 'banner' ];
         $others_query = 'select id from students '
-            . "where banner = $banner";
+            . "where banner = \"$banner\"";
         $others_result = $db->query( $others_query );
         while( $other_id = $others_result->fetch_assoc( ) ) {
             $remove_query = 'delete from student_x_section '
