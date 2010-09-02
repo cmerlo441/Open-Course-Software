@@ -325,10 +325,7 @@ $no_student = "<div class=\"ui-state-error ui-corner-all\" id=\"no_student\">\n"
   . "<p>You must be logged in as a student to view this page.</p>\n"
   . "</div>  <!-- div#no_student -->\n";
 
-/*
- * Figure this out someday
 session_name( "ocsw_{$prof[ 'last' ]}_{$prof[ 'first' ]}" );
-*/
 session_start( );
 
 // Set current semester
