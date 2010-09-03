@@ -73,7 +73,7 @@ $(document).ready(function(){
 	p1 = $('input#pw1').val();
 	p2 = $('input#pw2').val();
 
-	$.post( 'install2.php',
+	$.post( 'install.php',
 	    { username: username, password: p1 }
 	);
    })
