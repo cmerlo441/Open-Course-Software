@@ -6,8 +6,6 @@ require_once( '../_header.inc' );
 if( $_SESSION[ 'admin' ] == 1 ) {
 ?>
 
-<div id="mail_was_sent" class="success"></div>
-
 <table>
     <tr>
         <td>From:</td>
@@ -53,8 +51,6 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 
 <script type="text/javascript">
 $(document).ready(function(){
-    $('div#mail_was_sent').hide();
-    
     $('input#send').click(function(){
         var sections = '';
         var subject = $('input#subject').val();
@@ -84,7 +80,11 @@ $(document).ready(function(){
                 subject: subject,
                 message: message
             }, function(data){
-                $('div#mail_was_sent').html(data).slideDown(1000);
+                $.pnotify({
+                    pnotify_title: 'Your Mail Was Sent',
+                    pnotify_text: data,
+                    pnotify_shadow: true
+                });
                 $('input:checkbox').attr('checked','');
                 $('input#subject').val('');
                 $('textarea#message').val('');

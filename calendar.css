@@ -64,7 +64,8 @@ div.calendar td.absent {
 }
 
 div.calendar td.present {
-    border: 1px solid #5d562c;
+/*    border: 1px solid #5d562c; */
+    border: 1px solid #aaabac;
     font-weight: bold;
 }
 

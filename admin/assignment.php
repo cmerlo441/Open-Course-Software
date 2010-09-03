@@ -429,7 +429,7 @@ $(document).ready(function(){
         url: 'update_grade.php',
         default_text: '(No grade recorded yet)',
         params: "ajax=yes&assignment_id=<?php echo $assignment; ?>",
-		saving_image: "<?php echo $docroot; ?>/images/ajax-loader.gif"
+        saving_image: "<?php echo $docroot; ?>/images/ajax-loader.gif"
     })
     
     $('input.submit_comment').click(function(){

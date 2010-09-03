@@ -144,7 +144,8 @@ $(document).ready(function(){
                 $.post('section_assignments.php',
                     { section: section, grade_type: grade_type },
                     function(data){
-                        $("div.assignments[id="+ grade_type +"]").html(data);
+                        $("div.assignments[id="+ grade_type +"]")
+			    .html(data);
                         $('select#type').val('0');
                         $('input:text').val('');
                         $('textarea#description').val('');
@@ -152,6 +153,13 @@ $(document).ready(function(){
                 })
             }
         )
+
+        $.pnotify({
+            pnotify_title: "Assignment Created",
+            pnotify_text: "Your assignment " + title + 
+                "has been created.",
+            pnotify_shadow: true
+         })				    
     })
 })
 </script>

@@ -47,7 +47,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
         $banner_row = $banner_result->fetch_assoc( );
         $banner = $banner_row[ 'banner' ];
         $others_query = 'select id from students '
-            . "where banner = \"$banner\"";
+            . "where banner = \"$banner\" and id != $id";
         $others_result = $db->query( $others_query );
         while( $other_id = $others_result->fetch_assoc( ) ) {
             $remove_query = 'delete from student_x_section '
@@ -55,6 +55,21 @@ if( $_SESSION[ 'admin' ] == 1 ) {
             $remove_result = $db->query( $remove_query );
             $db->query( "delete from students where id = {$other_id[ 'id' ]}" );
         }
+
+?>
+
+<script type="text/javascript">
+$(document).ready(function(){
+    $.pnotify({
+        pnotify_title: 'Student Added',
+        pnotify_text: "Student <?php echo $name; ?> has been added to the database.",
+        pnotify_shadow: true
+    });
+})
+</script>
+
+<?php
+
     }
     
     else if( isset( $_POST[ 'deny' ] ) ) {
@@ -68,7 +83,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
         $email_row = $email_result->fetch_assoc( );
         $email = $email_row[ 'email' ];
         $first = $email_row[ 'first' ];
-        $last = $email_row[ 'last' ];
+	$name = name( $email_row );
         
         // Send denied e-mail
         
@@ -81,7 +96,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 
         $headers = "From: {$prof[ 'name' ]} <{$prof[ 'email' ]}>\n";
 
-        mail( "$first $last <{$email}>", 'Your Account Request Has Been Denied',
+        mail( "$name <{$email}>", 'Your Account Request Has Been Denied',
             $message, $headers );
 
         // Remove entries from student_x_section
@@ -96,6 +111,21 @@ if( $_SESSION[ 'admin' ] == 1 ) {
             . "where id = $id";
         $student_result = $db->query( $student_query );
         
+
+?>
+
+<script type="text/javascript">
+$(document).ready(function(){
+    $.pnotify({
+        pnotify_title: 'Student Denied',
+        pnotify_text: "<?php echo $name; ?> was not added to the database.",
+        pnotify_shadow: true
+    });
+})
+</script>
+
+<?php
+
     }
     
     $student_query = 'select * from students '

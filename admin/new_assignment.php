@@ -5,8 +5,6 @@ require_once( '../_header.inc' );
 
 if( $_SESSION[ 'admin' ] == 1 ) {
 
-  print "<script type=\"text/javascript\">alert( 'Foo!' );</script>\n";
-
   // Does this professor have a Twitter account?
   $twitter = null;
   $twitter_enabled_query = 'select twitter_username as u, '
@@ -119,8 +117,8 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 
       }
 
-      // ... or HW for remedial math
-      else if( preg_match( '/^MAT 00/', $section ) and
+      // ... or HW for math classes
+      else if( preg_match( '/^MAT/', $section ) and
 	       date( 'Y-m-d H:i' ) < date( 'Y-m-d H:i',
 					   strtotime( $due_date ) ) and
 	       preg_match( '/Homework/i', $type ) ) {
