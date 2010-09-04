@@ -230,15 +230,40 @@ $(document).ready(function(){
                     width: 500,
                     buttons: {
                         'Send': function(){
+			    var subject = $('input#subject').val();
+			    var message = $('textarea#message').val();
                             $.post( 'send_email.php',
                                 {
                                     student_id: student,
                                     section: section,
                                     to: student_address,
                                     from: prof_address,
-                                    subject: $('input#subject').val(),
-                                    message: $('textarea#message').val()
-                                }
+                                    subject: subject,
+                                    message: message
+				},
+                                function( data ) {
+				    var title;
+				    var text;
+				    var type;
+				    if( data == "1" ) {
+					title = 'E-Mail Sent';
+					text = 'Your e-mail message "'
+					    + message
+					    + '" has been sent to '
+					    + '<?php echo $student_name; ?>.';
+					type = 'normal';
+				    } else {
+					title = 'Problem Sending E-Mail';
+					text = 'Your e-mail message was not sent.';
+					type = 'error';
+				    }
+				    $.pnotify({
+				        pnotify_title: title,
+					pnotify_text: text,
+					pnotify_shadow: true,
+					pnotify_type: type
+				    })
+				}
                             );
                             $('div#send_email_dialog').dialog('destroy');
                         },

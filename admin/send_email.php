@@ -23,7 +23,8 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     if( $cc == 1 ) {
         $headers .= "Bcc: $from\n";
     }
-    $headers .= "Reply-To: $from\nX-Mailer: OCSW Version {$ocsw[ 'version' ]}\n";
+    $headers .= "Reply-To: $from\n"
+	. "X-Mailer: OCSW Version {$ocsw[ 'version' ]}\n";
     
     if( $qotd == 1 ) {
         $qotd_query = 'select * from quotes order by rand() limit 1';
@@ -38,25 +39,37 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     
     // Send the mail
     
-    mail( $to, $subject, $message, $headers );
+    $sent = mail( $to, $subject, $message, $headers );
 
-    // Look up student_x_section
+    if( $sent === true ) {
+
+	// Look up student_x_section
     
-    $x_query = 'select id from student_x_section '
-        . 'where student = ' . $db->real_escape_string( $_POST[ 'student_id' ] )
-        . ' and section = ' . $db->real_escape_string( $_POST[ 'section' ] );
-    $x_result = $db->query( $x_query );
-    $x_row = $x_result->fetch_assoc( );
-    $x = $x_row[ 'id' ];
+	$x_query = 'select id from student_x_section '
+	    . 'where student = '
+	    . $db->real_escape_string( $_POST[ 'student_id' ] )
+	    . ' and section = '
+	    . $db->real_escape_string( $_POST[ 'section' ] );
+	$x_result = $db->query( $x_query );
+	$x_row = $x_result->fetch_assoc( );
+	$x = $x_row[ 'id' ];
     
-    // Add the mail to the database
+	// Add the mail to the database
     
-    $insert_query = 'insert into mail_to_students '
-        . '( id, student_x_section, subject, message, datetime ) values '
-        . "( null, $x, \"" . $db->real_escape_string( $subject ) . "\", "
-        . '"' . $db->real_escape_string( $message ) . '", '
-        . '"' . date( 'Y-m-d H:i:s' ) . '" )';
-    $insert_result = $db->query( $insert_query );
+	$insert_query = 'insert into mail_to_students '
+	    . '( id, student_x_section, subject, message, datetime ) '
+	    . 'values '
+	    . "( null, $x, \"" . $db->real_escape_string( $subject )
+	    . "\", "
+	    . '"' . $db->real_escape_string( $message ) . '", '
+	    . '"' . date( 'Y-m-d H:i:s' ) . '" )';
+	$insert_result = $db->query( $insert_query );
+
+	$rows = $db->affected_rows;
+	print $rows;
+    } else {
+	print 0;
+    }
 }
    
 ?>
