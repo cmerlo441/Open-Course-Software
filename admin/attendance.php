@@ -31,6 +31,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
         $section_row = $section_result->fetch_assoc( );
         $section_name = "{$section_row[ 'dept' ]} {$section_row[ 'course' ]} "
             . $section_row[ 'section' ];
+	$day_eve = $section_row[ 'day' ];
         
         /* $days will contain numbers representing the days of the week this
          * class meets
@@ -55,14 +56,17 @@ if( $_SESSION[ 'admin' ] == 1 ) {
         $today = date( 'Y-m-d' );
         for( $date = $semester_start;
              $date <= ($today < $semester_end ? $today : $semester_end );
-             $date = date( 'Y-m-d', mktime( 0, 0, 0,
-                           date( 'n', strtotime( $date ) ), date( 'j', strtotime( $date ) ) + 1, date( 'Y' ) ) ) )
+             $date = date( 'Y-m-d',
+			   mktime( 0, 0, 0, date( 'n', strtotime( $date ) ),
+				   date( 'j', strtotime( $date ) ) + 1,
+				   date( 'Y' ) ) ) )
         {
             $day = date( 'w', strtotime( $date ) );
             
             $resched_query = 'select follow from rescheduled_days '
-                . "where date=\"$date\" "
-                . 'and ' . ( $section_row[ 'day' ] == 1 ? 'day' : 'evening' ) . ' = 1';
+                . "where date = \"$date\" and "
+		. ( $section_row[ 'day' ] == 1 ? 'day' : 'evening' )
+		. ' = 1';
             $resched_result = $db->query( $resched_query );
             if( $resched_result->num_rows == 1 ) {
                 $row = $resched_result->fetch_assoc( );
@@ -70,9 +74,10 @@ if( $_SESSION[ 'admin' ] == 1 ) {
             }
             
             $holiday_query = 'select '
-                . ( $section_row[ 'day' ] == 1 ? 'day' : 'evening' )
+                . ( $day_eve == 1 ? 'day' : 'evening' )
                 . ' from holidays '
-                . "where date = \"$date\"";
+		. "where " . ( $day_eve == 1 ? 'day' : 'evening' ) . ' = 1 '
+                . "and date = \"$date\"";
             $holiday_result = $db->query( $holiday_query );
             if( $holiday_result->num_rows == 1 ) {
                 $day = -1;

@@ -392,12 +392,25 @@ div.meeting {
     text-align: center;
 }
 
+div.meeting#now {
+    margin: auto;
+    padding: 0.5em;
+    background-color: #5d562c;
+    color: white;
+    font-weight: bold;
+    border: 1px solid white;
+}
+
 div.meeting span.time {
     font-weight: bold;
 }
 
 div.meeting span.course {
     color: #5d562c;
+}
+
+div.meeting#now span.course {
+    color: white;
 }
 
 div.success {
