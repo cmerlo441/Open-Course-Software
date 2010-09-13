@@ -61,8 +61,8 @@ foreach( $day_names as $number=>$day ) {
 
             print '<div class="meeting"';
 	    if( date( 'w' ) == $number
-		and $meeting_row[ 'start' ] <= date( 'H:m:s' )
-		and $meeting_row[ 'end' ] >= date( 'H:m:s' ) )
+		and $meeting_row[ 'start' ] <= date( 'H:i:s' )
+		and $meeting_row[ 'end' ] > date( 'H:i:s' ) )
 		print ' id="now"';
 	    print ">\n";
             print "<span class=\"time\">"
