@@ -142,8 +142,8 @@ if( $_SESSION[ 'admin' ] == 1 ) {
                  * tab key does the wrong thing, jumping back and forth between
                  * months.  Go ahead, prove it to yourself by changing the
                  * assignment below to $column = 0;  But now, by making the
-                 * second month's first column have a number one more than the
-                 * number of the last column in the first month, everything
+                 * first column of the second month have a number one more than
+                 * the number of the last column in the first month, everything
                  * works out.
                  */
 
@@ -224,7 +224,7 @@ $(document).ready(function(){
             var value = $(this).val();
 
             if( value == '0' ) {
-                $(this).val('P');
+                $(this).val('1');
                 value = $(this).val();
                 $.post( 'set_attendance.php',
                     { id: id, attendance: value }
@@ -240,7 +240,7 @@ $(document).ready(function(){
             var value = $(this).val();
 
             if( value == '0' ) {
-                $(this).val('A');
+                $(this).val('2');
                 value = $(this).val();
                 $.post( 'set_attendance.php',
                     { id: id, attendance: value }
