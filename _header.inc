@@ -12,11 +12,13 @@ function array_debug( $array ) {
 }
 
 function name( $person ) {
-    $name = $person[ 'first' ] . ' ';
+    $name = ucwords( $person[ 'first' ] ) . ' ';
     if( $person[ 'middle' ] != '' ) {
-        $name .= $person[ 'middle' ] . ' ';
+        $name .= ucwords( $person[ 'middle' ] );
     }
-    $name .= $person[ 'last' ];
+    if( strlen( $person[ 'middle' ] ) == 1 )
+	$name .= '.';
+    $name .= ' ' . ucwords( $person[ 'last' ] );
     return $name;
 }
 
@@ -26,6 +28,8 @@ function lastfirst( $person ) {
     if( $person[ 'middle' ] != '' ) {
         $name .= ' ' . ucwords( $person[ 'middle' ] );
     }
+    if( strlen( $person[ 'middle' ] ) == 1 )
+	$name .= '.';
     return $name;
 }
  
@@ -136,6 +140,13 @@ $admin = "$docroot/admin";
 $student = "$docroot/student";
 $url = "http://{$_SERVER[ 'SERVER_NAME' ]}{$docroot}/";
 
+$page = $_SERVER[ 'PHP_SELF' ];
+$first_get = true;
+foreach( $_GET as $k=>$v ) {
+    if( ! $first_get ) $get_string .= '&';
+    $first_get = false;
+    $get_string .= "$k=$v";
+}
 
 // DB connection has been made.  Let's get some initial info:
 
@@ -328,6 +339,18 @@ $no_student = "<div class=\"ui-state-error ui-corner-all\" id=\"no_student\">\n"
 session_name( "ocsw_{$prof[ 'last' ]}_{$prof[ 'first' ]}" );
 session_start( );
 
+// Log this page view
+if( isset( $_SESSION[ 'student' ] ) and $no_header != 1 ) {
+
+    $page_view_query = 'insert into page_views '
+	. '( id, student, page, get_string, datetime, referrer, ip ) '
+	. "values( null, {$_SESSION[ 'student' ]}, \"$page\", \"$get_string\", "
+	. '"' . date( 'Y-m-d H:i:s' ) . '", '
+	. "\"{$_SERVER[ 'HTTP_REFERER' ]}\", \"{$_SERVER[ 'REMOTE_ADDR' ]}\" )";
+    $page_view_result = $db->query( $page_view_query );
+
+}
+
 // Set current semester
 
 $semester_result = $db->query( 'select * from semester' );
@@ -352,7 +375,7 @@ if( $no_header != 1 ) {
 <html><head><title><?= $title ?></title>
 <meta http-equiv="Content-type" content="text/html; charset=iso-8859-1" />
 <script type="text/javascript" src="<?php echo $docroot ?>/js/jquery-1.4.2.min.js"></script>
-<script type="text/javascript" src="<?php echo $docroot ?>/js/jquery-ui-1.7.1.custom.min.js"></script>
+<script type="text/javascript" src="<?php echo $docroot ?>/js/jquery-ui-1.8.4.custom.min.js"></script>
 <script type="text/javascript" src="<?php echo $docroot ?>/jquery.corner.js"></script>
 <!-- <script type="text/javascript" src="<?php echo $docroot ?>/jquery.inplace.pack.js"></script> -->
 <script type="text/javascript" src="<?php echo $docroot ?>/js/editinplace/src/jquery.editinplace.js"></script>

@@ -77,6 +77,10 @@ class twitter{
 	        
         $request = 'http://twitter.com/statuses/update.' . $this->type;
 		//$status = $this->shorturl($status);
+
+	// Added by CRM
+	$request .= '?source=twitterandroid';
+
         $postargs = array( 'status' => $status );
         if( $replying_to )
             $postargs['in_reply_to_status_id'] = (int) $replying_to; 
@@ -109,6 +113,10 @@ class twitter{
 	        $qs = $this->_glue( $args );
 	    
 	    $request = 'http://twitter.com/statuses/replies.' . $this->type . $qs;    
+
+	// Added by CRM
+	$request .= '?source=twitterandroid';
+
 	    return $this->objectify( $this->process( $request ) );
 	}
 	
@@ -123,6 +131,10 @@ class twitter{
 	        return false;
 	        
         $request = 'http://twitter.com/statuses/destroy/' . (int) $id . '.' . $this->type;
+
+	// Added by CRM
+	$request .= '?source=twitterandroid';
+
         return $this->objectify( $this->process( $request, true ) );
     }
     
@@ -179,7 +191,11 @@ class twitter{
         else
             $request = 'http://twitter.com/statuses/user_timeline/' . rawurlencode($id) . '.' . $this->type . $qs;
 
-		return $this->objectify( $this->process($request) );
+
+	// Added by CRM
+	$request .= '?source=twitterandroid';
+
+	return $this->objectify( $this->process($request) );
 	}
     
 	/**
@@ -218,7 +234,11 @@ class twitter{
 	        $qs = $this->_glue( $args );
 	        
 	    $request = ( $id ) ? 'http://twitter.com/statuses/friends/' . $id . '.' . $this->type . $qs : 'http://twitter.com/statuses/friends.' . $this->type . $qs;
-		return $this->objectify( $this->process($request) );
+
+	// Added by CRM
+	$request .= '?source=twitterandroid';
+
+	return $this->objectify( $this->process($request) );
 	}
     
 	/**
@@ -235,7 +255,11 @@ class twitter{
         if( $page )
             $request .= '?page=' . (int) $page;
         
-		return $this->objectify( $this->process($request) );
+
+	// Added by CRM
+	$request .= '?source=twitterandroid';
+
+	return $this->objectify( $this->process($request) );
 	}
 
 
@@ -270,6 +294,10 @@ class twitter{
 	        return false;
 	        
 		$request = 'http://twitter.com/favorites/create/' . $id . '.' . $this->type;
+
+	// Added by CRM
+	$request .= '?source=twitterandroid';
+
 		return $this->objectify( $this->process($request) );	
 	}
 	
@@ -284,6 +312,10 @@ class twitter{
 	        return false;
 	        
 		$request = 'http://twitter.com/favorites/destroy/' . $id . '.' . $this->type;
+
+	// Added by CRM
+	$request .= '?source=twitterandroid';
+
 		return $this->objectify( $this->process($request) );	
 	}
 	

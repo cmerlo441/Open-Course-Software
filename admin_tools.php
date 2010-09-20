@@ -86,7 +86,8 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     }
     
     ?>
-    <p><?php print_link( "$admin/login_history.php", 'View Login History' ); ?></p>
+    <p><?php print_link( "$admin/login_history.php", 'View Login History' ); ?><br />
+    <?php print_link( "$admin/page_views.php", 'View Page View History' ); ?></p>
     <p><?php print_link( "$admin/sections.php", 'Edit Current Sections' ); ?></p>
 </div>  <!-- div#sections -->
 

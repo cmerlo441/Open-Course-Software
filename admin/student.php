@@ -202,6 +202,11 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     </tbody>
 </table>
 
+<p><?php print_link( "$admin/page_views.php?student={$student_row[ 'id' ]}",
+		  "<p>View {$student_row[ 'first' ]}'s page view history" ); ?>.</p>
+
+
+</div>  <!-- div#login_history -->
 </div>  <!-- div#student_details -->
 
 <script type="text/javascript">

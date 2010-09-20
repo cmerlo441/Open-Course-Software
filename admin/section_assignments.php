@@ -43,13 +43,14 @@ if( $_SESSION[ 'admin' ] == 1 ) {
                     . 'and due_date < "'
 		    . date( 'Y-m-d H:i:s', strtotime( $a[ 'due_date' ] ) )
 		    . '"';
+		//print "<pre>$sequence_query;</pre>\n";
                 $sequence_result = $db->query( $sequence_query );
                 $sequence = $sequence_result->num_rows + 1;
                 
                 print "<p><a href=\"$admin/assignment.php?"
 		    . "assignment={$a[ 'id' ]}\">"
                     . "<b>{$grade_type_row[ 'grade_type' ]}";
-		if( $previous_assignments_result->num_rows > 1 ) {
+		if( $sequence > 1 ) {
 		    print " #$sequence";
 		}
 		print ": ";

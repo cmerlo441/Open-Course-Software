@@ -20,7 +20,7 @@ if( $_FILES[ 'file' ][ 'error' ] == 0 ) {
         . '( id, filename, size, type, section, uploaded, available, file ) values '
         . "( null, \"{$_FILES[ 'file' ][ 'name' ]}\", \"{$_FILES[ 'file' ][ 'size' ]}\", "
         . "\"{$_FILES[ 'file' ][ 'type' ]}\", "
-        . "\"$section\", \"" . date( 'Y-m-d H:i:s' ) . "\", 1, \"$file\" )";
+        . "\"$section\", \"" . date( 'Y-m-d H:i:s' ) . "\", 0, \"$file\" )";
     $insert_result = $db->query( $insert_query );
 
     print 'Done.';
