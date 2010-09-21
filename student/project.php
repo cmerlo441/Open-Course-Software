@@ -15,6 +15,7 @@ if( $_SESSION[ 'student' ] > 0 ) {
         . 'and a.section = x.section '
         . "and x.student = {$_SESSION[ 'student' ]} "
         . "order by due_date";
+    //    print "<pre>$project_query;</pre>\n";
     $project_result = $db->query( $project_query );
     if( $project_result->num_rows > 0 ) {
         for( $count = 1; $count < $project; $count++ ) {
@@ -56,7 +57,7 @@ if( $_SESSION[ 'student' ] > 0 ) {
             . "order by datetime desc limit 1";
         $sub_result = $db->query( $sub_query );
         if( $sub_result->num_rows == 0 ) {
-            print 'No submission.';
+            print 'No submission';
         } else {
             $sub = $sub_result->fetch_assoc( );
             print '<p style="text-align: center">Last submission: ' . date( 'F j \a\t g:i a', strtotime( $sub[ 'datetime' ] ) );
@@ -142,7 +143,7 @@ $(document).ready(function(){
         'fileDataName': 'file',
         'multi': true,
         'onComplete': function(a,b,c,d,e){
-	  //	  alert( d );
+		//alert( d );
             $('div.upload').each(function(){
                 var id = $(this).attr('id');
                 $.post( 'assignment_upload_contents.php',

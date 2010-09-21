@@ -9,16 +9,18 @@ if( $_SESSION[ 'student' ] > 0 ) {
     
     // The id is a key on assignment_upload_requirements
     
-    $reqs_query = 'select a.due_date, aur.assignment, aur.filename '
+    $reqs_query = 'select a.due_date, aur.id, aur.assignment, '
+	. 'aur.filename '
         . 'from assignments as a, assignment_upload_requirements as aur '
         . "where aur.id = $id "
         . 'and aur.assignment = a.id';
+    //print "<pre>$reqs_query;</pre>\n";
     $reqs_result = $db->query( $reqs_query );
     if( $reqs_result->num_rows == 1 ) {
         $req = $reqs_result->fetch_assoc( );
         $upload_query = 'select datetime, file from assignment_uploads '
             . "where student = {$_SESSION[ 'student' ]} "
-            . "and assignment = {$req[ 'assignment' ]} "
+            . "and assignment_upload_requirement = {$req[ 'id' ]} "
             . "and filename = \"{$req[ 'filename' ]}\"";
         $upload_result = $db->query( $upload_query );
         if( $upload_result->num_rows == 1 ) {

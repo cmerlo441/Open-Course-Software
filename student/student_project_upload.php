@@ -16,10 +16,11 @@ if( $_FILES[ 'file' ][ 'error' ] == 0 ) {
     $assignment_query = 'select a.id '
         . 'from assignments as a, grade_types as t '
         . "where a.id = $assignment "
-        . 'and a.due_date <= "'
+        . 'and a.due_date >= "'
         . date( 'Y-m-d H:i:s', mktime( 23, 59, 0, date( 'n' ), date( 'j' ) + 5 ) ) . '" '
         . 'and a.grade_type = t.id '
         . 'and t.grade_type = "Project"';
+
     $assignment_result = $db->query( $assignment_query );
     if( $assignment_result->num_rows == 1 ) {
         
@@ -30,6 +31,9 @@ if( $_FILES[ 'file' ][ 'error' ] == 0 ) {
             . "and filename = \"{$_FILES[ 'file' ][ 'name' ]}\"";
         $reqs_result = $db->query( $reqs_query );
         if( $reqs_result->num_rows == 1 ) {
+
+	    $req_row = $reqs_result->fetch_assoc( );
+	    $req_id = $req_row[ 'id' ];
     
             $fh = fopen( $_FILES[ 'file' ][ 'tmp_name' ], 'r' );
             $line = fgets( $fh );
@@ -44,7 +48,7 @@ if( $_FILES[ 'file' ][ 'error' ] == 0 ) {
             // Insert or update?
             $file_query = 'select * from assignment_uploads '
                 . "where student = $student "
-                . "and assignment = $assignment "
+                . "and assignment_upload_requirement = $req_id "
                 . "and filename = \"{$_FILES[ 'file' ][ 'name' ]}\"";
             $file_result = $db->query( $file_query );
             if( $file_result->num_rows == 1 ) {
@@ -59,8 +63,10 @@ if( $_FILES[ 'file' ][ 'error' ] == 0 ) {
                 print $update_query;
             } else {
                 $insert_query = 'insert into assignment_uploads '
-                    . '( id, student, assignment, filename, filesize, datetime, file ) '
-                    . "values( null, $student, $assignment, \"{$_FILES[ 'file' ][ 'name' ]}\", "
+                    . '( id, student, assignment_upload_requirement, '
+		    . 'filename, filesize, datetime, file ) '
+                    . "values( null, $student, $req_id, "
+		    . "\"{$_FILES[ 'file' ][ 'name' ]}\", "
                     . "\"{$_FILES[ 'file' ][ 'size' ]}\", \"" . date( 'Y-m-d H:i:s' ) . "\", \"$file\" )";
                 $insert_result = $db->query( $insert_query );
                 print $insert_query;
