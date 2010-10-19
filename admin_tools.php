@@ -127,6 +127,39 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 
 <script type="text/javascript">
 $(document).ready(function(){
+
+    $.post("<?php echo $docroot; ?>/upcoming_events.php",
+        function(data){
+            $('h2#upcoming_events').slideDown();
+            $('div#upcoming_events').html(data).slideDown(750);
+	}
+    )
+
+    $.post( "<?php echo $admin; ?>/recent_logins.php",
+        function( data ) {
+            var growls = JSON.parse( data );
+            for( var i = 0; i < growls.length; i++ )
+                $.pnotify({
+                    pnotify_title: growls[ i ].title,
+                    pnotify_text: growls[ i ].text
+                })
+        }
+    )
+
+    $.doTimeout(10000, function(){
+        $.post( "<?php echo $admin; ?>/recent_logins.php",
+            function( data ) {
+                var growls = JSON.parse( data );
+                for( var i = 0; i < growls.length; i++ )
+                    $.pnotify({
+                        pnotify_title: growls[ i ].title,
+                        pnotify_text: growls[ i ].text
+                    })
+            }
+        )
+        var admin = <?php print $_SESSION[ 'admin' ]; ?>;
+        return admin == 1 ? true : false;
+    });
     
     $('div#unverified').hide();
     $.post( "<?php echo $admin; ?>/count_unverified_students.php",
@@ -147,10 +180,7 @@ $(document).ready(function(){
     $("a.logout").click(function(){
     
         // Unset all the session variables
-        $.ajax({
-            type: "POST",
-            url: "<?php echo $docroot; ?>/logout.php"
-    	});
+	$.post( "<?php echo $docroot; ?>/logout.php" );
     
         $("div#admin").fadeOut(500, function(){
             $.ajax({
@@ -161,6 +191,10 @@ $(document).ready(function(){
                 }
             })
         });
+
+	$('h2#upcoming_events').slideUp();
+	$('div#upcoming_events').html('').slideUp(500);
+
         return false;
     });
     

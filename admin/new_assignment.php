@@ -113,7 +113,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 
 	// Tweet it!
 
-	$twitter->update( $update_string . '?source=twitterandroid' );
+	$twitter->update( $update_string );
 
       }
 

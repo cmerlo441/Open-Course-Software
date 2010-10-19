@@ -65,8 +65,11 @@ if( $_SESSION[ 'admin' ] == 1 ) {
                     
                 if( $collected == 1 ) {
                     if( $grade_type_row[ 'grade_type' ] == 'Project' ) {
-                        $uploads_query = 'select * from assignment_uploads '
-                            . "where assignment = {$a[ 'id' ]} "
+                        $uploads_query = 'select student, datetime '
+			    . 'from assignment_uploads '
+			    . 'where assignment_upload_requirement in '
+			    . '( select id from assignment_upload_requirements '
+                            . "where assignment = {$a[ 'id' ]} ) "
                             . "group by student order by datetime desc";
                         $uploads_result = $db->query( $uploads_query );
                         $num = $uploads_result->num_rows;

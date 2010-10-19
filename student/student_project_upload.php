@@ -17,7 +17,7 @@ if( $_FILES[ 'file' ][ 'error' ] == 0 ) {
         . 'from assignments as a, grade_types as t '
         . "where a.id = $assignment "
         . 'and a.due_date >= "'
-        . date( 'Y-m-d H:i:s', mktime( 23, 59, 0, date( 'n' ), date( 'j' ) + 5 ) ) . '" '
+        . date( 'Y-m-d H:i:s', mktime( 23, 59, 0, date( 'n' ), date( 'j' ) - 5 ) ) . '" '
         . 'and a.grade_type = t.id '
         . 'and t.grade_type = "Project"';
 
@@ -60,7 +60,6 @@ if( $_FILES[ 'file' ][ 'error' ] == 0 ) {
                     . "file = \"$file\" "
                     . "where id = {$file_row[ 'id' ]}";
                 $update_result = $db->query( $update_query );
-                print $update_query;
             } else {
                 $insert_query = 'insert into assignment_uploads '
                     . '( id, student, assignment_upload_requirement, '

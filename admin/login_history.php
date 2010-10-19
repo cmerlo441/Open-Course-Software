@@ -66,7 +66,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 
 <script type="text/javascript">
 $(document).ready(function(){
-    $('#logins').tablesorter({ sortList: [ [0,0], [1,0] ], widgets: [ 'ocsw' ] });
+    $('#logins').tablesorter({ sortList: [ [1,1], [0,0] ], widgets: [ 'ocsw' ] });
     
     $('a.hide').click(function(){
         var id = $(this).attr('id');

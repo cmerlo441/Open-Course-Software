@@ -262,6 +262,8 @@ $(document).ready(function(){
     var theMonth;
     if( month < 10 ) {
         theMonth = "0" + month;
+    } else {
+	theMonth = month;
     }
     $('div.attendance_table[id=' + year + '-' + theMonth + ']').show();
     

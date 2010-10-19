@@ -114,7 +114,9 @@ if( $_SESSION[ 'admin' ] == 1 ) {
             $student_query = 'select s.first, s.middle, s.last, u.student '
                 . 'from assignment_uploads as u, students as s '
                 . 'where u.student = s.id '
-                . "and u.assignment = {$assignment_row[ 'id' ]} "
+                . "and u.assignment_upload_requirement in "
+		. "( select id from assignment_upload_requirements "
+		. "where assignment = {$assignment_row[ 'id' ]} ) "
                 . 'group by s.id '
                 . 'order by s.last, s.first, s.middle';
             $student_result = $db->query( $student_query );
@@ -140,10 +142,14 @@ if( $_SESSION[ 'admin' ] == 1 ) {
                 while( $student = $student_result->fetch_assoc( ) ) {
                     print "        <tr id=\"{$student[ 'student' ]}\">\n";
                     
-                    $last_submit_query = 'select datetime from assignment_uploads '
-                        . "where student = {$student[ 'student' ]} "
-                        . "and assignment = {$assignment_row[ 'id' ]} "
-                        . "order by datetime desc limit 1";
+		    $last_submit_query = 'select u.datetime '
+		    . 'from assignment_upload_requirements as r, '
+		    . 'assignment_uploads as u '
+		    . 'where u.assignment_upload_requirement = r.id '
+		    . "and u.student = {$student[ 'student' ]} "
+		    . "and r.assignment = {$assignment_row[ 'id' ]} "
+		    . 'order by datetime desc limit 1';
+
                     $last_submit_result = $db->query( $last_submit_query );
                     $last_submit_row = $last_submit_result->fetch_assoc( );
                     $last_submit = $last_submit_row[ 'datetime' ];

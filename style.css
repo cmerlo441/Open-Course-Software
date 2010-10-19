@@ -725,6 +725,55 @@ div.attendance_table {
     display: none;
 }
 
+h2#upcoming_events {
+    display: none;
+}
+
+div#middle div#upcoming_events {
+    display: none;
+    padding: 0 1.5em;
+    margin: 0 0.5em;
+    max-height: 200px;
+    border: 1px solid #5d562c;
+    color: #1e273e;
+    /* background: #aaabaf; */
+    border-radius: 10px;
+    -moz-border-radius: 10px;
+}
+
+div#middle div#upcoming_events div#upcoming_internal {
+    max-height: 170px;
+    margin: 10px 5px;
+    padding: 0.5em 1em;
+    overflow: auto;
+    background: #aaabaf;
+}
+
+div#middle div#upcoming_events a {
+    color: #1e273e;
+}
+
+/*
+div#middle div#upcoming_events > div {
+    color: #1e273e;
+    background: #5d562c;
+}
+
+div#middle div#upcoming_events span {
+    color: #1e273e;
+}
+*/
+
+div#middle div.upcoming_event {
+    padding: 0.5em 0;
+}
+
+div#middle div.upcoming_event > span.section {
+    font-size: 1.25em;
+    font-weight: bold;
+    color: #5d562c;
+}
+
 /*****************************************************/
 /* Student-specific stuff */
 /*****************************************************/

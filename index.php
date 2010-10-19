@@ -28,6 +28,10 @@ if( $pages_result->num_rows > 0 ) {
     print "</ul>\n";
 }
 
+print "<h2 id=\"upcoming_events\">Upcoming Events</h2>\n";
+print "<div id=\"upcoming_events\">\n";
+print "</div>  <!-- div#upcoming_events -->\n";
+
 // Does this professor have a Twitter account?
 
 $twitter_enabled_query = 'select count( * ) as c from prof '

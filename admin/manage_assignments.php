@@ -157,7 +157,7 @@ $(document).ready(function(){
         $.pnotify({
             pnotify_title: "Assignment Created",
             pnotify_text: "Your assignment " + title + 
-                "has been created.",
+                " has been created.",
             pnotify_shadow: true
          })				    
     })

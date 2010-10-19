@@ -66,6 +66,7 @@ $(document).ready(function(){
                             )
 		        } else if( data == 'inactive' ) {
 			    $("input[id=username]").select();
+			    $("span#error_message").html("You are not active in any classes.");
 			    $("div#login_error").fadeIn(500);
                         } else if( data == 'student' ) {
                             $("div#login_dialog").dialog('destroy');
@@ -78,7 +79,7 @@ $(document).ready(function(){
                         } // else...
                         else if( data == 'none' ) {
                             $("input[id=username]").select();
-			    $("span#error_message").html("You are not active in any classes.");
+			    $("span#error_message").html("This combination of username and password was not found in the system.  Please check your spelling and try again.");
                             $("div#login_error").fadeIn(500);
                         }
                     })

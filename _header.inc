@@ -394,6 +394,7 @@ if( $no_header != 1 ) {
 <script type="text/javascript" src="<?php echo $docroot ?>/snow.js"></script>
 <script type="text/javascript" src="<?php echo $docroot ?>/js/jquery.pnotify.min.js"></script>
 <script type="text/javascript" src="<?php echo $docroot ?>/js/jquery.pnotify.default.css"></script>
+<script type="text/javascript" src="<?php echo $docroot ?>/js/jquery.ba-dotimeout.min.js"></script>
 <script type="text/javascript">
 		SyntaxHighlighter.config.clipboardSwf = "<?php echo $docroot ?>/highlighter/scripts/clipboard.swf";
 		SyntaxHighlighter.all();

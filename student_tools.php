@@ -107,6 +107,14 @@ if( $_SESSION[ 'student' ] > 0 ) {
 
 <script type="text/javascript">
 $(document).ready(function(){
+
+    $.post("<?php echo $docroot; ?>/upcoming_events.php",
+        function(data){
+            $('h2#upcoming_events').slideDown();
+            $('div#upcoming_events').html(data).slideDown(750);
+	}
+    )
+
     $(".accordion div>ul").css("padding","0");
     $(".accordion").accordion({
         active: 0,
@@ -131,6 +139,10 @@ $(document).ready(function(){
                 }
             })
         });
+
+	$('h2#upcoming_events').slideUp();
+	$('div#upcoming_events').html('').slideUp(500);
+
         return false;
     });
     

@@ -51,9 +51,12 @@ if( $_SESSION[ 'student' ] > 0 ) {
         
         print "<h2>Your Solutions</h2>\n";
         
-        $sub_query = 'select * from assignment_uploads '
-            . "where assignment = {$project_row[ 'id' ]} "
-            . "and student = {$_SESSION[ 'student' ]} "
+        $sub_query = 'select u.id, u.datetime '
+	    . 'from assignment_uploads as u, '
+	    . 'assignment_upload_requirements as r '
+	    . 'where u.assignment_upload_requirement = r.id '
+            . "and r.assignment = {$project_row[ 'id' ]} "
+            . "and u.student = {$_SESSION[ 'student' ]} "
             . "order by datetime desc limit 1";
         $sub_result = $db->query( $sub_query );
         if( $sub_result->num_rows == 0 ) {
@@ -78,9 +81,10 @@ if( $_SESSION[ 'student' ] > 0 ) {
             . 'order by filename';
         $upload_reqs_result = $db->query( $upload_reqs_query );
         while( $reqs = $upload_reqs_result->fetch_assoc( ) ) {
+	    $extension = preg_replace( '/^.*\.([^\.]+)$/', "$1", $reqs[ 'filename' ] );
             print "<h3><a href=\"#\">{$reqs[ 'filename' ]}</a></h3>\n";
             print "<div class=\"upload\" name=\"{$reqs[ 'filename' ]}\" "
-                . "id=\"{$reqs[ 'id' ]}\">\n";
+                . "extension=\"$extension\" id=\"{$reqs[ 'id' ]}\">\n";
             print "</div>\n";
         }
         print "</div>  <!-- div.accordion#solutions -->\n";
@@ -117,7 +121,8 @@ $(document).ready(function(){
         $.post( 'assignment_upload_contents.php',
             { id: id },
             function(data){
-                $('div.upload[id=' + id + ']').html(data);
+		var extension = "<?php echo $extension; ?>";
+                $('div.upload[id=' + id + ']').html(data).addClass( "brush:" + extension );
             }
         )
     })
@@ -143,7 +148,7 @@ $(document).ready(function(){
         'fileDataName': 'file',
         'multi': true,
         'onComplete': function(a,b,c,d,e){
-		//alert( d );
+	    //console.log(d);
             $('div.upload').each(function(){
                 var id = $(this).attr('id');
                 $.post( 'assignment_upload_contents.php',

@@ -37,10 +37,19 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     print "<h3>Project #$sequence: {$assignment_row[ 'title' ]}</h3>\n";
     
     print "<div class=\"student_uploads\" id=\"$student\">\n";
+    /*
     $uploads_query = 'select * from assignment_uploads '
         . "where student = $student "
         . "and assignment = $assignment "
         . "order by filename";
+    */
+    $uploads_query = 'select u.student, u.filename, u.filesize, u.filetype, '
+	. 'u.datetime, u.file '
+	. 'from assignment_uploads as u, assignment_upload_requirements as r '
+	. 'where u.assignment_upload_requirement = r.id '
+	. "and u.student = $student "
+	. "and r.assignment = $assignment "
+	. 'order by u.filename';
     $uploads_result = $db->query( $uploads_query );
     while( $upload = $uploads_result->fetch_assoc( ) ) {
         print '<h3><a href="#">' . $upload[ 'filename' ] . ': '
