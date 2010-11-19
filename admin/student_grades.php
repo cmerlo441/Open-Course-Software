@@ -13,6 +13,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
         . 'where w.course = s.course '
         . 'and w.grade_type = t.id '
         . "and s.id = $section "
+	. 'and w.grade_weight > 0 '
         . 'order by w.grade_weight desc, t.grade_type';
     $grade_types_result = $db->query( $grade_types_query );
     
@@ -24,6 +25,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
         $grade_events_query = 'select * from grade_events '
             . "where section = $section "
             . "and grade_type = {$grade_types_row[ 'id' ]} "
+	    . 'and date <= "' . date( 'Y-m-d H:i:s' ) . '" '
             . 'order by date';
         $grade_events_result = $db->query( $grade_events_query );
         if( $grade_events_result->num_rows > 0 ) {

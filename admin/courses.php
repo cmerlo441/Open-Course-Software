@@ -5,6 +5,82 @@ require_once( '../_header.inc' );
 
 ?>
 
+<div id="new_course_success" class="success">
+<p>Your new class was successfully added.</p>
+</div> <!-- #new_course_success -->
+
+<?php
+
+if( $_SESSION[ 'admin' ] == 1 ) {
+    print "<div id=\"courses_list\">\n";
+    $courses_query = 'select id, dept, course, credits, short_name from courses';
+    $courses_result = $db->query( $courses_query );
+    if( $courses_result->num_rows == 0 ) {
+	print "<p>There are no courses in the database.</p>\n";
+    } else {
+
+	print "<table class=\"tablesorter\" id=\"courses_table\">\n";
+	print "<thead>\n";
+	print "<tr>\n";
+	print "  <th>Department</th>\n";
+	print "  <th>Course</th>\n";
+	print "  <th>Credits</th>\n";
+	print "  <th>Short Name</th>\n";
+	print "</tr>\n";
+	print "</thead>\n\n";
+		
+	print "<tbody>\n";
+	while( $row = $courses_result->fetch_assoc( ) ) {
+	    print "<tr id=\"{$row[ 'id' ]}\">\n";
+	    print "  <td name=\"{$row[ 'id' ]}\" class=\"dept\">{$row[ 'dept' ]}</td>\n";
+	    print "  <td name=\"{$row[ 'id' ]}\" class=\"course\">{$row[ 'course' ]}</td>\n";
+	    print "  <td name=\"{$row[ 'id' ]}\" class=\"credits\">{$row[ 'credits' ]}</td>\n";
+	    print "  <td name=\"{$row[ 'id' ]}\" class=\"short_name\">{$row[ 'short_name' ]}</td>\n";
+	    print "</tr>\n";
+	}
+	$courses_result->close( );
+	print "</tbody>\n";
+	print "</table>\n";
+		
+	print "<div class=\"course_details\">\n";
+	print "</div> <!-- .course_details #{$row[ 'id' ]} -->\n";
+
+    }
+    print "</div> <!-- #courses_list -->\n";
+	
+    print "<p class=\"centered\">"
+    . "<a id=\"show_new_course_form\" href=\"javascript:void(0)\">Add a "
+    . "new course</a>.</p>\n";
+
+?>
+<div id="new_course">
+
+<div id="new_course_failure" class="failure">
+<p>There was a problem adding your new class to OCSW.</p>
+</div> <!-- #new_course_failure -->
+
+<form id="new_course_form">
+<p>Department: <input type="text" id="dept" size="5" />
+Course ID/Number: <input type="text" id="course" size="5" />
+Credits: <select id="credits"></p>
+
+<?php
+	for( $c = 0; $c <= 10; $c++ ) {
+		print "<option value=\"$c\">$c</option>\n";
+	}
+?>
+</select></p>
+<p>Short Course Name (25 Chars. Max.): <input type="text" id="short_name" /></p>
+<p>Long Course Name: <input type="text" id="long_name" /></p>
+<p>Prerequisites: <input type="text" id="prereq" /></p>
+<p>Catalog Description:</p>
+<p><textarea id="catalog" rows="5" cols="80"></textarea></p>
+
+<p class="centered"><input type="submit" id="new_course" value="Create New Course" /></p>
+
+</form>
+</div> <!-- #new_course -->
+
 <script type="text/javascript">
   $(document).ready(function(){
   	
@@ -137,86 +213,11 @@ require_once( '../_header.inc' );
   });
 </script>
 
-<div id="new_course_success" class="success">
-<p>Your new class was successfully added.</p>
-</div> <!-- #new_course_success -->
-
-<?php
-
-if( $_SESSION[ 'admin' ] == 1 ) {
-    print "<div id=\"courses_list\">\n";
-    $courses_query = 'select id, dept, course, credits, short_name from courses';
-    $courses_result = $db->query( $courses_query );
-    if( $courses_result->num_rows == 0 ) {
-	print "<p>There are no courses in the database.</p>\n";
-    } else {
-
-	print "<table class=\"tablesorter\" id=\"courses_table\">\n";
-	print "<thead>\n";
-	print "<tr>\n";
-	print "  <th>Department</th>\n";
-	print "  <th>Course</th>\n";
-	print "  <th>Credits</th>\n";
-	print "  <th>Short Name</th>\n";
-	print "</tr>\n";
-	print "</thead>\n\n";
-		
-	print "<tbody>\n";
-	while( $row = $courses_result->fetch_assoc( ) ) {
-	    print "<tr id=\"{$row[ 'id' ]}\">\n";
-	    print "  <td name=\"{$row[ 'id' ]}\" class=\"dept\">{$row[ 'dept' ]}</td>\n";
-	    print "  <td name=\"{$row[ 'id' ]}\" class=\"course\">{$row[ 'course' ]}</td>\n";
-	    print "  <td name=\"{$row[ 'id' ]}\" class=\"credits\">{$row[ 'credits' ]}</td>\n";
-	    print "  <td name=\"{$row[ 'id' ]}\" class=\"short_name\">{$row[ 'short_name' ]}</td>\n";
-	    print "</tr>\n";
-	}
-	$courses_result->close( );
-	print "</tbody>\n";
-	print "</table>\n";
-		
-	print "<div class=\"course_details\">\n";
-	print "</div> <!-- .course_details #{$row[ 'id' ]} -->\n";
-
-    }
-    print "</div> <!-- #courses_list -->\n";
-	
-    print "<p class=\"centered\">"
-    . "<a id=\"show_new_course_form\" href=\"javascript:void(0)\">Add a "
-    . "new course</a>.</p>\n";
-
-?>
-<div id="new_course">
-
-<div id="new_course_failure" class="failure">
-<p>There was a problem adding your new class to OCSW.</p>
-</div> <!-- #new_course_failure -->
-
-<form id="new_course_form">
-<p>Department: <input type="text" id="dept" size="5" />
-Course ID/Number: <input type="text" id="course" size="5" />
-Credits: <select id="credits"></p>
-
-<?php
-	for( $c = 0; $c <= 10; $c++ ) {
-		print "<option value=\"$c\">$c</option>\n";
-	}
-?>
-</select></p>
-<p>Short Course Name (25 Chars. Max.): <input type="text" id="short_name" /></p>
-<p>Long Course Name: <input type="text" id="long_name" /></p>
-<p>Prerequisites: <input type="text" id="prereq" /></p>
-<p>Catalog Description:</p>
-<p><textarea id="catalog" rows="5" cols="80"></textarea></p>
-
-<p class="centered"><input type="submit" id="new_course" value="Create New Course" /></p>
-
-</form>
-</div> <!-- #new_course -->
-
 <?php
 	
-} else {
-	print $no_admin;
+} // if an admin is logged in
+else {
+    print $no_admin;
 }
 
 $lastmod = filemtime( $_SERVER[ 'SCRIPT_FILENAME' ] );

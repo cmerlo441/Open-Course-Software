@@ -22,6 +22,12 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     $collected_row = $collected_result->fetch_assoc( );
     $collected = $collected_row[ 'collected' ];
 
+    $total_assignments_query = 'select count( id ) as c from assignments '
+	. "where section = \"$section\" and grade_type = \"$grade_type\"";
+    $total_assignments_result = $db->query( $total_assignments_query );
+    $total_assignments_row = $total_assignments_result->fetch_assoc( );
+    $total_assignments = $total_assignments_row[ 'c' ];
+
     foreach( explode( ',', 'Due Already,Due in the Future' ) as $when ) {
         print "<h3>$when</h3>";
         $previous_assignments_query = 'select * from assignments '
@@ -50,7 +56,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
                 print "<p><a href=\"$admin/assignment.php?"
 		    . "assignment={$a[ 'id' ]}\">"
                     . "<b>{$grade_type_row[ 'grade_type' ]}";
-		if( $sequence > 1 ) {
+		if( $total_assignments > 1 ) {
 		    print " #$sequence";
 		}
 		print ": ";

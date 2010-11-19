@@ -774,6 +774,10 @@ div#middle div.upcoming_event > span.section {
     color: #5d562c;
 }
 
+div.dialog#info div#downloads div#download_list {
+    overflow: auto;
+}
+
 /*****************************************************/
 /* Student-specific stuff */
 /*****************************************************/

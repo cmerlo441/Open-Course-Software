@@ -5,17 +5,17 @@ require_once( '../_header.inc' );
 
 if( $_SESSION[ 'admin' ] == 1 ) {
     
-    $update_query = 'select count( * ) as c from semester';
-    $update_result = $db->query( $update_query );
-    $update_row = $update_result->fetch_assoc( );
-    $update = $update_row[ 'c' ];
-
     // Changing semester name
     if( isset( $_POST[ 'update_value' ] ) ) {
     
+	$update_query = 'select count( * ) as c from semester';
+	$update_result = $db->query( $update_query );
+	$update_row = $update_result->fetch_assoc( );
+	$update = $semester_row[ 'c' ];
+
     	if( trim( $_POST[ 'update_value' ] ) != trim( $_POST[ 'original_html' ] ) ) {
 
-            $update_value = $db->real_escape_string( $_POST[ 'update_value' ] );
+	    $update_value = $db->real_escape_string( $update_value );
 
 	    if( $update == 1 ) {
 		$update_query = "update semester set name = \"$update_value\"";
@@ -23,7 +23,6 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 	    } else {
 		$insert_query = 'insert into semester( name ) '
 		    . "values( \"$update_value\" )";
-		$insert_result = $db->query( $insert_query );
 	    }
     
             $select_query = 'select name from semester';

@@ -14,6 +14,40 @@ if( $_SESSION[ 'admin' ] == 1 ) {
         . '"' . date( 'Y-m-d H:i:s' ) . '", '
         . "\"$comment\" )";
     $add_comment_result = $db->query( $add_comment_query );
+    if( $db->affected_rows == 1 ) {
+?>
+
+<script type="text/javascript">
+
+$(document).ready(function(){
+    $.pnotify({
+        pnotify_title: 'Comment Posted',
+        pnotify_text: 'Your comment has been posted to this assignment.',
+        pnotify_shadow: true
+    })
+})
+
+</script>
+
+<?php
+    } else {
+?>
+
+<script type="text/javascript">
+
+$(document).ready(function(){
+    $.pnotify({
+        pnotify_title: 'Database Error',
+        pnotify_text: 'Your comment was not posted to this assignment.',
+        pnotify_shadow: true,
+        pnotify_type: 'error'
+    })
+})
+
+</script>
+
+<?php
+    }
 
     $comments_query = 'select * from submission_comments '
         . "where `submission_id` = $submission "

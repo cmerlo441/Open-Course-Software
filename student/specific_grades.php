@@ -66,7 +66,7 @@ if( $_SESSION[ 'student' ] > 0 ) {
 
 		if( preg_match( '/Project/i', $name ) == 1 ) {
 		    $submitted_query = 'select count( u.id ) as c '
-			. 'from assignment_uploads as u '
+			. 'from assignment_uploads as u, '
 			. 'assignment_upload_requirements as r, '
 			. 'grade_events as e '
 			. "where u.assignment_upload_requirement = r.id "
@@ -100,6 +100,30 @@ if( $_SESSION[ 'student' ] > 0 ) {
 			    . "{$grade_row[ 'grade' ]}</span></div>\n";
 			$sum += $grade_row[ 'grade' ];
 			$count++;
+
+			// Is there a curve?  If so, display it
+
+			$curve_query = 'select * from curves '
+			    . "where grade_event = $grade_event";
+			$curve_result = $db->query( $curve_query );
+			if( $curve_result->num_rows == 1 ) {
+			    $curve_row = $curve_result->fetch_assoc( );
+			    if( $curve_row[ 'points' ] > 0 ) {
+				$curved_grade = $grade_row[ 'grade' ] + $curve_row[ 'points' ];
+			    } else {
+				$curved_grade = $grade_row[ 'grade' ] *
+				    ( 1 + $curve_row[ 'percent' ] * 0.01 );
+			    }
+			    print " &rarr; $curved_grade";
+			    $sum += $curved_grade;
+			}  // if there's a curve
+			else {
+			    $sum += $grade_row[ 'grade' ];
+			}
+
+			print "</span>.</div>\n";
+			$count++;
+
 		    } else {
 
 			// No, it hasn't been graded.
@@ -125,9 +149,31 @@ if( $_SESSION[ 'student' ] > 0 ) {
 		    $grade_row = $grade_result->fetch_assoc( );
 		    print "<div class=\"grade\" id=\"$grade_event\">Grade: ";
 		    print "<span class=\"grade\" id=\"$grade_event\">"
-			. "{$grade_row[ 'grade' ]}</span>.</div>\n";
-		    $sum += $grade_row[ 'grade' ];
+			. "{$grade_row[ 'grade' ]}";
+
+		    // Is there a curve?  If so, display it
+
+		    $curve_query = 'select * from curves '
+			. "where grade_event = $grade_event";
+		    $curve_result = $db->query( $curve_query );
+		    if( $curve_result->num_rows == 1 ) {
+			$curve_row = $curve_result->fetch_assoc( );
+			if( $curve_row[ 'points' ] > 0 ) {
+			    $curved_grade = $grade_row[ 'grade' ] + $curve_row[ 'points' ];
+			} else {
+			    $curved_grade = $grade_row[ 'grade' ] *
+				( 1 + $curve_row[ 'percent' ] * 0.01 );
+			}
+			print " &rarr; $curved_grade";
+			$sum += $curved_grade;
+		    }  // if there's a curve
+		    else {
+			$sum += $grade_row[ 'grade' ];
+		    }
+
+		    print "</span>.</div>\n";
 		    $count++;
+
 		} else {
 
 		    /* This student's assignment hasn't been graded yet.

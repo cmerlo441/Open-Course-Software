@@ -78,16 +78,17 @@ if( $_SESSION[ 'student' ] > 0 ) {
                         strtotime( date( 'Y' ) . '-' . $month . '-01' ) )
                 . '" '
                 . 'and a.date <= "'
-                . date( 'Y-m-t', strtotime( date( 'Y' ) . '-' . $month ) )
+                . date( 'Y-m-t', strtotime( date( 'Y' ) . '-' . $month . -'01' ) )
                 . '" '
                 . 'and a.presence = t.id '
                 . 'order by a.date';
+	    //print "<pre>$attendance_query;</pre>\n";
             $attendance_result = $db->query( $attendance_query );
             while( $attendance_row = $attendance_result->fetch_assoc( ) ) {
                 $attendance[ date( 'j', strtotime( $attendance_row[ 'date' ] ) ) ] =
                     $attendance_row[ 'type' ];
             }
-            
+
             $calendar = new Calendar( $month, date( 'Y' ), $docroot, $db, $attendance );
             $calendar->disp( );
             

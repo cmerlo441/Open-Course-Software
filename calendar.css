@@ -64,9 +64,12 @@ div.calendar td.absent {
 }
 
 div.calendar td.present {
-/*    border: 1px solid #5d562c; */
-    border: 1px solid #aaabac;
+/*
     font-weight: bold;
+*/
+    border: 1px solid #1e273e;
+    background-color: #aaabac;
+    color: #1e273e;
 }
 
 div.calendar td.excused {

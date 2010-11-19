@@ -327,19 +327,21 @@ $(document).ready(function(){
             'folder': './uploads',
             'buttonText': 'Browse',
             'wmode': 'transparent',
-            'sizeLimit': '500000',
+            'sizeLimit': '5000000',
             'scriptData': {
                 'requirement': id,
                 'student': student
             },
             'fileDataName': 'file',
             'onComplete': function(a,b,c,d,e){
-                alert( 'foo' );
+		alert( d );
+		/*
                 $.pnotify({
                     pnotify_title: 'File Uploaded',
                     pnotify_text: 'Your file has been uploaded.',
                     pnotify_shadow: true
 		})
+		*/
             },
             'onError': function( a, b, c, d ){
                 if( d.info == 404 )

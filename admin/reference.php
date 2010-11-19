@@ -5,6 +5,8 @@ require_once( '../_header.inc' );
 
 if( $_SESSION[ 'admin' ] == 1 ) {
     $section = $db->real_escape_string( $_GET[ 'section' ] );
+
+    print "<div class=\"dialog\" id=\"info\"></div>\n";
     
     // What class is this?
     
@@ -19,7 +21,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     
     print "<h2>Upload New Reference Material</h2>\n";
     print "<div id=\"file_upload\">\n";
-    print "Upload a file:  <div id=\"fileUpload\" />\n";
+    print "Upload a file:  <div id=\"fileUpload\"></div>\n";
     print "</div>  <!-- div#file_upload -->\n";
     
     print "<h2>Current Reference Materials</h2>\n";

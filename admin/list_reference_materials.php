@@ -5,27 +5,6 @@ require_once( '../_header.inc' );
 
 if( $_SESSION[ 'admin' ] == 1 ) {
     $section = $db->real_escape_string( $_POST[ 'section' ] );
-    if( isset( $_POST[ 'id_to_delete' ] ) ) {
-        $id = $db->real_escape_string( $_POST[ 'id_to_delete' ] );
-        $delete_query = 'delete from reference '
-            . "where id = $id";
-        $delete_result = $db->query( $delete_query );
-    }
-    
-    if( isset( $_POST[ 'available' ] ) ) {
-        $id = $db->real_escape_string( $_POST[ 'available' ] );
-        $avail_query = 'select available from reference '
-            . "where id = $id";
-        $avail_result = $db->query( $avail_query );
-        $avail_row = $avail_result->fetch_assoc( );
-        $avail = $avail_row[ 'available' ];
-        
-        $update_query = 'update reference '
-            . 'set available = '
-            . ( $avail == 0 ? '1' : '0' )
-            . " where id = $id";
-        $update_result = $db->query( $update_query );
-    }
     
     $ref_query = 'select * from reference '
         . "where section = $section "
@@ -39,29 +18,45 @@ if( $_SESSION[ 'admin' ] == 1 ) {
         print "<thead>\n";
         print "  <tr>\n";
         print "    <th>File</th>\n";
-        print "    <th>Size</th>\n";
         print "    <th>Uploaded</th>\n";
         print "    <th>Available</th>\n";
-        print "    <th>Delete</th>\n";
+	print "    <th>Info</th>\n";
         print "  </tr>\n";
         print "</thead>\n\n";
         
         print "<tbody>\n";        
         while( $ref = $ref_result->fetch_assoc( ) ) {
+
             print "  <tr id=\"{$ref[ 'id' ]}\">\n";
-            print "    <td><a href=\"javascript:void(0)\" class=\"download\" id=\"{$ref[ 'id' ]}\">{$ref[ 'filename' ]}</a></td>\n";
-            print "    <td align=\"right\">{$ref[ 'size' ]}</td>\n";
-            print "    <td>" . date( 'M j, Y g:i A', strtotime( $ref[ 'uploaded' ] ) ) . "</td>\n";
-            print "    <td><a href=\"javascript:void(0)\" class=\"avail\" id=\"{$ref[ 'id' ]}\">";
+            print "    <td class=\"title\"><a href=\"javascript:void(0)\" "
+		. "class=\"download\" id=\"{$ref[ 'id' ]}\">"
+		. "<span class=\"title\">{$ref[ 'filename' ]}</span></a>"
+		. "</td>\n";
+            print "    <td class=\"date\">"
+		. date( 'M j, Y g:i A', strtotime( $ref[ 'uploaded' ] ) )
+		. "</td>\n";
+            print "    <td class=\"available\">"
+		. "<a href=\"javascript:void(0)\" class=\"avail\" "
+		. "id=\"{$ref[ 'id' ]}\"><span class=\"available\">";
             if( $ref[ 'available' ] == 1 ) {
                 print 'Yes.';
             } else {
                 print 'No.';
             }
-            print "</a></td>\n";
-            print "    <td><a href=\"javascript:void(0)\" class=\"delete\" id=\"{$ref[ 'id' ]}\">"
-                . "<img src=\"$docroot/images/silk_icons/cancel.png\" height=\"16\" "
-                . "width=\"16\" alt=\"Delete {$ref[ 'filename' ]}\" /></a></td>\n";
+            print "</span></a></td>\n";
+
+	    /*
+            print "    <td><a href=\"javascript:void(0)\" "
+		. "class=\"delete\" id=\"{$ref[ 'id' ]}\">"
+                . "<img src=\"$docroot/images/silk_icons/cancel.png\" "
+		. "height=\"16\" width=\"16\" "
+		. "alt=\"Delete {$ref[ 'filename' ]}\" /></a></td>\n";
+	    */
+
+	    print "    <td>"
+		. "<a href=\"javascript:void(0)\" class=\"info\" "
+		. "id=\"{$ref[ 'id' ]}\">Info</a></td>\n";
+
             print "  </tr>\n\n";
         }
         print "</tbody></table>\n";
@@ -72,7 +67,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 $(document).ready(function(){
     
     $('table.tablesorter').tablesorter( {
-        sortList: [ [3,1], [0,0] ], widgets: [ 'phprof' ]
+        sortList: [ [3,1], [0,0] ], widgets: [ 'ocsw' ]
     })
     
     $('a.delete').click(function(){
@@ -85,14 +80,58 @@ $(document).ready(function(){
         )
     })
     
+    function toggle_availability( id ) {
+        $.post( 'update_reference.php',
+            { available: id }
+        );
+
+        if( $('div#available > span.available')
+            .html() == 'Available for download' ) {
+            $('div#available > span.available')
+                .html( 'Unavailable for download' );
+            $('tr#' + id + ' td.available span').html( 'No.' );
+        } else {
+            $('div#available > span.available')
+                .html( 'Available for download' );
+            $('tr#' + id + ' td.available span').html( 'Yes.' );
+        }
+    }
+
     $('a.avail').click(function(){
         var id = $(this).attr('id');
-        $.post( 'list_reference_materials.php',
-            { available: id, section: "<?php echo $section; ?>" },
-            function(data){
-                $('div#current').html(data);
-            }
-        )
+
+        $.post( 'update_reference.php',
+            { available: id }
+        );
+
+        if( $('tr#' + id + ' td.available span').html() == 'Yes.' )
+            $('tr#' + id + ' td.available span').html( 'No.' );
+        else
+            $('tr#' + id + ' td.available span').html( 'Yes.' );
+    })
+
+    $('a.info').click(function(){
+        var id = $(this).attr('id');
+	var title = $('tr[id=' + id + '] span.title').html();
+	var available = $('tr[id=' + id + '] span.available').html();
+
+	$.post('reference_more_info.php',
+        { id: id },
+        function( data ) {
+	    $('div#info').html(data).dialog({
+		buttons: {
+		    "OK": function(){
+			$(this).dialog( 'close' );
+		    },
+		    'Toggle Availability': function() {
+		        toggle_availability( id );
+		    }
+                },
+                modal: true,
+                title: title,
+                width: 500
+	    });
+	})
     })
 
     $('a.download').click(function(){

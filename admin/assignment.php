@@ -63,9 +63,14 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     }            
     print wordwrap( stripslashes( nl2br( "{$assignment_row[ 'description' ]}</div>\n" ) ) );
     
-    print "<h3>File Upload Requirements</h3>\n";
-    print "<div id=\"upload_requirements\">\n";
-    print "</div>  <!-- div#upload_requirements -->\n";
+    // Has the due date passed?
+    $due_date_passed = date( 'Y-m-d H:i:s' ) > $assignment_row[ 'due_date' ];
+
+    if( ! $due_date_passed ) {
+	print "<h3>File Upload Requirements</h3>\n";
+	print "<div id=\"upload_requirements\">\n";
+	print "</div>  <!-- div#upload_requirements -->\n";
+    }
 
     print "<div id=\"files\">\n";
     print "<h3>Downloadable Files</h3>\n";
@@ -240,6 +245,48 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 			print "<pre>" . htmlentities( str_replace( "<br />", "", $submission[ 'submission' ] ) ) . "</pre>\n";
 		    }
 
+		    // See if any files were uploaded
+
+		    $upload_r_query = 'select id, filename '
+			. 'from assignment_upload_requirements '
+			. "where assignment = {$assignment_row[ 'id' ]} "
+			. 'order by filename';
+		    $upload_r_result = $db->query( $upload_r_query );
+		    if( $upload_r_result->num_rows > 0 ) {
+			print "<h2>File Uploads</h2>\n";
+			while( $req = $upload_r_result->fetch_assoc( ) ) {
+			    print "<div class='upload' "
+				. "style='border: 1px solid #5d562c; "
+				. "padding: 0.5em 1em;'>\n";
+			    print "<h3>{$req[ 'filename' ]}</h3>\n";
+			    $upload_query = "select id, filename, filesize, "
+				. 'filetype, datetime, file '
+				. 'from assignment_uploads '
+				. "where student "
+				. "= {$submission[ 'student_id' ]} "
+				. "and assignment_upload_requirement "
+				. "= {$req[ 'id' ]}";
+			    $upload_result = $db->query( $upload_query );
+			    if( $upload_result->num_rows == 0 )
+				print 'No submission';
+			    else {
+				$row = $upload_result->fetch_assoc( );
+				$ext = preg_replace( '/.*\.([^\.]+)$/', "$1",
+						     $row[ 'filename' ] );
+				if( $ext == 'zip' ) {
+				    print_link( 'download_student_upload.php?'
+						. "id={$row[ 'id' ]}",
+						$row[ 'filename' ] );
+				    print ' Uploaded '
+					. date( 'l, F j g:i a',
+						strtotime( $row[ 'datetime' ] ) );
+				}
+			    }
+			    print "</div>  <!-- div.upload -->\n";
+			}
+
+		    }
+
                     
                     // See if a grade has been posted
     
@@ -253,6 +300,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
                         $sum += $grade;
                     }
                     
+		    print "<h2>Grade</h2>\n";
 		    print "<div class=\"grade\">\n";
                     print "Grade: "
                         . "<span class=\"grade\" id=\"{$submission[ 'student_id' ]}\" size=\"4\" "

@@ -10,14 +10,16 @@ if( $_SESSION[ 'admin' ] == 1 ) {
         . 'order by dept, course';
     $course_result = $db->query( $course_query );
     while( $course_row = $course_result->fetch_assoc( ) ) {
-        $courses[ $course_row[ 'id' ] ] = "{$course_row[ 'dept' ]} {$course_row[ 'course' ]}: "
+        $courses[ $course_row[ 'id' ] ] =
+	    "{$course_row[ 'dept' ]} {$course_row[ 'course' ]}: "
             . "{$course_row[ 'short_name' ]}";
     }
     $course_result->close( );
     
     print "<div id=\"sections_list\"></div>\n";
     
-    print "<div class=\"dialog\" id=\"add_section\" title=\"Add New Section\">\n";
+    print "<div class=\"dialog\" id=\"add_section\" "
+	. "title=\"Add New Section\">\n";
     print "<table>\n";
     print "  <tr>\n";
     print "    <td>Course</td><td><select id=\"course\">\n";
@@ -27,15 +29,20 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     print "      </select></td>\n";
     print "  </tr>\n";
     print "  <tr>\n";
-    print "    <td>Section</td><td><input type=\"text\" id=\"section_name\" size=\"3\" /></td>\n";
+    print "    <td>Section</td><td><input type=\"text\" "
+	. "id=\"section_name\" size=\"3\" /></td>\n";
     print "  </tr>\n";
     print "  <tr>\n";
-    print "    <td>Banner code</td><td><input type=\"text\" id=\"banner\" size=\"8\" /></td>\n";
+    print "    <td>CRN</td><td><input type=\"text\" "
+	. "id=\"banner\" size=\"8\" /></td>\n";
     print "  </tr>\n";
     print "  <tr>\n";
-    print "    <td colspan=\"2\"><input type=\"radio\" name=\"day_eve\" value=\"day\" /> Day "
-        . "<input type=\"radio\" name=\"day_eve\" value=\"eve\" /> Evening "
-        . "<input type=\"radio\" name=\"day_eve\" value=\"weekend\" /> Weekend</td>\n";
+    print "    <td colspan=\"2\"><input type=\"radio\" "
+	. "name=\"day_eve\" value=\"day\" /> Day "
+        . "<input type=\"radio\" name=\"day_eve\" value=\"eve\" /> "
+	. "Evening "
+        . "<input type=\"radio\" name=\"day_eve\" value=\"weekend\" /> "
+	. "Weekend</td>\n";
     print "  </tr>\n";
     print "</table>\n";
     print "</div> <!-- .dialog#add_section -->\n";

@@ -79,6 +79,7 @@ if( $_SESSION[ 'student' ] > 0 ) {
         $upload_reqs_query = 'select * from assignment_upload_requirements '
             . "where assignment = {$project_row[ 'id' ]} "
             . 'order by filename';
+	//print "<pre>$upload_reqs_query;</pre>\n";
         $upload_reqs_result = $db->query( $upload_reqs_query );
         while( $reqs = $upload_reqs_result->fetch_assoc( ) ) {
 	    $extension = preg_replace( '/^.*\.([^\.]+)$/', "$1", $reqs[ 'filename' ] );

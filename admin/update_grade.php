@@ -74,6 +74,27 @@ if( $_SESSION[ 'admin' ] == 1 ) {
             $insert_result = $db->query( $insert_query );
             if( $db->affected_rows == 1 ) {
                 print $update_value;
+
+		$student_query = 'select first, middle, last '
+		    . 'from students '
+		    . "where id = $student";
+		$student_result = $db->query( $student_query );
+		$student_row = $student_result->fetch_assoc( );
+		$student_name = name( $student_row );
+?>
+
+<script type="text/javascript">
+$(document).ready(function(){
+    $.pnotify({
+        pnotify_title: 'Grade Recorded',
+        pnotify_text: 'You recorded a grade of <?php echo $update_value; ?> ' +
+		'for <?php echo $student_name; ?>.',
+        pnotify_shadow: true
+    })
+})
+</script>
+
+<?php
             } else {
                 print $_POST[ 'original_html' ];
             }
