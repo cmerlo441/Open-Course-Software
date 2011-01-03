@@ -296,7 +296,8 @@ while( $row = $section_result->fetch_assoc( ) ) {
         print "<p id=\"evaluation\"><b>Evaluation:</b> $value</p>\n";
         print "<ul>\n";
         foreach( $weights as $column=>$weight ) {
-            print "<li>$column: $weight%</li>\n";
+            print "<li>$column: $weight%";
+	    print "</li>\n";
         }
         print "</ul>\n";
         

@@ -20,6 +20,8 @@ if( $_SESSION[ 'admin' ] == 1 ) {
         $student_name .= $student_row[ 'middle' ] . ' ';
     }
     $student_name .= $student_row[ 'last' ];
+
+    $student_name = htmlentities( $student_name, ENT_QUOTES );
     
     print "<h2>$student_name</h2>\n";
     

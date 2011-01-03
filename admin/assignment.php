@@ -53,7 +53,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 	print " #{$sequence}";
     }
     print ": Due "
-        . date( 'l, M j', strtotime( $assignment_row[ 'due_date' ] ) )
+        . date( 'l, M j g:i a', strtotime( $assignment_row[ 'due_date' ] ) )
         . " </h2>\n";
     
     print "<h3>Assignment Details</h3>\n";
@@ -265,7 +265,9 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 				. "where student "
 				. "= {$submission[ 'student_id' ]} "
 				. "and assignment_upload_requirement "
-				. "= {$req[ 'id' ]}";
+				. "= {$req[ 'id' ]} "
+				. "order by datetime desc limit 1";
+			    //print "<pre>$upload_query;</pre>\n";
 			    $upload_result = $db->query( $upload_query );
 			    if( $upload_result->num_rows == 0 )
 				print 'No submission';

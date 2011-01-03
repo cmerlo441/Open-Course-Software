@@ -121,7 +121,11 @@ $(document).ready(function(){
 </script>
 
 <?php
-
+} else {
+    print $no_admin;
 }
+
+$lastmod = filemtime( $_SERVER[ 'SCRIPT_FILENAME' ] );
+include( "$fileroot/_footer.inc" );
 
 ?>

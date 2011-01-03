@@ -21,6 +21,23 @@ if( $_SESSION[ 'admin' ] == 1 ) {
         print "    </tr>\n";
     }
     print "</table>\n";
+?>
+
+<script type="text/javascript">
+$(document).ready(function(){
+    $('input:checkbox').click(function(){
+        var k = $(this).attr('id');
+
+	$.post('config.php',
+	       { k: k }
+        );
+
+    })
+})
+</script>
+
+<?php
+
 }
 
 $lastmod = filemtime( $_SERVER[ 'SCRIPT_FILENAME' ] );

@@ -3,20 +3,26 @@
 $title_stub = 'Login Statistics';
 require_once( '../_header.inc' );
 
+print "<h2>Total Logins By Section</h2>\n";
+print "<div id=\"sections\" style=\"width:550px;height:300px;margin:auto\"></div>\n";
+
 print "<h2>Total Logins By Day of Week</h2>\n";
 print "<div id=\"days\" style=\"width:550px;height:300px;margin:auto\"></div>\n";
 
 print "<h2>Total Logins By Hour</h2>\n";
 print "<div id=\"hours\" style=\"width:550px;height:300px;margin:auto\"></div>\n";
 
+print "<h2>Total Logins By Browser</h2>\n";
+print "<div id=\"browsers\" style=\"width:550px;height:300px;margin:auto\"></div>\n";
+
+print "<h2>Total Logins By Operating System</h2>\n";
+print "<div id=\"os\" style=\"width:550px;height:300px;margin:auto\"></div>\n";
+
 print "<h2>Logins By Day of Week By Section</h2>\n";
 print "<div id=\"section_by_day\" style=\"width:550px;height:300px;margin:auto\"></div>\n";
 
 print "<h2>Logins By Hour By Section</h2>\n";
 print "<div id=\"section_by_hour\" style=\"width:550px;height:300px;margin:auto\"></div>\n";
-
-print "<h2>Total Logins By Browser</h2>\n";
-print "<div id=\"browsers\" style=\"width:550px;height:300px;margin:auto\"></div>\n";
 
 ?>
 
@@ -26,6 +32,46 @@ $(document).ready(function(){
     
     days = [ 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday' ];
     
+    $.getJSON( '../graph_data/sections.php', function( data ){
+        var labels = [];
+        var values = [];
+        var i = 1;
+        for( var key in data ) {
+            labels.push( data[ key ][ 'name' ] + " (" + data[ key ][ 'count' ] + ")" );
+            values.push( [ i++, data[ key ][ 'count' ] ] );
+        }
+
+        $.plot( $('#sections'), [
+            {
+                data: values,
+                bars: {
+                    show: true, align: "center"
+                },
+                label: "Total Amount of Logins"
+            }
+        ], {
+            xaxis: {
+                ticks: labels.length,
+                tickFormatter: function(v, axis){
+                    if (v <= labels.length) {
+                        return labels[ v - 1 ];
+                    }
+                    else {
+                        return '';
+                    }
+                }
+            },
+            grid: {
+                color: "#aaabac",
+                /* tickColor: "#5d562c", */
+                aboveData: false
+            },
+            legend: {
+                show: false
+            }
+        });
+    })
+
     $.getJSON( '../graph_data/browsers.php', function( data ){
         var labels = [];
         var values = [];
@@ -59,8 +105,50 @@ $(document).ready(function(){
                 color: "#aaabac",
                 /* tickColor: "#5d562c", */
                 aboveData: false
+            },
+            legend: {
+                show: false
             }
         });
+    })
+
+    $.getJSON( '../graph_data/os.php', function( data ) {
+        var labels = [];
+	var values = [];
+	var i = 1;
+	for( var key in data ) {
+	    labels.push( data[ key ][ 'name' ]
+	        + ' (' + data[ key ][ 'count' ] + ')' );
+	    values.push( [ i++, data[ key ][ 'count' ] ] );
+	}
+
+	$.plot( $('#os'), [
+            {
+	    data: values,
+	        bars: {
+		    show: true, align: "center"
+                },
+	        label: 'Total Amount of Logins'
+	    }
+        ], {
+            xaxis: {
+                ticks: labels.length,
+                tickFormatter: function(v,axis){
+                    if( v <= labels.length ) {
+                        return labels[ v - 1 ];
+		    } else {
+			return '';
+		    }
+		}
+	    },
+	    grid: {
+	        color: "#aaabac",
+	        aboveData: false
+	    },
+            legend: {
+                show: false
+            }
+	});
     })
 
     $.getJSON( '../graph_data/days.php', function( data ) {
@@ -87,6 +175,9 @@ $(document).ready(function(){
                 color: "#aaabac",
                 aboveData: false,
                 hoverable: true
+            },
+            legend: {
+                show: false
             }
         });
     })
@@ -142,6 +233,9 @@ $(document).ready(function(){
                 color: "#aaabac",
                 aboveData: false,
                 hoverable: true
+            },
+            legend: {
+                show: false
             }
         });
     })
@@ -213,6 +307,9 @@ $(document).ready(function(){
                 color: "#aaabac",
                 aboveData: false,
                 hoverable: true
+            },
+            legend: {
+                backgroundColor: "#1e273e"
             }
         } );
         
@@ -311,6 +408,9 @@ $(document).ready(function(){
                 color: "#aaabac",
                 aboveData: false,
                 hoverable: true
+            },
+            legend: {
+                backgroundColor: "#1e273e"
             }
         } );
         

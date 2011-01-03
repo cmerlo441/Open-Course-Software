@@ -20,6 +20,8 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     print "<div id=\"student_grades\">\n";
     
     while( $grade_types_row = $grade_types_result->fetch_assoc( ) ) {
+
+	$grade_type = $grade_types_row[ 'id' ];
         
         // Now, for each type, see if anything has been assigned
         $grade_events_query = 'select * from grade_events '
@@ -39,6 +41,9 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 
             $sequence = 1;
             $event = array( );
+	    $min = 1;
+	    $min_curve = 0;
+
             while( $event_row = $grade_events_result->fetch_assoc( ) ) {
                 $event[ $sequence ][ 'date' ] = $event_row[ 'date' ];
                 $event[ $sequence ][ 'id' ] = $event_row[ 'id' ];
@@ -50,7 +55,35 @@ if( $_SESSION[ 'admin' ] == 1 ) {
                 if( $grade_result->num_rows == 1 ) {
                     $grade_row = $grade_result->fetch_assoc( );
                     $event[ $sequence ][ 'grade' ] = $grade_row[ 'grade' ];
-                }
+
+		    // Is there a curve?
+		    $curve_query = 'select * from curves '
+			. "where grade_event = {$event_row[ 'id' ]}";
+		    $curve_result = $db->query( $curve_query );
+		    if( $curve_result->num_rows == 1 ) {
+			$curve_row = $curve_result->fetch_assoc( );
+			if( $curve_row[ 'points' ] > 0 ) {
+			    $curved_grade = $grade_row[ 'grade' ] +
+				$curve_row[ 'points' ];
+			} else {
+			    $curved_grade = $grade_row[ 'grade' ] *
+				( 1 + $curve_row[ 'percent' ] * 0.01 );
+			}
+			if( is_numeric( $event[ $min ][ 'grade' ] ) and
+			    $curved_grade <
+			    $event[ $min ][ 'grade' ] + $min_curve ) {
+			    $min = $sequence;
+			    $min_curve = $curved_grade - $grade_row[ 'grade' ];
+			}
+
+		    }
+		    else if( is_numeric( $event[ $min ][ 'grade' ] ) and
+			     $grade_row[ 'grade' ] <
+			     $event[ $min ][ 'grade' ] + $min_curve ) {
+			$min = $sequence;
+			$min_curve = 0;
+		    }
+		}
                 
                 /* Else, maybe they've been graded, and this student just
                  * didn't hand it in
@@ -63,6 +96,8 @@ if( $_SESSION[ 'admin' ] == 1 ) {
                     $grade_check_result = $db->query( $grade_check_query );
                     if( $grade_check_result->num_rows > 0 ) {
                         $event[ $sequence ][ 'grade' ] = 'No Grade';
+			$min = $sequence;
+			$min_curve = 0;
                     }
                 }
                 
@@ -76,6 +111,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
             }
             print "  </tr>\n";
             print "  <tr id=\"grades\">\n";
+	    $count = 1;
             foreach( $event as $sequence=>$data ) {
 
 	      /* To make these editable:
@@ -95,29 +131,47 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 	       * it's in $data[ 'assignment' ], and post it
 	       */
     
-                print "    <td><span class=\"grade\" "
+                print "    <td";
+
+		// Do we drop the lowest grade of this type?
+		$drop_lowest_query = 'select d.id '
+		    . 'from sections as s, drop_lowest as d '
+		    . "where s.id = $section "
+		    . 'and s.course = d.course '
+		    . "and d.grade_type = $grade_type";
+		$drop_lowest_result = $db->query( $drop_lowest_query );
+
+		if( $drop_lowest_result->num_rows == 1 ) {
+		    // Yes, drop the lowest
+
+		    if( $min == $count )
+			print " class=\"min\"";
+		}
+
+		print "><span class=\"grade\" "
                     . "id=\"$student:{$data[ 'assignment' ]}\">"
                     . "{$data[ 'grade' ]}</span>\n";
 
 		// Is there a curve?
 		// Only do this if there's a grade to curve from!
 		$curve_query = 'select * from curves '
-		  . "where grade_event = {$data[ 'id' ]}";
+		    . "where grade_event = {$data[ 'id' ]}";
 		$curve_result = $db->query( $curve_query );
 		if( $curve_result->num_rows == 1 and
 		    $data[ 'grade' ] != 'No Grade' ) {
-		  $curve_row = $curve_result->fetch_assoc( );
-		  if( $curve_row[ 'points' ] > 0 ) {
-		    $curved_grade = $data[ 'grade' ] + $curve_row[ 'points' ];
-		  } else {
-		    $curved_grade = $data[ 'grade' ] *
-		      ( 1 + $curve_row[ 'percent' ] * 0.01 );
-		  }
-		  print " &rarr; $curved_grade";
+		    $curve_row = $curve_result->fetch_assoc( );
+		    if( $curve_row[ 'points' ] > 0 ) {
+			$curved_grade = $data[ 'grade' ] +
+			    $curve_row[ 'points' ];
+		    } else {
+			$curved_grade = $data[ 'grade' ] *
+			    ( 1 + $curve_row[ 'percent' ] * 0.01 );
+		    }
+		    print " &rarr; $curved_grade";
 		}
 
 		print "</td>\n";
-
+		$count++;
             }
             print "</tr>\n";
             print "</table>\n\n";
@@ -129,6 +183,9 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 
 <script type="text/javascript">
 $(document).ready(function(){
+
+    $('td.min').css('background-color','#5c5d60').css('color','#8f8b88');
+
     $('span.grade').editInPlace({
         url: 'update_grade.php',
         default_text: '(No grade recorded yet)',

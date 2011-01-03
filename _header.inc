@@ -379,10 +379,12 @@ if( $no_header != 1 ) {
 
 ?>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html><head><title><?= $title ?></title>
-<meta http-equiv="Content-type" content="text/html; charset=iso-8859-1" />
+<!DOCTYPE html>
+<html lang="en"><head><title><?= $title ?></title>
+<meta charset="utf-8" />
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
 <script type="text/javascript" src="<?php echo $docroot ?>/js/jquery-1.4.2.min.js"></script>
 <script type="text/javascript" src="<?php echo $docroot ?>/js/jquery-ui-1.8.4.custom.min.js"></script>
 <script type="text/javascript" src="<?php echo $docroot ?>/jquery.corner.js"></script>
@@ -475,7 +477,7 @@ if( $no_header != 1 ) {
   
 </script>
 
-<link rel="stylesheet" href="<?php echo $docroot ?>/style.css" type="text/css" />
+<link rel="stylesheet" href="<?php echo $docroot ?>/style.css" />
 <link rel="icon" type="image/png" href="<?php echo $docroot ?>/images/ocsw.favicon.png" />
 </head>
 

@@ -16,10 +16,10 @@ $.fn.snow = function(options) {
             var $left = parseInt(flakes[i].css('left'));
             var $top = parseInt(flakes[i].css('top'));
             
-            if($top > $(window).height()) {
+            if($top > $('div#wrapper').height()) {
                 $top = 0;
             }
-            if($left > $(window).width()) {
+            if($left > $('body').width() - 10) {
                 $left = 0;
             }
             

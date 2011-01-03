@@ -66,7 +66,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 	. "<span class=\"outline\" id=\"{$row[ 'id' ]}\">"
 	. "{$row[ 'outline' ]}</p></div>\n";
     
-    $weights_query = 'select w.id, t.grade_type as t, '
+    $weights_query = 'select w.id, t.grade_type as t, t.id as type_id, '
 	. 'w.grade_weight as w, collected as c '
 	. 'from grade_types as t, grade_weights as w '
         . "where w.course = $id "
@@ -82,7 +82,9 @@ if( $_SESSION[ 'admin' ] == 1 ) {
         $sum = 0;
         print "<ul id=\"grade_weights\">\n";
         while( $row = $weights_result->fetch_assoc( ) ) {
-            print "<li><a href=\"javascript:void(0)\" "
+            print "<li style=\"margin: auto;\">";
+	    print "<span class=\"name_and_weight\" >\n";
+	    print "<a href=\"javascript:void(0)\" "
 		. "class=\"remove_grade_weight\" id=\"{$row[ 'id' ]}\" "
                 . "title=\"Remove {$row[ 't' ]} Weight\">"
                 . "<img src=\"$docroot/images/silk_icons/cancel.png\" "
@@ -90,10 +92,24 @@ if( $_SESSION[ 'admin' ] == 1 ) {
             print "<span class=\"grade_type\" "
 		. "id=\"{$row[ 'id' ]}\">{$row[ 't' ]}</span>"
                 . ": <span class=\"grade_weight\" "
-		. "id=\"{$row[ 'id' ]}\">{$row[ 'w' ]}</span>%";
+		. "id=\"{$row[ 'id' ]}\">{$row[ 'w' ]}%</span>";
             if( $row[ 'c' ] == 1 ) {
                 print ' (Collected)';
             }
+	    print "</span> <!-- name_and_weight -->\n\n";
+
+	    print "<span></span>"
+		. "<input type=\"checkbox\" id=\"{$row[ 'id' ]}\" "
+		. "course=\"$id\" grade_type=\"{$row[ 'type_id' ]}\"";
+
+	    // Do we drop the lowest grade?
+	    $drop_query = 'select id from drop_lowest '
+		. "where course = $id and grade_type = {$row[ 'type_id' ]}";
+	    $drop_result = $db->query( $drop_query );
+	    if( $drop_result->num_rows == 1 )
+		print ' checked="checked"';
+
+	    print "> Drop the lowest grade?\n";
             print "</li>\n";
             $sum += $row[ 'w' ];
         }
@@ -210,6 +226,14 @@ $(document).ready(function(){
         })
     })
 
+    $('input:checkbox').click(function(){
+        var course = $(this).attr('course');
+	var grade_type = $(this).attr('grade_type');
+
+	$.post( 'toggle_drop_lowest_grade.php',
+            { course: course, grade_type: grade_type }
+        )
+    })
   	
 })
 </script>

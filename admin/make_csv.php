@@ -48,12 +48,20 @@ if( $_SESSION[ 'admin' ] == 1 ) {
         . 'from grade_weights as w, grade_types as t '
         . "where w.course = {$course_row[ 'id' ]} "
         . 'and w.grade_type = t.id '
-        // and weight > 0 ?
+        . 'and w.grade_weight > 0 '
         . 'order by w.grade_type';
     $weights_result = $db->query( $weights_query );
     while( $w_row = $weights_result->fetch_assoc( ) ) {
         $weights[ $w_row[ 'grade_type' ] ] = $w_row[ 'grade_weight' ];
     }
+
+    $drop_query = 'select grade_type from drop_lowest '
+	. "where course = {$course_row[ 'id' ]} "
+	. 'order by grade_type';
+    $drop_result = $db->query( $drop_query );
+    while( $row = $drop_result->fetch_object( ) )
+	$drop_lowest[ $row->grade_type ] = 1;
+
     $first_column = array( );  // First column of each type of grade event
     $column = 4;
 
@@ -63,36 +71,37 @@ if( $_SESSION[ 'admin' ] == 1 ) {
         . 'order by e.grade_type, e.date';
     $events_result = $db->query( $events_query );
     while( $event = $events_result->fetch_assoc( ) ) {
-        $type_counts[ $event[ 'grade_type' ] ][ 'count' ]++;
+	if( $weights[ $event[ 'grade_type' ] ] > 0 ) {
+	    $type_counts[ $event[ 'grade_type' ] ][ 'count' ]++;
         
-        $events[ $event[ 'id' ] ][ 'type' ] = $event[ 'grade_type' ];
-        $events[ $event[ 'id' ] ][ 'date' ] =
-            date( 'm/d/Y', strtotime( $event[ 'date' ] ) );
-        $events[ $event[ 'id' ] ][ 'description' ] =
-            $type_counts[ $event[ 'grade_type' ] ][ 'description' ];
+	    $events[ $event[ 'id' ] ][ 'type' ] = $event[ 'grade_type' ];
+	    $events[ $event[ 'id' ] ][ 'date' ] =
+		date( 'm/d/Y', strtotime( $event[ 'date' ] ) );
+	    $events[ $event[ 'id' ] ][ 'description' ] =
+		$type_counts[ $event[ 'grade_type' ] ][ 'description' ];
         
-        // If there are more than one of these events, label each with a #
-        // like "Exam 1"; otherwise, just "Exam"
+	    // If there are more than one of these events, label each with a #
+	    // like "Exam 1"; otherwise, just "Exam"
         
-        $event_count_query = 'select * from grade_events '
-            . "where grade_type = {$event[ 'grade_type' ]} "
-            . "and section = $section";
-        $event_count_result = $db->query( $event_count_query );
-        if( $event_count_result->num_rows > 1 ) {
-            $events[ $event[ 'id' ] ][ 'description' ]
-                .= ' ' . ( $type_counts[ $event[ 'grade_type' ] ][ 'count' ] );
-        }
-        $events[ $event[ 'id' ] ][ 'column' ] = column( $column );
+	    $event_count_query = 'select * from grade_events '
+		. "where grade_type = {$event[ 'grade_type' ]} "
+		. "and section = $section";
+	    $event_count_result = $db->query( $event_count_query );
+	    if( $event_count_result->num_rows > 1 ) {
+		$events[ $event[ 'id' ] ][ 'description' ]
+		    .= ' ' . ( $type_counts[ $event[ 'grade_type' ] ][ 'count' ] );
+	    }
+	    $events[ $event[ 'id' ] ][ 'column' ] = column( $column );
         
-        // Someday curve logic goes here.  For now:
-        $events[ $event[ 'id' ] ][ 'curve' ] = 0;
+	    $events[ $event[ 'id' ] ][ 'curve' ] = 0;
         
-        // Remember the first column with this type of grade in it
-        if( $type_counts[ $event[ 'grade_type' ] ][ 'count' ] == 1 ) {
-            $first_column[ $event[ 'grade_type' ] ] = $column;
-        }
+	    // Remember the first column with this type of grade in it
+	    if( $type_counts[ $event[ 'grade_type' ] ][ 'count' ] == 1 ) {
+		$first_column[ $event[ 'grade_type' ] ] = $column;
+	    }
         
-        $column++;
+	    $column++;
+	} // if the weight of this type of event is > 0
     }
     
     $averages = array( );
@@ -238,9 +247,29 @@ if( $_SESSION[ 'admin' ] == 1 ) {
                 print column( $first_column[ $key ] ) . "$row:"
                     . column( $first_column[ $key ] + $type_counts[ $key ][ 'count' ] - 1 )
                     . "$row)=0{$arg_sep}0{$arg_sep}";
-                print "average(" . column( $first_column[ $key ] ) . "$row:"
-                    . column( $first_column[ $key ] + $type_counts[ $key ][ 'count' ] - 1 )
+
+		if( $drop_lowest[ $key ] == 1 ) {
+		    // Drop the lowest one of these
+
+		    $count = $type_counts[ $key ][ 'count' ];
+		    $count--;
+
+		    print "(sum(" . column( $first_column[ $key ] ) . "$row:"
+			. column( $first_column[ $key ] +
+				  $type_counts[ $key ][ 'count' ] - 1 )
+			. "$row)-"
+			. "min(" . column( $first_column[ $key ] ) . "$row:"
+			. column( $first_column[ $key ] +
+				  $type_counts[ $key ][ 'count' ] - 1 )
+			. "$row))/$count)";
+
+		} else {
+
+		    print "average(" . column( $first_column[ $key ] ) . "$row:"
+                    . column( $first_column[ $key ] +
+			      $type_counts[ $key ][ 'count' ] - 1 )
                     . "$row))";
+		}
             }
         }
         
