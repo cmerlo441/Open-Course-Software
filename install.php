@@ -9,24 +9,35 @@ require_once( "$home_directory/.htpasswd" );
 
 if( isset( $_REQUEST[ 'first' ] ) && isset( $_REQUEST[ 'last' ] ) &&
     isset( $_REQUEST[ 'username' ] ) && isset( $_REQUEST[ 'password' ] ) ) {
+        
+    // Create tables as necessary
+?>
 
-  // Make sure we're not overwriting something that's there already
+<script type="text/javascript">
+$(document).ready(function(){
+    $.post('create_databases.php');
+})
+</script>
 
-  $rows_query = 'select count( id ) as c from prof';
-  $rows_result = $db->query( $rows_query );
-  $rows_row = $rows_result->fetch_object( );
-  if( $rows_row->c == 0 ) {
+<?php
 
-    $first = $db->real_escape_string( $_REQUEST[ 'first' ] );
-    $last = $db->real_escape_string( $_REQUEST[ 'last' ] );
-    $username = $db->real_escape_string( $_REQUEST[ 'username' ] );
-    $password = $db->real_escape_string( $_REQUEST[ 'password' ] );
-    $db->query( 'lock tables prof' );
-    $db->query( 'truncate table prof' );
-    $db->query( 'insert into prof( id, first, last, username, password ) '
-		. "values( null, \"$first\", \"$last\", \"$username\", "
-		. "\"$password\" )" );
-  }
+    // Make sure we're not overwriting something that's there already
+    
+    $rows_query = 'select count( id ) as c from prof';
+    $rows_result = $db->query( $rows_query );
+    $rows_row = $rows_result->fetch_object( );
+    if( $rows_row->c == 0 ) {
+    
+        $first = $db->real_escape_string( $_REQUEST[ 'first' ] );
+        $last = $db->real_escape_string( $_REQUEST[ 'last' ] );
+        $username = $db->real_escape_string( $_REQUEST[ 'username' ] );
+        $password = $db->real_escape_string( $_REQUEST[ 'password' ] );
+        $db->query( 'lock tables prof' );
+        $db->query( 'truncate table prof' );
+        $db->query( 'insert into prof( id, first, last, username, password ) '
+        	. "values( null, \"$first\", \"$last\", \"$username\", "
+        	. "\"$password\" )" );
+    }
 }
 
 $prof_query = 'select * from prof';
