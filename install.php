@@ -13,6 +13,7 @@ if( isset( $_REQUEST[ 'first' ] ) && isset( $_REQUEST[ 'last' ] ) &&
     // Create tables as necessary
 ?>
 
+<script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>
 <script type="text/javascript">
 $(document).ready(function(){
     $.post('create_databases.php');
