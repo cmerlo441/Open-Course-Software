@@ -7,8 +7,6 @@ if( preg_match( '|^(/home/faculty/)(.+)/public_html|', $cwd, $matches ) ) {
 }
 require_once( "$home_directory/.htpasswd" );
 
-print "<pre>$home_directory</pre>\n";
-
 $prof_query = 'select * from prof';
 $prof_result = $db->query( $prof_query );
 
