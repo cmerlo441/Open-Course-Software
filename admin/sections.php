@@ -38,7 +38,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     print "  </tr>\n";
     print "  <tr>\n";
     print "    <td colspan=\"2\"><input type=\"radio\" "
-	. "name=\"day_eve\" value=\"day\" /> Day "
+	. "name=\"day_eve\" value=\"day\" checked=\"checked\" /> Day "
         . "<input type=\"radio\" name=\"day_eve\" value=\"eve\" /> "
 	. "Evening "
         . "<input type=\"radio\" name=\"day_eve\" value=\"weekend\" /> "
@@ -56,33 +56,6 @@ $(document).ready(function(){
         $("div#sections_list").html(data);
     })
     
-    $("a.add_section").click(function(){
-        $("div#add_section").dialog({
-            autoOpen: true,
-            modal: true,
-            width: 400,
-            buttons: {
-                'Add Section': function(){
-                    $.post('new_section.php',
-                        {
-                            course: $("select#course").val(),
-                            section: $("input#section_name").val(),
-                            banner: $("input#banner").val(),
-                            day_eve: $("input:radio").val()
-                        }, function(data){
-                            $.post('list_sections.php', function(data){
-                                $("div#sections_list").html(data);
-                            })
-                        }
-                    )
-                    $("div#add_section").dialog('destroy');
-                },
-                'Cancel': function(){
-                    $("div#add_section").dialog('destroy');
-                }
-            }
-        });
-    });
 })
 </script>
 

@@ -37,9 +37,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
         . "width=\"16\" title=\"Add new section\" /></a>\n";
     print "<a href=\"javascript:void(0)\" class=\"add_section\">"
         . " Add new section</a>\n";
-} else {
-    print $no_admin;
-}
+    print "</ul>\n";
 
 ?>
 
@@ -65,25 +63,56 @@ $(document).ready(function(){
     });
     
     $("a.add_section").click(function(){
+        alert( 'hi' );
         $("div#add_section").dialog({
             autoOpen: true,
             modal: true,
             width: 400,
             buttons: {
                 'Add Section': function(){
-                    $("div#add_section").dialog('destroy');
-                    $.post('new_section.php',
-                        {
-                            course: $("select#course").val(),
-                            section: $("input#section_name").val(),
-                            banner: $("input#banner").val(),
-                            day_eve: $("input:radio").val()
-                        }, function(data){
-                            $.post('list_sections.php', function(data){
-                                $("div#sections_list").html(data);
+    
+                    var course;
+                    var section_name;
+                    var crn;
+                    var day_eve;
+        
+                    course = $('select#course').val( );
+                    section_name = $('input#section_name').val( ).trim();
+                    crn = $('input#banner').val().trim();
+                    day_eve = $('input:radio').val();
+    
+                    if( section_name == "" || crn == "" ) {
+                        if( section_name == "" )
+                            $.pnotify({
+                                pnotify_title: 'Section Name',
+                                pnotify_text: 'You must supply the section name.',
+                                pnotify_shadow: true,
+                                pnotify_type: 'error'
                             })
-                        }
-                    )
+                        if( crn == "" )
+                            $.pnotify({
+                                pnotify_title: 'CRN',
+                                pnotify_text: 'You must supply this section\'s CRN.',
+                                pnotify_shadow: true,
+                                pnotify_type: 'error'
+                            })
+                    }
+                    else {
+                        alert( "section_name is '" + section_name + "'" );
+                        $.post('new_section.php',
+                            {
+                                course: course,
+                                section: section_name,
+                                banner: crn,
+                                day_eve: day_eve
+                            }, function(data){
+                                $.post('list_sections.php', function(data){
+                                    $("div#sections_list").html(data);
+                                })
+                            }
+                        )
+                        $("div#add_section").dialog('destroy');
+                    }
                 },
                 'Cancel': function(){
                     $("div#add_section").dialog('destroy');
@@ -107,3 +136,11 @@ $(document).ready(function(){
 
 })
 </script>
+
+<?php
+
+} else {
+    print $no_admin;
+}
+
+?>
