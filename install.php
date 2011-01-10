@@ -7,39 +7,7 @@ if( preg_match( '|^(/home/faculty/)(.+)/public_html|', $cwd, $matches ) ) {
 }
 require_once( "$home_directory/.htpasswd" );
 
-if( isset( $_REQUEST[ 'first' ] ) && isset( $_REQUEST[ 'last' ] ) &&
-    isset( $_REQUEST[ 'username' ] ) && isset( $_REQUEST[ 'password' ] ) ) {
-        
-    // Create tables as necessary
-?>
-
-<script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>
-<script type="text/javascript">
-$(document).ready(function(){
-    $.post('create_databases.php');
-})
-</script>
-
-<?php
-
-    // Make sure we're not overwriting something that's there already
-    
-    $rows_query = 'select count( id ) as c from prof';
-    $rows_result = $db->query( $rows_query );
-    $rows_row = $rows_result->fetch_object( );
-    if( $rows_row->c == 0 ) {
-    
-        $first = $db->real_escape_string( $_REQUEST[ 'first' ] );
-        $last = $db->real_escape_string( $_REQUEST[ 'last' ] );
-        $username = $db->real_escape_string( $_REQUEST[ 'username' ] );
-        $password = $db->real_escape_string( $_REQUEST[ 'password' ] );
-        $db->query( 'lock tables prof' );
-        $db->query( 'truncate table prof' );
-        $db->query( 'insert into prof( id, first, last, username, password ) '
-        	. "values( null, \"$first\", \"$last\", \"$username\", "
-        	. "\"$password\" )" );
-    }
-}
+print "<pre>$home_directory</pre>\n";
 
 $prof_query = 'select * from prof';
 $prof_result = $db->query( $prof_query );
@@ -48,7 +16,8 @@ if( $prof_result->num_rows == 0 ) {
 
     print "<html><head><title>OCSW Installation</title>\n";
     print "<script type=\"text/javascript\" "
-      . "src=\"js/jquery-1.3.2.min.js\"></script>\n";
+      . "src=\"js/jquery-1.4.2.min.js\"></script>\n";
+      
     print "</head>\n\n";
 
     print "<body>\n";
@@ -138,21 +107,28 @@ $(document).ready(function(){
     }
 
     $('input#install').click(function(){
+			       alert( 'hi' );
         var first;
-	var last;
+        var last;
         var username;
-	var p1;
+        var p1;
 
-	first = $('input#first').val();
-	last = $('input#last').val();
-	username = $('input#username').val();
-	p1 = $('input#pw1').val();
-	p1_md5 = $().crypt({method:"md5",source:p1});
-
-	if( first != '' && last != '' && username != '' && p1 != '' )
-	  $(location).attr('href', 'install.php?first=' + first +
-			   '&last=' + last + '&username=' + username +
-			   '&password=' + p1_md5);
+    	first =    $('input#first').val();
+    	last =     $('input#last').val();
+    	username = $('input#username').val();
+    	p1 =       $('input#pw1').val();
+    	p1_md5 =   $().crypt({method:"md5",source:p1});
+    
+    	if (first != '' && last != '' && username != '' && p1 != '') {
+            $.post('create_databases.php');
+            $.post('populate_prof.php', {
+                first: first,
+                last: last,
+                username: username,
+                password: p1_md5
+            });
+            //window.location.reload();
+        }
     })
 
 })

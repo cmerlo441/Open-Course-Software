@@ -1,7 +1,11 @@
 <?php
 
-$no_header = 1;
-require_once( './_header.inc' );
+$cwd = getcwd( );
+if( preg_match( '|^(/home/faculty/)(.+)/public_html|', $cwd, $matches ) ) {
+    $home_directory = $matches[ 1 ] . $matches[ 2 ];
+    $username = $matches[ 2 ];
+}
+require_once( "$home_directory/.htpasswd" );
 
 $tables = array( );
 $data = array( );
@@ -566,10 +570,16 @@ foreach( $tables as $name=>$create ) {
         
         // Create the table
         $db->query( $create );
+	print "$name created";
         
         // Prepopulate data
-        if( isset( $data[ $name ] ) )
+        if( isset( $data[ $name ] ) ) {
             $db->query( $data[ $name ] );
+	    print " and populated";
+	}
+
+	print ".\n";
+
     }
 }
 
