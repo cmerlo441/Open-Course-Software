@@ -156,6 +156,7 @@ $prof_result = $db->query( $prof_query );
 
 if( $prof_result->num_rows == 0 ) {
     header( 'Location: install.php' );
+    print 'Redirecting...';
     die( );
 }
 
@@ -368,12 +369,14 @@ if( isset( $title_stub ) ) {
 
 // Stuff to do Google Calendar integration
 
+/*
 set_include_path( get_include_path( ) . ":$fileroot/ZendGdata-1.11.0/library/" );
 require_once 'Zend/Loader.php';
 Zend_Loader::loadClass('Zend_Gdata');
 Zend_Loader::loadClass('Zend_Gdata_AuthSub');
 Zend_Loader::loadClass('Zend_Gdata_ClientLogin');
 Zend_Loader::loadClass('Zend_Gdata_Calendar');
+*/
 
 if( $no_header != 1 ) {
 

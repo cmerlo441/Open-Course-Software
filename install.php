@@ -6,6 +6,11 @@ if( preg_match( '|^(/home/faculty/)(.+)/public_html|', $cwd, $matches ) ) {
     $username = $matches[ 2 ];
 }
 require_once( "$home_directory/.htpasswd" );
+$docroot = "/~{$username}";
+$fileroot = "$home_directory/public_html";
+$admin = "$docroot/admin";
+$student = "$docroot/student";
+$url = "http://{$_SERVER[ 'SERVER_NAME' ]}{$docroot}/";
 
 $prof_query = 'select * from prof';
 $prof_result = $db->query( $prof_query );
@@ -85,6 +90,8 @@ $(document).ready(function(){
         check_inputs( );
     })
 
+    $('input#first').focus( );
+
     function check_inputs() {
 
         var first =      $('input#first').val();
@@ -105,11 +112,11 @@ $(document).ready(function(){
     }
 
     $('input#install').click(function(){
-			       alert( 'hi' );
         var first;
         var last;
         var username;
         var p1;
+	var url;
 
     	first =    $('input#first').val();
     	last =     $('input#last').val();
@@ -118,14 +125,15 @@ $(document).ready(function(){
     	p1_md5 =   $().crypt({method:"md5",source:p1});
     
     	if (first != '' && last != '' && username != '' && p1 != '') {
-            $.post('create_databases.php');
-            $.post('populate_prof.php', {
+            $.post('create_databases.php', {
                 first: first,
                 last: last,
                 username: username,
                 password: p1_md5
-            });
-            //window.location.reload();
+            }, function( data ) {
+	        url = "<?php echo $url; ?>";
+                window.location = url;
+	    })
         }
     })
 
@@ -136,7 +144,6 @@ $(document).ready(function(){
 
 } else {
     header( 'Location: index.php' );
-    die( );
 }
 
 ?>
