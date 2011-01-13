@@ -23,18 +23,20 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     <li>All student information</li>
 </ul>
 
-<p><b>Make sure you know what you're doing</b> before you enable this script.</p>
+<p><b>Make sure you know what you&apos;re doing</b> before you enable this script.</p>
 
 <table>
     <tr>
         <td valign="top"><input type="checkbox" id="confirm" /></td>
-        <td>I know what I'm doing, and I want to delete all the information
-        from the previous semester.</td>
+            <td>I know what I&apos;m doing, and I want to delete all the
+            information from the previous semester.</td>
     </tr>
 </table>
 <p style="text-align: center"><input type="submit" id="clean" /></p>
 
-<div class="dialog" id="cleanup_dialog" title="Cleanup Results"></div>
+<div class="dialog" id="cleanup_dialog" title="Cleanup Results">
+<img src="<?php echo $docroot; ?>/images/ajax-loader.gif" alt="Please wait" />
+</div>
 
 <script type="text/javascript">
 $(document).ready(function(){

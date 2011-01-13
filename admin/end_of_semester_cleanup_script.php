@@ -11,11 +11,11 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 	. 'assignment_upload_requirements,'
 	. 'attendance,'
 	. 'curves,'
-	. 'drop_lowest',
+	. 'drop_lowest,'
         . 'grades,'
 	. 'grade_events,'
 	. 'holidays,'
-	. 'last_login_growled',
+	. 'last_login_growled,'
 	. 'logins,'
 	. 'mail_from_students,'
 	. 'mail_to_classes,'
@@ -23,7 +23,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 	. 'office_hours,'
 	. 'password_reset_request,'
 	. 'reference,'
-	. 'reference_downloads',
+	. 'reference_downloads,'
 	. 'rescheduled_days,'
 	. 'sections,'
 	. 'section_meetings,'
