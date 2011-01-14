@@ -63,7 +63,6 @@ $(document).ready(function(){
     });
     
     $("a.add_section").click(function(){
-        alert( 'hi' );
         $("div#add_section").dialog({
             autoOpen: true,
             modal: true,
