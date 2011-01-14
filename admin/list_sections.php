@@ -97,7 +97,6 @@ $(document).ready(function(){
                             })
                     }
                     else {
-                        alert( "section_name is '" + section_name + "'" );
                         $.post('new_section.php',
                             {
                                 course: course,
