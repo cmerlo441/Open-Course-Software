@@ -11,11 +11,17 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 
     $semester_query = 'select * from semester';
     $semester_result = $db->query( $semester_query );
-    $semester_row = $semester_result->fetch_assoc( );
-    $semester_result->close( );
-    $semester = $semester_row[ 'name' ];
-    $start = date( 'l, F j, Y', strtotime( $semester_row[ 'start' ] ) );
-    $end = date( 'l, F j, Y', strtotime( $semester_row[ 'end' ] ) );
+    if( $semester_result->num_rows == 1 ) {
+	$semester_row = $semester_result->fetch_assoc( );
+	$semester_result->close( );
+    
+	if( $semester_row[ 'name' ] != '' )
+	    $semester = $semester_row[ 'name' ];
+	if( $semester_row[ 'start' ] != '0000-00-00' )
+	    $start = date( 'l, F j, Y', strtotime( $semester_row[ 'start' ] ) );
+	if( $semester_row[ 'end' ] != '0000-00-00' )
+	    $end = date( 'l, F j, Y', strtotime( $semester_row[ 'end' ] ) );
+    }
 
     $days = array( 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday',
 		   'Friday', 'Saturday' );

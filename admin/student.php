@@ -37,12 +37,12 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     print "</div>  <!-- div#send_email_dialog -->\n";
 
     print "<div class=\"dialog\" id=\"sent_email_dialog\" "
-	. "title=\"E-Mail You Sent To $student_name\">\n";
+	   . "title=\"E-Mail You Sent To $student_name\">\n";
     print 'foo';
     print "</div>  <!-- div#sent_email_dialog -->\n";
     
     print "<div class=\"dialog\" id=\"received_email_dialog\" "
-	. "title=\"E-Mail $student_name Sent You\">\n";
+	   . "title=\"E-Mail $student_name Sent You\">\n";
     print 'foo';
     print "</div>  <!-- div#received_email_dialog -->\n";
     
@@ -50,10 +50,10 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     print "<li><a href=\"javascript:void(0)\" class=\"send_email\" id=\"$student_id\">Send {$student_row[ 'first' ]} an e-mail</a></li>\n";
 
     $sent_mail_query = 'select m.id '
-	. 'from mail_to_students as m, student_x_section as x '
-	. "where x.student = $student_id "
-	. "and x.section = $section "
-	. 'and m.student_x_section = x.id';
+    	. 'from mail_to_students as m, student_x_section as x '
+    	. "where x.student = $student_id "
+    	. "and x.section = $section "
+    	. 'and m.student_x_section = x.id';
     $sent_mail_result = $db->query( $sent_mail_query );
     if( $sent_mail_result->num_rows > 0 ) {
 	print "<li><a href=\"javascript:void(0)\" class=\"sent_email\" "
@@ -65,10 +65,10 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     }
 
     $received_mail_query = 'select m.id '
-	. 'from mail_from_students as m, student_x_section as x '
-	. "where x.student = $student_id "
-	. "and x.section = $section "
-	. 'and m.student_x_section = x.id';
+    	. 'from mail_from_students as m, student_x_section as x '
+    	. "where x.student = $student_id "
+    	. "and x.section = $section "
+    	. 'and m.student_x_section = x.id';
     $received_mail_result = $db->query( $received_mail_query );
     if( $received_mail_result->num_rows > 0 ) {
 	print "<li><a href=\"javascript:void(0)\" class=\"received_email\" "
@@ -237,8 +237,8 @@ $(document).ready(function(){
                     width: 500,
                     buttons: {
                         'Send': function(){
-			    var subject = $('input#subject').val();
-			    var message = $('textarea#message').val();
+            			    var subject = $('input#subject').val();
+            			    var message = $('textarea#message').val();
                             $.post( 'send_email.php',
                                 {
                                     student_id: student,
@@ -247,31 +247,29 @@ $(document).ready(function(){
                                     from: prof_address,
                                     subject: subject,
                                     message: message
-				},
-                                function( data ) {
-				    var title;
-				    var text;
-				    var type;
-				    if( data == "1" ) {
-					title = 'E-Mail Sent';
-					text = 'Your e-mail message "'
-					    + message
-					    + '" has been sent to '
-					    + '<?php echo $student_name; ?>.';
-					type = 'normal';
-				    } else {
-					title = 'Problem Sending E-Mail';
-					text = 'Your e-mail message was not sent.';
-					type = 'error';
-				    }
-				    $.pnotify({
-				        pnotify_title: title,
-					pnotify_text: text,
-					pnotify_shadow: true,
-					pnotify_type: type
-				    })
-				}
-                            );
+            				    }, function( data ) {
+            				    var title;
+            				    var text;
+            				    var type;
+            				    if( data == "1" ) {
+                					title = 'E-Mail Sent';
+                					text = 'Your e-mail message "'
+                					    + subject
+                					    + '" has been sent to '
+                					    + '<?php echo $student_name; ?>.';
+                					type = 'normal';
+            				    } else {
+                					title = 'Problem Sending E-Mail';
+                					text = 'Your e-mail message was not sent.';
+                					type = 'error';
+            				    }
+            				    $.pnotify({
+            				        pnotify_title: title,
+                					pnotify_text: text,
+                					pnotify_shadow: true,
+                					pnotify_type: type
+            				    })
+            				});
                             $('div#send_email_dialog').dialog('destroy');
                         },
                         'Cancel': function(){
@@ -284,24 +282,23 @@ $(document).ready(function(){
     })
 
 	$('a.sent_email').click(function(){
-            $.post( 'list_email_to_student.php',
-	    { student: student, section: section },
-            function( data ) {
-                $('div#sent_email_dialog').html(data).dialog({
-		    title: "E-Mail You Sent to " + student_name,
-		    autoOpen: true,
-		    hide: 'puff',
-		    modal: true,
-		    position: 'center',
-		    width: 700,
-		    buttons: {
-		        'OK': function(){
-			    $('div#sent_email_dialog').dialog('destroy');
-			}
-		    }
-		})
-	    }
-	    )
+    $.post( 'list_email_to_student.php',
+        { student: student, section: section },
+        function( data ) {
+            $('div#sent_email_dialog').html(data).dialog({
+                title: "E-Mail You Sent to " + student_name,
+                autoOpen: true,
+                hide: 'puff',
+                modal: true,
+                position: 'center',
+                width: 700,
+                buttons: {
+                    'OK': function(){
+                        $('div#sent_email_dialog').dialog('destroy');
+                    }
+                }
+            })
+        })
 	})
 
 	$('a.received_email').click(function(){

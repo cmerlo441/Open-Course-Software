@@ -60,11 +60,11 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     	    . "class=\"" . ( $row[ 'active' ] == 1 ? 'active' : 'not_active' )
             . "\">\n";
         print "  <td student=\"{$row[ 'id' ]}\" class=\"first\">"
-	  . ucwords( $row[ 'first' ] ) . "</td>\n";
+            . ucwords( $row[ 'first' ] ) . "</td>\n";
         print "  <td student=\"{$row[ 'id' ]}\" class=\"middle\">"
-	  . ucwords( $row[ 'middle' ] ) . "</td>\n";
+            . ucwords( $row[ 'middle' ] ) . "</td>\n";
         print "  <td student=\"{$row[ 'id' ]}\" class=\"last\">"
-	  . ucwords( $row[ 'last' ] ) . "</td>\n";
+            . ucwords( $row[ 'last' ] ) . "</td>\n";
         print "  <td student=\"{$row[ 'id' ]}\" class=\"banner\">{$row[ 'banner' ]}</td>\n";
         print "  <td student=\"{$row[ 'id' ]}\" class=\"active\">"
             . "<a href=\"javascript:void(0)\" class=\"active\" id=\"{$row[ 'id' ]}\">"
@@ -78,14 +78,14 @@ if( $_SESSION[ 'admin' ] == 1 ) {
         
         print "  <td student=\"{$row[ 'id' ]}\" class=\"average\"></td>\n";
 
-	$absences_query = 'select count( * ) as c from attendance '
-	    . "where student = {$row[ 'id' ]} "
-	  . "and presence = 2";
-	$absences_result = $db->query( $absences_query );
-	$absences_row = $absences_result->fetch_assoc( );
-	$absences = $absences_row[ 'c' ];
-
-	print "<td>$absences</td>\n";
+    	$absences_query = 'select count( * ) as c from attendance '
+            . "where student = {$row[ 'id' ]} "
+            . "and presence = 2";
+    	$absences_result = $db->query( $absences_query );
+    	$absences_row = $absences_result->fetch_assoc( );
+    	$absences = $absences_row[ 'c' ];
+    
+    	print "<td>$absences</td>\n";
         print "</tr>\n";
     }
     $roster_result->close( );

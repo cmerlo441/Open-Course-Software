@@ -58,8 +58,8 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     $id = 1;
     while( isset( $_POST[ "meeting{$id}day" ] ) ) {
         $day        = $db->real_escape_string( $_POST[ "meeting{$id}day" ] );
-	$post_start = trim( $db->real_escape_string( $_POST[ "meeting{$id}start" ] ) );
-	$post_end   = trim( $db->real_escape_string( $_POST[ "meeting{$id}end" ] ) );
+    	$post_start = trim( $db->real_escape_string( $_POST[ "meeting{$id}start" ] ) );
+    	$post_end   = trim( $db->real_escape_string( $_POST[ "meeting{$id}end" ] ) );
         $start      = date( 'H:i:s', strtotime( $post_start ) );
         $end        = date( 'H:i:s', strtotime( $post_end ) );
         $building   = $db->real_escape_string( $_POST[ "meeting{$id}building" ] );
