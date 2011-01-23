@@ -88,8 +88,17 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     ?>
     <p><?php print_link( "$admin/login_history.php", 'View Login History' ); ?><br />
     <?php print_link( "$admin/page_views.php", 'View Page View History' ); ?></p>
-    <p><?php print_link( "$admin/sections.php", 'Edit Current Sections' ); ?></p>
+    <p><?php print_link( "$admin/sections.php", 'Edit Current Sections' ); ?><br />
+    <?php print_link( "$admin/office_hours.php", 'Edit Office Hours' ); ?></p>
+
 </div>  <!-- div#sections -->
+
+<h3><a href="#">Student Accounts</a></h3>
+<div id="accounts">
+<ul>
+    <li><?php print_link( "$admin/remove_student.php", 'Student Entered Wrong E-Mail' ) ?></li>
+</ul>
+</div>
 
 <h3><a href="#">Course Information</a></h3>
 <div id="courses">

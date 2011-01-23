@@ -389,7 +389,7 @@ if( $no_header != 1 ) {
   <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
 <![endif]-->
 <script type="text/javascript" src="<?php echo $docroot ?>/js/jquery-1.4.4.min.js"></script>
-<script type="text/javascript" src="<?php echo $docroot ?>/js/jquery-ui-1.8.8.custom.min.js"></script>
+<script type="text/javascript" src="<?php echo $docroot ?>/js/jquery-ui-1.8.9.custom.min.js"></script>
 <script type="text/javascript" src="<?php echo $docroot ?>/jquery.corner.js"></script>
 <!-- <script type="text/javascript" src="<?php echo $docroot ?>/jquery.inplace.pack.js"></script> -->
 <script type="text/javascript" src="<?php echo $docroot ?>/js/editinplace/src/jquery.editinplace.js"></script>
