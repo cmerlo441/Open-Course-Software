@@ -93,14 +93,10 @@ $tables[ 'authors' ] =
     PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1";
 
-$tables[ 'contact_information' ] =
-    "CREATE TABLE `contact_information` (
-    `id` int(11) NOT NULL auto_increment,
-    `type` varchar(100) NOT NULL,
-    `description` text NOT NULL,
-    `contact_info` text NOT NULL,
-    `sequence` int(11) NOT NULL,
-    PRIMARY KEY  (`id`)
+$tables[ 'contact_info' ] =
+    "CREATE TABLE `contact_info` (
+    `contact_info` longtext NULL,
+    `last_updated` datetime NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1";
 
 $tables[ 'course_x_textbook' ] =

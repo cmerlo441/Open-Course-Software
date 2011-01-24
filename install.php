@@ -116,7 +116,7 @@ $(document).ready(function(){
         var last;
         var username;
         var p1;
-	var url;
+	    var url;
 
     	first =    $('input#first').val();
     	last =     $('input#last').val();
@@ -131,9 +131,9 @@ $(document).ready(function(){
                 username: username,
                 password: p1_md5
             }, function( data ) {
-	        url = "<?php echo $url; ?>";
+	            url = "<?php echo $url; ?>";
                 window.location = url;
-	    })
+	        })
         }
     })
 
