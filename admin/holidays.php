@@ -30,7 +30,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     } else {
         while( $row = $holidays_result->fetch_assoc( ) ) {
             print "<div class=\"holiday\" id=\"{$row[ 'id' ]}\">\n";
-            print "<span class=\"remove\" id=\"{$row[ 'id' ]}\"";
+            print "<span class=\"remove\" id=\"{$row[ 'id' ]}\">";
             print "<a href=\"javascript:void(0)\" class=\"remove_holiday\" id=\"{$row[ 'id' ]}\" "
                 . "title=\"Remove {$row[ 'description' ]}\">";
             print "<img src=\"$docroot/images/silk_icons/cancel.png\" height=\"16\" width=\"16\" /></a></span>\n";
@@ -58,8 +58,7 @@ $(document).ready(function(){
 	$.post( 'holidays.php', { remove: id },
             function(data) {
                 $('div#holidays').html(data);
-	    }
-        )
+	    })
     })
 })
 </script>
