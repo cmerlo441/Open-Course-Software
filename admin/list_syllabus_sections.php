@@ -9,6 +9,25 @@ if( $_SESSION[ 'admin' ] == 1 ) {
         $delete_query = 'delete from syllabus_sections '
             . 'where id = "' . $db->real_escape_string( $_POST[ 'id' ] ) . '"';
         $delete_result = $db->query( $delete_query );
+        
+        // Renumber
+        
+        $sequence_query = 'select id, sequence from syllabus_sections '
+            . 'order by sequence';
+        $sequence_result = $db->query( $sequence_query );
+        while( $sequence_row = $sequence_result->fetch_object( ) ) {
+            $sequence[ $sequence_row->sequence ] = $sequence_row->id;
+        }
+        print "<pre>"; print_r( $sequence ); print "</pre>\n";
+        $db->query( 'lock tables syllabus_sections' );
+        $new_sequence = 1;
+        foreach( $sequence as $seq=>$id ) {
+            $db->query( "update syllabus_sections set sequence = $new_sequence "
+                . "where id = $id" );
+            $new_sequence++;
+        }
+        $db->query( 'unlock tables' );
+        print "<pre>"; print_r( $sequence ); print "</pre>\n";
     }
     
     else if( $_POST[ 'new_content' ] != '' ) {
