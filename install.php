@@ -19,7 +19,7 @@ if( $prof_result->num_rows == 0 ) {
 
     print "<html><head><title>OCSW Installation</title>\n";
     print "<script type=\"text/javascript\" "
-      . "src=\"js/jquery-1.4.2.min.js\"></script>\n";
+      . "src=\"js/jquery-1.4.4.min.js\"></script>\n";
       
     print "</head>\n\n";
 
