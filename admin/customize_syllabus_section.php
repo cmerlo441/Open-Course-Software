@@ -40,6 +40,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     print "<select id=\"section\">\n";
     print "<option value=\"0\">Choose a syllabus section</option>\n";
     $syllabus_query = 'select id, section from syllabus_sections '
+        . 'where editable = 1 '
         . 'order by sequence';
     $syllabus_result = $db->query( $syllabus_query );
     while( $row = $syllabus_result->fetch_assoc( ) ) {
