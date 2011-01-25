@@ -415,6 +415,8 @@ if( $no_header != 1 ) {
 	</script>
 <script type="text/javascript">
   $(document).ready(function(){
+      
+      $('div#wrapper_content').hide();
     
     // $(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
     

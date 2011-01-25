@@ -47,8 +47,8 @@ if( $twitter_enabled[ 'c' ] == 1 ) {
 
     if( $u != '' and $u != 'NULL' ) {
 
-	print "<h2>Prof. {$prof[ 'last' ]}'s Twitter Feed</h2>\n";
-	print "<div id=\"twitter\" style=\"padding: 1em;\">\n";
+    	print "<h2>Prof. {$prof[ 'last' ]}'s Twitter Feed</h2>\n";
+    	print "<div id=\"twitter\" style=\"padding: 1em;\">\n";
     }
 
     ?>
@@ -84,7 +84,7 @@ new TWTR.Widget({
 }).render().setUser("<?php echo $u; ?>").start();
 </script>
 <?php
-      print "</div>\n";
+      print "</div>  <!-- div#twitter -->\n";
 }
 
 $lastmod = filemtime( $_SERVER[ 'SCRIPT_FILENAME' ] );
