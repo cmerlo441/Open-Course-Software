@@ -125,7 +125,8 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     <li><?php print_link( "$admin/prof_details.php", 'About You' ); ?></li>
     <li><?php print_link( "$admin/calendar.php", 'About This Semester' ); ?></li>
     <li><?php print_link( "$admin/contact_info.php", 'Edit Your Contact Information' ); ?></li>
-    <li><?php print_link( "$admin/pages.php", 'Static Pages' ); ?></li>
+    <li><?php print_link( "$admin/pages.php", 'Static Pages (Important Information)' ); ?></li>
+    <li><?php print_link( "$admin/links.php", 'Important Links' ); ?></li>
     <li><?php print_link( "$admin/syllabus_editor.php", 'Syllabus Editor' ); ?></li>
     <li><?php print_link( "$admin/end_of_semester.php", 'End-of-Semester Clean Up' ); ?></li>
     <li><?php print_link( "$admin/ocsw.php", 'OCSW Configuration Options' ); ?></li>

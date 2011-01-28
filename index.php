@@ -28,6 +28,17 @@ if( $pages_result->num_rows > 0 ) {
     print "</ul>\n";
 }
 
+$links_query = 'select * from links order by created';
+$links_result = $db->query( $links_query );
+if( $links_result->num_rows > 0 ) {
+    print "<h2>Important Links</h2>\n";
+
+    print "<ul>\n";
+    while( $row = $links_result->fetch_object( ) )
+	print "<li><a href=\"$row->url\">$row->link_text</a></li>\n";
+    print "</ul>\n";
+}
+
 print "<h2 id=\"upcoming_events\">Upcoming Events</h2>\n";
 print "<div id=\"upcoming_events\">\n";
 print "</div>  <!-- div#upcoming_events -->\n";
