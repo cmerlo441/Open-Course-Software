@@ -13,7 +13,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     
     // What class is this?
     
-    $course_query = 'select c.id as course_id, c.dept, c.course, s.section '
+    $course_query = 'select c.id as course_id, c.dept, c.course, s.section, s.id as sid '
         . 'from courses as c, sections as s '
         . 'where s.course = c.id '
         . "and s.id = {$assignment_row[ 'section' ]}";
@@ -48,13 +48,19 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     $sequence_row = $sequence_result->fetch_assoc( );
     $sequence = $sequence_row[ 'amount' ];
     
-    print "<h2>$type";
+    $assignment_string = $type;
     if( $count > 1 ) {
-	print " #{$sequence}";
+        $assignment_string .= " #{$sequence}";
     }
-    print ": Due "
-        . date( 'l, M j g:i a', strtotime( $assignment_row[ 'due_date' ] ) )
-        . " </h2>\n";
+    
+    print "<h2>$assignment_string</h2>\n";
+
+    print "Due <input type=\"text\" id=\"due_date\" value=\""
+        . date( 'l, M j, Y', strtotime( $assignment_row[ 'due_date' ] ) )
+        . '"></input> at <input type=\"text\" id="due_time" value="'
+        . date( 'g:i a', strtotime( $assignment_row[ 'due_date' ] ) )
+        . "\"></input>\n";
+    print "<input type=\"submit\" id=\"change_time\"value=\"Update Due Date\" />\n";
     
     print "<h3>Assignment Details</h3>\n";
     print "<div id=\"assignment\">\n";
@@ -436,9 +442,11 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 $(document).ready(function(){
     var course = " :: <?php echo $course_name; ?>";
     var assignment = "<?php echo $_GET[ 'assignment' ]; ?>";
+    var assignment_string = "<?php echo $assignment_string; ?>";
     
     $('h1').html( $('h1').html( ) + course );
-    $(document).attr('title', $(document).attr('title') + course );
+    $(document).attr('title', $(document).attr('title') + course + ' :: ' +
+        assignment_string );
     
     $('table#grades').tablesorter({
         sortList: [ [ 0, 0 ] ],
@@ -447,6 +455,57 @@ $(document).ready(function(){
     
     $('table#submissions_table').tablesorter({
         sortList: [ [ 0, 0 ] ], widgets: [ 'ocsw' ]
+    })
+    
+    $("input#due_date").datepicker( {dateFormat: 'yy-mm-dd'} ).change(function(){
+        var assignment_type = "<?php echo $assignment_row[ 'grade_type' ]; ?>"
+        var section = "<?php echo $course_row[ 'sid' ]; ?>";
+        var date = $('#due_date').val();
+        
+        $.post( './calculate_due_time.php',
+            { assignment_type: assignment_type, section: section, date: date },
+            function( data ) {
+                $('input#due_time').val( data );
+            }
+        )
+    })
+    
+    $('input#change_time').click(function(){
+        var assignment = <?php echo $assignment; ?>;
+        var due_date = $('input#due_date').val();
+        var due_time = $('input#due_time').val();
+        
+        // There's gotta be a better way to do this
+        var days = [ 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday',
+            'Saturday'];
+        var months = [ 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+            'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec' ];
+        
+        $.post('update_assignment_due_date.php',
+            { assignment: assignment, due_date: due_date, due_time: due_time },
+            function(data){
+                var date = new Date( Date.parse(data) );
+                var date_string = days[date.getDay()] + ', ' +
+                    months[date.getMonth( )] + ' ' + date.getDate() + ', ' +
+                    date.getFullYear();
+                $('input#due_date').val(date_string);
+                
+                var hour = date.getHours( );
+                var ampm = hour < 12 ? "am" : "pm";
+                if( hour == 0 )
+                    hour = "12";
+                else if( hour > 12 )
+                    hour -= 12;
+                
+                $('input#due_time').val(hour + ':' + date.getMinutes( ) + ' ' + ampm );
+                $.pnotify({
+                    pnotify_title: 'Due Date Updated',
+                    pnotify_text: 'The due date has been changed to ' + due_date +
+                        ' at ' + $('input#due_time').val(),
+                    pnotify_shadow: true
+                })
+            }
+        )
     })
     
     $.post( 'list_assignment_documents.php',
@@ -471,10 +530,10 @@ $(document).ready(function(){
     $.post( 'assignment_statistics.php',
 	    {
 	        event: "<?php echo $event; ?>",
-		date: "<?php echo $assignment_row[ 'due_date' ]; ?>",
-		type: "<?php echo $type; ?>",
-		sequence: "<?php echo $sequence; ?>",
-		course_name: "<?php echo $course_name; ?>"
+    		date: "<?php echo $assignment_row[ 'due_date' ]; ?>",
+    		type: "<?php echo $type; ?>",
+    		sequence: "<?php echo $sequence; ?>",
+    		course_name: "<?php echo $course_name; ?>"
 	    },
         function( data ) {
             $('div#stats').html(data);
