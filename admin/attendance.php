@@ -13,6 +13,10 @@ if( $_SESSION[ 'admin' ] == 1 ) {
       $types[ $type_row[ 'id' ] ] = substr( $type_row[ 'type' ], 0, 1 );
     }
     
+    $reverse_types = array( );
+    foreach( $types as $id=>$type )
+        $reverse_types[ $type ] = $id;
+    
     $section = $db->real_escape_string( $_GET[ 'section' ] );
     $section_query = 'select c.dept, c.course, s.section, s.day '
         . 'from courses as c, sections as s '
@@ -219,12 +223,14 @@ $(document).ready(function(){
 
     $('a.p').click(function(){
         var date = $(this).attr('date');
+        var p = <?php echo $reverse_types[ 'P' ]; ?>;
+        
         $('select.attendance[date=' + date + ']').each(function(){
             var id = $(this).attr('id');
             var value = $(this).val();
 
             if( value == '0' ) {
-                $(this).val('1');
+                $(this).val(p);
                 value = $(this).val();
                 $.post( 'set_attendance.php',
                     { id: id, attendance: value }
@@ -235,12 +241,14 @@ $(document).ready(function(){
 
     $('a.a').click(function(){
         var date = $(this).attr('date');
+        var a = <?php echo $reverse_types[ 'A' ]; ?>;
+        
         $('select.attendance[date=' + date + ']').each(function(){
             var id = $(this).attr('id');
             var value = $(this).val();
 
             if( value == '0' ) {
-                $(this).val('2');
+                $(this).val(a);
                 value = $(this).val();
                 $.post( 'set_attendance.php',
                     { id: id, attendance: value }
