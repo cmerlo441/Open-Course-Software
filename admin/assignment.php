@@ -65,9 +65,12 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     print "<h3>Assignment Details</h3>\n";
     print "<div id=\"assignment\">\n";
     if( $assignment_row[ 'title' ] != '' ) {
-        print "<div id=\"title\">{$assignment_row[ 'title' ]}</div>\n";
-    }            
-    print wordwrap( stripslashes( nl2br( "{$assignment_row[ 'description' ]}</div>\n" ) ) );
+        print "<div class=\"editInPlace\" id=\"title\">" . nl2br($assignment_row[ 'title' ])
+	    . "</div>\n";
+    }
+    print "<div class=\"editInPlace\" id=\"description\">\n";
+    print stripslashes( nl2br( "{$assignment_row[ 'description' ]}</div>\n" ) );
+    print "</div>  <!-- div#assignment -->\n";
     
     // Has the due date passed?
     $due_date_passed = date( 'Y-m-d H:i:s' ) > $assignment_row[ 'due_date' ];
@@ -557,6 +560,21 @@ $(document).ready(function(){
                 $('textarea.comment[id=' + id + ']').val('');
             }
         )
+    })
+
+    $('div#title').editInPlace({
+        url: 'update_assignment.php',
+        params: 'ajax=yes&id=' + assignment + '&column=title',
+        saving_image: "<?php echo $docroot; ?>/images/ajax-loader.gif"
+    })
+    
+    $('div#description').editInPlace({
+        url: 'update_assignment.php',
+	field_type: 'textarea',
+	textarea_rows: "10",
+	textarea_columns: "80",
+        params: 'ajax=yes&id=' + assignment + '&column=description',
+        saving_image: "<?php echo $docroot; ?>/images/ajax-loader.gif"
     })
     
     $('#fileUpload').uploadify({
