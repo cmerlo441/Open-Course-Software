@@ -64,10 +64,11 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     
     print "<h3>Assignment Details</h3>\n";
     print "<div id=\"assignment\">\n";
-    if( $assignment_row[ 'title' ] != '' ) {
-        print "<div class=\"editInPlace\" id=\"title\">" . nl2br($assignment_row[ 'title' ])
-	    . "</div>\n";
-    }
+    if( $assignment_row[ 'title' ] == '' )
+	$title = '(No title)';
+    else
+	$title = nl2br( $assignment_row[ 'title' ] );
+    print "<div class=\"editInPlace\" id=\"title\">$title</div>\n";
     print "<div class=\"editInPlace\" id=\"description\">\n";
     print stripslashes( nl2br( "{$assignment_row[ 'description' ]}</div>\n" ) );
     print "</div>  <!-- div#assignment -->\n";
