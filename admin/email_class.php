@@ -24,7 +24,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     while( $section_row = $section_result->fetch_assoc( ) ) {
         print "<input type=\"checkbox\" id=\"{$section_row[ 'id' ]}\" /> "
             . $section_row[ 'dept' ] . ' ' . $section_row[ 'course' ] . ' '
-            . $section_row[ 'section ' ] . "<br />\n";
+            . $section_row[ 'section' ] . "<br />\n";
     }
 ?>
         </td>
