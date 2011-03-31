@@ -3,6 +3,17 @@
 $title_stub = 'Class Roster';
 require_once( '../_header.inc' );
 
+function getOrdinal($number){
+    // get first digit
+    $digit = abs($number) % 10;
+    $ext = 'th';
+    $ext = ((abs($number) %100 < 21 && abs($number) %100 > 4)
+	    ? 'th'
+	    : (($digit < 4) ? ($digit < 3) ? ($digit < 2) ? ($digit < 1)
+	       ? 'th' : 'st' : 'nd' : 'rd' : 'th'));
+    return "{$number}{$ext}";
+}
+
 if( $_SESSION[ 'admin' ] == 1 ) {
 
   $wf_query = 'select v from ocsw where k = "wf"';
@@ -13,7 +24,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     
   $section = urlencode( $_GET[ 'section' ] );
     
-  $section_query = 'select c.dept, c.course, s.section, c.long_name '
+  $section_query = 'select c.dept, c.course, s.section, s.id, c.long_name '
     . 'from courses as c, sections as s '
     . 'where s.course = c.id '
     . "and s.id = $section";
@@ -51,6 +62,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     print "  <th>Active?</th>\n";
     print "  <th>Average</th>\n";
     print "  <th>Absences</th>\n";
+    print "  <th>Logins</th>\n";
     print "</tr>\n";
     print "</thead>\n\n";
 		
@@ -78,19 +90,69 @@ if( $_SESSION[ 'admin' ] == 1 ) {
         
         print "  <td student=\"{$row[ 'id' ]}\" class=\"average\"></td>\n";
 
-    	$absences_query = 'select count( * ) as c from attendance '
-            . "where student = {$row[ 'id' ]} "
-            . "and presence = 2";
+    	$absences_query = 'select a.id '
+	    . 'from attendance as a, attendance_types as t '
+            . "where a.student = {$row[ 'id' ]} "
+            . "and a.presence = t.id "
+	    . "and t.type like \"a%\"";
     	$absences_result = $db->query( $absences_query );
-    	$absences_row = $absences_result->fetch_assoc( );
-    	$absences = $absences_row[ 'c' ];
+    	$absences = $absences_result->num_rows;
     
-    	print "<td>$absences</td>\n";
+    	print "  <td student=\"{$row[ 'id' ]}\" class=\"absences\">$absences</td>\n";
+
+	$logins_query = 'select id from logins '
+	    . "where student = {$row[ 'id' ]}";
+	$logins_result = $db->query( $logins_query );
+	$logins = $logins_result->num_rows;
+	print "<td>$logins</td>\n";
+
         print "</tr>\n";
     }
     $roster_result->close( );
     print "</tbody>\n";
     print "</table>\n\n";
+
+    print "<div id=\"recent_absences\">\n";
+    print "<h2>Recent Absences</h2>\n";
+    $recent_meeting_query = 'select date from attendance '
+	. "where section = {$section_row[ 'id' ]} "
+	. 'order by date desc limit 1';
+    $recent_meeting_result = $db->query( $recent_meeting_query );
+    if( $recent_meeting_result->num_rows == 0 ) {
+	print 'You haven\'t entered any attendance.';
+    } else {
+	$recent_meeting_row = $recent_meeting_result->fetch_object( );
+	$date = $recent_meeting_row->date;
+	print "<h3>" . date( 'l, F j, Y', strtotime( $date ) ) . "</h3>\n";
+	$recent_absences_query = 'select s.first, s.last, s.id '
+	    . 'from students as s, attendance as a, attendance_types as t '
+	    . 'where a.student = s.id '
+	    . "and a.section = {$section_row[ 'id' ]} "
+	    . "and a.date = \"$date\" "
+	    . 'and a.presence = t.id '
+	    . 'and t.type = "absent" '
+	    . 'order by s.last, s.first';
+	$recent_absences_result = $db->query( $recent_absences_query );
+	if( $recent_absences_result->num_rows == 0 ) {
+	    print 'Perfect attendance.';
+	} else {
+	    print "<ul>\n";
+	    while( $row = $recent_absences_result->fetch_assoc( ) ) {
+		print '<ul>' . lastfirst( $row );
+		$how_many_query = 'select a.id '
+		    . 'from attendance as a, attendance_types as t '
+		    . "where a.student = {$row[ 'id' ]} "
+		    . "and a.section = {$section_row[ 'id' ]} "
+		    . "and a.presence = t.id "
+		    . 'and t.type = "absent"';
+		$how_many_result = $db->query( $how_many_query );
+		$how_many = $how_many_result->num_rows;
+		print " (" . getOrdinal( $how_many ) . " absence)</ul>\n";
+	    }
+	    print "</ul>\n";
+	}
+    }
+    print "</div>  <!-- div#recent_absences -->\n";
     
     print "<div id=\"student_data\"></div>\n";
 }
