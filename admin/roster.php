@@ -22,7 +22,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
   $wf_result->close( );
   $wf = $wf_row[ 'v' ];
     
-  $section = urlencode( $_GET[ 'section' ] );
+  $section = $db->real_escape_string( $_GET[ 'section' ] );
     
   $section_query = 'select c.dept, c.course, s.section, s.id, c.long_name '
     . 'from courses as c, sections as s '
