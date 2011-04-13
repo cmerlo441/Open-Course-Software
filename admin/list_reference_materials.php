@@ -5,6 +5,29 @@ require_once ( '../_header.inc' );
 if( $_SESSION[ 'admin' ] == 1 ) {
     $section = $db->real_escape_string( $_POST[ 'section' ] );
     
+    if( isset( $_POST[ 'id_to_delete' ] ) ) {
+        $id = $db->real_escape_string( $_POST[ 'id_to_delete' ] );
+        $delete_query = 'delete from reference '
+            . "where id = \"$id\" limit 1";
+        $delete_result = $db->query( $delete_query );
+        if( $db->affected_rows == 1 ) {
+
+?>
+
+<script type="text/javascript">
+
+$(document).ready(function(){
+    var id = <?php echo $id;?>;
+    $('table#reference > tbody > tr#' + id ).slideUp('200');
+})
+
+</script>
+
+<?php
+
+        }
+    }
+    
     $ref_query = 'select * from reference '
         . "where section = $section "
         . 'order by filename, available desc';
@@ -19,6 +42,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
         print "    <th>File</th>\n";
         print "    <th>Uploaded</th>\n";
         print "    <th>Available</th>\n";
+        print "    <th>Delete</th>\n";
         print "    <th>Info</th>\n";
         print "  </tr>\n";
         print "</thead>\n\n";
@@ -44,13 +68,11 @@ if( $_SESSION[ 'admin' ] == 1 ) {
             }
             print "</span></a></td>\n";
             
-            /*
              print "    <td><a href=\"javascript:void(0)\" "
              . "class=\"delete\" id=\"{$ref[ 'id' ]}\">"
-             . "<img src=\"$docroot/images/silk_icons/cancel.png\" "
+             . "<img src=\"$docroot/images/silk_icons/cross.png\" "
              . "height=\"16\" width=\"16\" "
              . "alt=\"Delete {$ref[ 'filename' ]}\" /></a></td>\n";
-             */
             
             print "    <td>"
                 . "<a href=\"javascript:void(0)\" class=\"info\" "
@@ -66,7 +88,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     $(document).ready(function() {
     
         $('table.tablesorter').tablesorter({
-            sortList: [[3, 1], [0, 0]],
+            sortList: [[2, 1], [0, 0]],
             widgets: ['ocsw']
         })
         
