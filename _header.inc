@@ -388,13 +388,10 @@ if( $no_header != 1 ) {
 <!--[if lt IE 9]>
   <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
 <![endif]-->
-<script type="text/javascript" src="<?php echo $docroot ?>/js/jquery-1.4.4.min.js"></script>
+<script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.6.min.js"></script>
 <script type="text/javascript" src="<?php echo $docroot ?>/js/jquery-ui-1.8.9.custom.min.js"></script>
-<script type="text/javascript" src="<?php echo $docroot ?>/jquery.corner.js"></script>
-<!-- <script type="text/javascript" src="<?php echo $docroot ?>/jquery.inplace.pack.js"></script> -->
 <script type="text/javascript" src="<?php echo $docroot ?>/js/editinplace/src/jquery.editinplace.js"></script>
 <script type="text/javascript" src="<?php echo $docroot ?>/tablesorter/jquery.tablesorter.js"></script>
-<script type="text/javascript" src="<?php echo $docroot ?>/jquery.clockpick.1.2.4.pack.js"></script>
 <script type="text/javascript" src="<?php echo $docroot ?>/markitup/markitup/jquery.markitup.pack.js"></script>
 <script type="text/javascript" src="<?php echo $docroot ?>/markitup/markitup/sets/html/set.js"></script>
 <script type="text/javascript" src="<?php echo $docroot ?>/highlighter/scripts/shCore.js"></script>
@@ -477,12 +474,18 @@ if( $no_header != 1 ) {
         $('.snowflake').hide();
         $('div#snow').fadeOut();
     })
+
+	$.post("<?php echo $docroot; ?>/shoutbox.php",
+	       function(data){
+		   $('div#shoutbox').html(data);
+	       }
+	);
     
   });
   
 </script>
 
-<link rel="stylesheet" href="<?php echo $docroot ?>/style.css" />
+<link rel="stylesheet" href="<?php echo $docroot ?>/default.css" />
 <link rel="icon" type="image/png" href="<?php echo $docroot ?>/images/ocsw.favicon.png" />
 </head>
 
@@ -582,6 +585,7 @@ $next_month->disp( );
 
 <?php
 
+/*
 $delicious_query = 'select delicious from prof';
 $delicious_result = $db->query( $delicious_query );
 $delicious_row = $delicious_result->fetch_assoc( );
@@ -596,6 +600,13 @@ if( trim( $delicious_row[ 'delicious' ] ) != '' ) {
 
 <?php
 } // if delicious username is set
+*/
+?>
+
+<?php
+if( $_SESSION[ 'admin' ] == 1 ) {
+    print "<div id=\"shoutbox\"></div>\n";
+}
 ?>
 
 <div id="ocsw_logo">
