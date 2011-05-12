@@ -388,7 +388,7 @@ if( $no_header != 1 ) {
 <!--[if lt IE 9]>
   <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
 <![endif]-->
-<script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.6.min.js"></script>
+<script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.5.2.min.js"></script>
 <script type="text/javascript" src="<?php echo $docroot ?>/js/jquery-ui-1.8.9.custom.min.js"></script>
 <script type="text/javascript" src="<?php echo $docroot ?>/js/editinplace/src/jquery.editinplace.js"></script>
 <script type="text/javascript" src="<?php echo $docroot ?>/tablesorter/jquery.tablesorter.js"></script>
@@ -475,13 +475,15 @@ if( $no_header != 1 ) {
         $('div#snow').fadeOut();
     })
 
-	$.post("<?php echo $docroot; ?>/shoutbox.php",
-	       function(data){
-		   $('div#shoutbox').html(data);
-	       }
-	);
+    /*
+    $.post("<?php echo $docroot; ?>/shoutbox.php",
+        function(data){
+            $('div#shoutbox').html(data);
+        }
+    );
+    */
     
-  });
+});
   
 </script>
 
