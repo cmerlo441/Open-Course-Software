@@ -155,8 +155,8 @@ div#middle div#left {
 }
 
 div#middle div#calendars {
-	margin: 5px;
-	padding: 0.5em;
+    margin: 5px;
+    padding: 0.5em;
     border-bottom: 1px dotted #c7c6bf;
 }
 
@@ -167,7 +167,7 @@ div#middle div#calendars div#time {
 }
 
 div#ocsw_logo {
-    border-top: 1px dotted #c7c6bf;
+//    border-top: 1px dotted #c7c6bf;
     padding: 0.5em 0 0 0;
     text-align: center;
 }
@@ -496,6 +496,11 @@ div#middle div#assignment div#title {
 
 div#middle div#assignment {
     margin: 1em;
+}
+
+div.delete_assignment {
+    margin: 0 auto;
+    text-align: center;
 }
 
 table.tablesorter {
@@ -890,7 +895,76 @@ div#bottom div#qotd span#attribution {
     font-style: italic;
 }
 
-} /* @media screen */
+/* Shoutbox */
+
+div#shoutbox {
+    color: #1e273e;
+    margin: auto;
+    padding: 0;
+    font-size: 90%;
+}
+
+div#shoutbox p#top {
+    font-weight: bold;
+    font-size: 1.5em;
+    text-align: center;
+    color: #5d562c;
+}
+
+div#shoutbox > div.shout {
+    color: #aaabac;
+    margin: 0.5em;
+    padding: 0;
+    border: 0;
+}
+
+div#shoutbox > div.shout > div.metainfo {
+    background-color: #aaabac;
+    color: #1e273e;
+    padding: 0.5em;
+    font-size: 0.8em;
+    border-bottom: 1px solid #5d562c;
+}
+
+div#shoutbox > div.shout > div.metainfo > span.author {
+    font-weight: bold;
+}
+
+div#shoutbox > div.shout > div.message {
+    background-color: #5d562c;
+    font-size: 1.25em;
+    padding: 5px;
+    border-left: 1px solid;
+}
+
+div#shoutbox div.reply_link, div#shoutbox div.hide {
+    float: right;
+    padding: 0 0 0 0.5em;
+}
+
+div#shoutbox a {
+    color: #1e273e;
+}
+
+div#shoutbox > div#bottom {
+    background-color: #1e273e;
+    border-bottom: 1px dotted;
+}
+
+div#shoutbox > div#bottom > span#count {
+    display: none;
+}
+
+div#shoutbox > div#empty {
+    color: #aaabac;
+    text-align: center;
+    margin: auto;
+    padding: 0.5em;
+}
+
+}
+
+/* @media screen */
 
 @media print {
     div#top {
@@ -943,6 +1017,25 @@ div#bottom div#qotd span#attribution {
     table.sign_in td.sign_here {
         width: 70%;
         border-bottom: 1px solid;
+    }
+
+    /* What an unsightly hack! */
+
+    table#attendance_summary_01 td,
+    table#attendance_summary_02 td,
+    table#attendance_summary_03 td,
+    table#attendance_summary_04 td,
+    table#attendance_summary_05 td,
+    table#attendance_summary_06 td,
+    table#attendance_summary_07 td,
+    table#attendance_summary_08 td,
+    table#attendance_summary_09 td,
+    table#attendance_summary_10 td,
+    table#attendance_summary_11 td,
+    table#attendance_summary_12 td {
+        margin: 0;
+        padding: 0.25em;
+        border: 1px solid #888;
     }
 
     .noprint {
