@@ -23,6 +23,10 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     <li>All student information</li>
 </ul>
 
+<p>You may want to view or print a semester
+<?php print_link( 'attendance_summary.php', 'attendance summary' ); ?> before
+continuing.</p>
+
 <p><b>Make sure you know what you&apos;re doing</b> before you enable this script.</p>
 
 <table>
