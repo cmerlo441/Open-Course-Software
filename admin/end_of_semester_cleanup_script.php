@@ -21,6 +21,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 	. 'mail_to_classes,'
         . 'mail_to_students,'
 	. 'office_hours,'
+	. 'page_views,'
 	. 'password_reset_request,'
 	. 'reference,'
 	. 'reference_downloads,'
