@@ -143,7 +143,7 @@ $(document).ready(function(){
         function(data){
             $('h2#upcoming_events').slideDown();
             $('div#upcoming_events').html(data).slideDown(750);
-	}
+	    }
     )
 
     $.post( "<?php echo $admin; ?>/recent_logins.php",
@@ -203,8 +203,8 @@ $(document).ready(function(){
             })
         });
 
-	$('h2#upcoming_events').slideUp();
-	$('div#upcoming_events').html('').slideUp(500);
+    	$('h2#upcoming_events').slideUp();
+    	$('div#upcoming_events').html('').slideUp(500);
 
         return false;
     });
@@ -213,6 +213,10 @@ $(document).ready(function(){
         var id = $(this).attr("id");
         $("div#sections ul.section_tasks[id=" + id + "]").slideToggle(1000);
     })
+    
+    if( $('div#sections ul.section_tasks').size() == 1 ) {
+        $('div#sections ul.section_tasks').first().slideDown(1000);
+    }
     
     $("div#admin_top a.hide").click(function(){
         $("div#show_left").slideDown()
