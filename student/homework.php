@@ -258,12 +258,33 @@ if( $_SESSION[ 'student' ] > 0 ) {
 		    print ":</p>\n";
 		    print "<ul>\n";
 		    while( $upload_row = $upload_result->fetch_assoc( ) ) {
-			print "<li>{$upload_row[ 'filename' ]}";
+			print "<li class=\"requirement\">{$upload_row[ 'filename' ]}: ";
+                        print "<span class=\"upload_details\" "
+                            . "id=\"upload_details{$upload_row[ 'id' ]}\">\n";
+
+                        $files_query = 'select id, filename, filesize, datetime '
+			    . 'from assignment_uploads '
+                            . "where assignment_upload_requirement = {$upload_row[ 'id' ]} "
+                            . "and student = {$_SESSION[ 'student' ]}";
+                        $files_result = $db->query( $files_query );
+                        if( $files_result->num_rows == 0 ) {
+                            print 'You have not uploaded this file.';
+                        } else {
+			    $file_row = $files_result->fetch_object( );
+			    print "You uploaded $file_row->filename "
+				. "($file_row->filesize bytes) on "
+				. date( 'l, F j, Y \a\t g:i a',
+					strtotime( $file_row->datetime ) )
+				. ".";
+			}
+                            
+                        print "</span>  <!-- span.upload_details#upload_details{$upload_row['id']} -->\n";
 
 			print "<div class=\"upload_container\" "
 			    . "id=\"{$upload_row[ 'id' ]}\">\n";
 			print "<div id=\"fileUpload{$upload_row[ 'id' ]}\"></div> "
 			    . "<!-- fileUpload{$upload_row[ 'id' ]} -->\n";
+
 			print "</div>  <!-- "
 			    . "upload_container#{$upload_row[ 'id' ]} -->\n";
 			print "</li>\n";
@@ -334,6 +355,8 @@ $(document).ready(function(){
             },
             'fileDataName': 'file',
             'onComplete': function(event, queueID, fileObj, response, data){
+                $('span.upload_details[id=upload_details' + id + ']')
+		    .fadeOut().html(response).fadeIn();
                 $.pnotify({
                     pnotify_title: 'File Uploaded',
                     pnotify_text: 'Your file ' + fileObj.name + ' has been uploaded.',
