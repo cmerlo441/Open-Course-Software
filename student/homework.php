@@ -262,9 +262,8 @@ if( $_SESSION[ 'student' ] > 0 ) {
 
 			print "<div class=\"upload_container\" "
 			    . "id=\"{$upload_row[ 'id' ]}\">\n";
-			print "<div class=\"fileUpload\" "
-			    . "id=\"{$upload_row[ 'id' ]}\"></div> "
-			    . "<!-- fileUpload -->\n";
+			print "<div id=\"fileUpload{$upload_row[ 'id' ]}\"></div> "
+			    . "<!-- fileUpload{$upload_row[ 'id' ]} -->\n";
 			print "</div>  <!-- "
 			    . "upload_container#{$upload_row[ 'id' ]} -->\n";
 			print "</li>\n";
@@ -316,14 +315,15 @@ $(document).ready(function(){
         )
     })
 
+
     $('div.upload_container').each(function(){
         var id = $(this).attr('id');
 
-	$(this).children('.fileUpload').uploadify({
+	$('div#fileUpload' + id).uploadify({
 	    'uploader': '../uploadify/uploadify.swf',
 	    'script': './assignment_document_upload.php',
             'cancelImg': '../uploadify/cancel.png',
-            'auto': 'true',
+            'auto': true,
             'folder': './uploads',
             'buttonText': 'Browse',
             'wmode': 'transparent',
@@ -333,16 +333,22 @@ $(document).ready(function(){
                 'student': student
             },
             'fileDataName': 'file',
-            'onComplete': function(a,b,c,d,e){
-		alert( d );
-		/*
+            'onComplete': function(event, queueID, fileObj, response, data){
                 $.pnotify({
                     pnotify_title: 'File Uploaded',
-                    pnotify_text: 'Your file has been uploaded.',
+                    pnotify_text: 'Your file ' + fileObj.name + ' has been uploaded.',
                     pnotify_shadow: true
 		})
-		*/
             },
+
+	    /* remove this later */
+	    /*
+	    'onOpen': function(event,ID,fileObj){
+		alert(event + ' ' + ID + ' ' + fileObj.name );
+	    },
+	    */
+	    /* remove that later */
+
             'onError': function( a, b, c, d ){
                 if( d.info == 404 )
                     alert( 'Can not find upload script' );
@@ -357,6 +363,8 @@ $(document).ready(function(){
 
 <?php
         
+} else {
+    print $no_student;
 }
    
 $lastmod = filemtime( $_SERVER[ 'SCRIPT_FILENAME' ] );
