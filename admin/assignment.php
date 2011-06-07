@@ -130,8 +130,8 @@ if( $_SESSION[ 'admin' ] == 1 ) {
                 . 'from assignment_uploads as u, students as s '
                 . 'where u.student = s.id '
                 . "and u.assignment_upload_requirement in "
-		. "( select id from assignment_upload_requirements "
-		. "where assignment = {$assignment_row[ 'id' ]} ) "
+        		. "( select id from assignment_upload_requirements "
+        		. "where assignment = {$assignment_row[ 'id' ]} ) "
                 . 'group by s.id '
                 . 'order by s.last, s.first, s.middle';
             $student_result = $db->query( $student_query );
@@ -292,6 +292,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 				    print ' Uploaded '
 					. date( 'l, F j g:i a',
 						strtotime( $row[ 'datetime' ] ) );
+				    print ".  {$row[ 'filesize' ]} bytes.";
 				}
 			    }
 			    print "</div>  <!-- div.upload -->\n";
@@ -322,13 +323,13 @@ if( $_SESSION[ 'admin' ] == 1 ) {
                     print "<div class=\"comments\" id=\"{$submission[ 'sub_id' ]}\">\n";
                     print "<h2>Comments</h2>\n";
     
-                    print "<div id=\"current_comments\">\n";                
+                    print "<div class=\"current_comments\" id=\"{$submission[ 'sub_id' ]}\">\n";                
                     $comments_query = 'select * from submission_comments '
                         . "where `submission_id` = {$submission[ 'sub_id' ]} "
                         . 'order by `when`';
                     $comments_result = $db->query( $comments_query );
                     if( $comments_result->num_rows == 0 ) {
-                        print "None.\n";
+                        print "<div class=\"none\" id=\"{$submission[ 'sub_id' ]}\">None.</div>\n";
                     } else {
                         while( $comment_row = $comments_result->fetch_assoc( ) ) {
                             $whose_comment = $comment_row[ 'who' ] == 0 ? 'prof' : 'student';
@@ -345,7 +346,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
                             print "</div>\n";
                         }
                     }
-                    print "</div>  <!-- div#current_comments -->\n";
+                    print "</div>  <!-- div.current_comments -->\n";
                     print "<p>Add a comment:</p>\n";
                     print "<p><textarea class=\"comment\" id=\"{$submission[ 'sub_id' ]}\" "
                         . "cols=\"40\" rows=\"5\">"
@@ -557,7 +558,15 @@ $(document).ready(function(){
         $.post( 'add_comment.php',
             { comment: comment, submission: id },
             function(data){
-                $('div.comments[id=' + id + '] div#current_comments').html(data);
+                if( $('div.none[id=' + id + ']:visible').length == 1 ) {
+                	$('div.none[id=' + id + ']:visible').fadeOut('normal',
+                        function(){
+                		   $('div.current_comments[id=' + id + ']').html(data).children().fadeIn('normal');
+                    	}
+                	)
+                } else {
+                    $(data).insertAfter( $('div.current_comments[id=' + id + '] > div:last') ).fadeIn('normal');
+                }
                 $('textarea.comment[id=' + id + ']').val('');
             }
         )

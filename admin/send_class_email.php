@@ -58,8 +58,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
         $insert_result = $db->query( $insert_query );
     }
 
-    print "<h2 style=\"color: #1e273e;\">Mail Sent</h2>\n";
-    print "<p>Your mail has been sent, and saved in the database.</p>\n";
+    print "<p>Your message \"{$send[ 'subject' ]}\" has been sent, and saved in the database.</p>\n";
 
 }
 
