@@ -265,7 +265,8 @@ if( $_SESSION[ 'student' ] > 0 ) {
                         $files_query = 'select id, filename, filesize, datetime '
 			    . 'from assignment_uploads '
                             . "where assignment_upload_requirement = {$upload_row[ 'id' ]} "
-                            . "and student = {$_SESSION[ 'student' ]}";
+                            . "and student = {$_SESSION[ 'student' ]} "
+			    . "order by datetime desc limit 1";
                         $files_result = $db->query( $files_query );
                         if( $files_result->num_rows == 0 ) {
                             print 'You have not uploaded this file.';
