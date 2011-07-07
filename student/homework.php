@@ -86,6 +86,44 @@ if( $_SESSION[ 'student' ] > 0 ) {
                             . stripslashes( $sub_row[ 'submission' ] ) . "</p>\n";
                     }
                 }
+
+				// Was a file upload required?
+				
+				$upload_required_query = 'select id, filename '
+					. 'from assignment_upload_requirements '
+				    . "where assignment = {$hw[ 'id' ]} "
+					. 'order by filename';
+				$upload_required_result = $db->query( $upload_required_query );
+				if( $upload_required_result->num_rows > 0 ) {
+					// Yes, upload(s) was/were required
+					print "<div id=\"uploads\">\n";
+					print "<h2>Your Uploaded Files</h2>\n";
+					print "<ul>\n";
+					while( $requirement = $upload_required_result->fetch_object( ) ) {
+						print "<li>$requirement->filename: ";
+						$upload_query = 'select id, filename, filesize, datetime '
+							. 'from assignment_uploads '
+							. "where assignment_upload_requirement = $requirement->id "
+							. "and student = {$_SESSION[ 'student' ]} "
+							. 'order by datetime desc '
+							. 'limit 1';
+						// print "<pre>$upload_query;</pre>\n";
+						$upload_result = $db->query( $upload_query );
+						if( $upload_result->num_rows == 0 ) {
+							print 'You did not upload this file.';
+						} else {
+							$upload = $upload_result->fetch_object();
+							print "You uploaded $upload->filename ($upload->filesize bytes) at "
+								. date( 'g:i a \o\n l, F j', strtotime( $upload->datetime ) ) . ".  ";
+							print_link( "download_homework_submission.php?id=$upload->id", 'Download this file now' );
+							print '.';
+						}
+						print "</li>\n";
+					}
+					print "</ul>\n";
+					print "</div>\n";
+				}
+
                 print "</div>  <!-- div.submission_details -->\n\n";
             
                 $grade_event_query = 'select id from grade_events '
@@ -313,7 +351,13 @@ $(document).ready(function(){
     $('div.assignments').accordion({
         active: false,
         autoHeight: false,
-        collapsible: true
+        collapsible: true,
+		/*
+		changestart: function( event, ui ) {
+			var active = $('div.accordion').accordion( 'option', 'active' );
+			alert( active );
+		}
+		*/
     });
     
     $('div#future div.submission').editInPlace({
