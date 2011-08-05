@@ -27,15 +27,13 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 <?php print_link( 'attendance_summary.php', 'attendance summary' ); ?> before
 continuing.</p>
 
-<p><b>Make sure you know what you&apos;re doing</b> before you enable this script.</p>
+<p style="text-align: center; font-size: 1.5em; border: 1px solid white; padding: 0.5em; background-color: #5d562c">
+Make sure you know what you&apos;re doing before you enable this script.</p>
 
-<table>
-    <tr>
-        <td valign="top"><input type="checkbox" id="confirm" /></td>
-            <td>I know what I&apos;m doing, and I want to delete all the
-            information from the previous semester.</td>
-    </tr>
-</table>
+<p style="margin: 0 auto"><input type="checkbox" id="confirm" />
+<label for="confirm">I know what I&apos;m doing, and I want to delete all the information from the previous semester.</label>
+</p>
+
 <p style="text-align: center"><input type="submit" id="clean" /></p>
 
 <div class="dialog" id="cleanup_dialog" title="Cleanup Results">

@@ -5,15 +5,15 @@ require_once( '../_header.inc' );
 
 if( $_SESSION[ 'admin' ] == 1 ) {
     
-$days = array( "Monday" => 1,
-               "Tuesday" => 2,
-               "Wednesday" => 3,
-               "Thursday" => 4,
-               "Friday" => 5,
-               "Saturday" => 6,
-               "Sunday" => 7 );
+    $days = array( "Monday" => 1,
+		   "Tuesday" => 2,
+		   "Wednesday" => 3,
+		   "Thursday" => 4,
+		   "Friday" => 5,
+		   "Saturday" => 6,
+		   "Sunday" => 7 );
     
-    $id = $db->real_escape_string( $_POST[ 'id' ] );
+    $id = $db->real_escape_string( $_POST[ 'section' ] );
     $section_query = 'select c.dept, c.course, s.section '
         . 'from courses as c, sections as s '
         . "where s.course = c.id "
