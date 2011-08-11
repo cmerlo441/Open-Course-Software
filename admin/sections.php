@@ -1,4 +1,4 @@
-?php
+<?php
 
 $title_stub = 'Edit Current Sections';
 require_once( '../_header.inc' );
