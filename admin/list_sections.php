@@ -93,20 +93,14 @@ $(document).ready(function(){
                                         { section: section },
                                         function(data){
                                             $('div.meeting_list[id=' + section + ']').html(data);
-
-					    /*
-					     * Wherever I put this code, it doesn't seem to run.
-
-					    $('div#add_meeting select:day > option:first').attr('selected',true);
-					    $('div#add_meeting input:text').val('');
-					    $('div#add_meeting').dialog('destroy');
-
-					    *
-					    */
                                         }
-				   );
+				                    );
+				                    $('div#add_meeting').dialog('destroy');
                                 }
-			    );
+			                 );
+                        },
+                        'Cancel': function(){
+                            $('div#add_meeting').dialog('destroy');
                         }
                     }
                 })

@@ -16,6 +16,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
         . "\"" . date( 'H:i:s', strtotime( $start ) ) . "\", \"" . date( 'H:i:s', strtotime( $end ) ) . "\", "
         . "\"$building\", \"$room\" )";
     $insert_result = $db->query( $insert_query );
+    print 'OK';
 }
 
 ?>
