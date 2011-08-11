@@ -17,47 +17,6 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     $course_result->close( );
     
     print "<div id=\"sections_list\"></div>\n";
-
-    /* This whole section is going to go away */
-    /*
-     *
-     */
-
-    
-    print "<div class=\"dialog\" id=\"add_section\" "
-	. "title=\"Add New Section\">\n";
-    print "<table>\n";
-    print "  <tr>\n";
-    print "    <td>Course</td><td><select id=\"course\">\n";
-    foreach( $courses as $key=>$value ) {
-        print "      <option value=\"$key\">$value</option>\n";
-    }
-    print "      </select></td>\n";
-    print "  </tr>\n";
-    print "  <tr>\n";
-    print "    <td>Section</td><td><input type=\"text\" "
-	. "id=\"section_name\" size=\"3\" /></td>\n";
-    print "  </tr>\n";
-    print "  <tr>\n";
-    print "    <td>CRN</td><td><input type=\"text\" "
-	. "id=\"banner\" size=\"8\" /></td>\n";
-    print "  </tr>\n";
-    print "  <tr>\n";
-    print "    <td colspan=\"2\"><input type=\"radio\" "
-	. "name=\"day_eve\" value=\"day\" checked=\"checked\" /> Day "
-        . "<input type=\"radio\" name=\"day_eve\" value=\"eve\" /> "
-	. "Evening "
-        . "<input type=\"radio\" name=\"day_eve\" value=\"weekend\" /> "
-	. "Weekend</td>\n";
-    print "  </tr>\n";
-    print "</table>\n";
-    print "</div> <!-- .dialog#add_section -->\n";
-    print "</li></ul>\n";
-    
-    /*
-     * 
-     * End of section that's going to go away
-     */
     
     print "<div id=\"new_section_dialog\" class=\"dialog\"></div>\n";
     
@@ -68,12 +27,6 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 <script type="text/javascript">
 $(document).ready(function(){
 
-/*    
-    $.post('list_sections.php', function(data){
-        $("div#sections_list").html(data);
-    })
-*/
-    
     $.post('list_sections.php', function(data){
         $("div#sections_list").html(data);
     })
@@ -106,6 +59,9 @@ $(document).ready(function(){
                         $('div#new_section_dialog input:radio').attr('checked',false);
                         $('div#new_section_dialog select').val(0);
                         
+                        $('div#new_section_dialog').dialog('destroy');
+                    },
+                    'Cancel': function(){
                         $('div#new_section_dialog').dialog('destroy');
                     }
                 }
