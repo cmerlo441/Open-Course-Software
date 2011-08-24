@@ -4,6 +4,15 @@ $no_header = 1;
 require_once ('../_header.inc' );
 
 if( $_SESSION[ 'admin' ] == 1 ) {
+
+	if( isset( $_POST[ 'delete' ] ) ) {
+	
+		$delete = $db->real_escape_string( $_POST[ 'delete' ] );
+		$delete_query = 'delete from sections '
+			. "where id = $delete";
+		$delete_result = $db->query( $delete_query );
+	
+	}
     
     $days = array( 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday' );
     
@@ -21,7 +30,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     } else {
         print "<div class=\"accordion\" id=\"sections\">\n";
         while( $row = $sections_result->fetch_object( ) ) {
-            print "<h3><a href=\"#\">$row->dept $row->course $row->section</a></h3>\n";
+            print "<h3 id=$row->id><a href=\"#\">$row->dept $row->course $row->section</a></h3>\n";
             print "<div class=\"section\" id=\"$row->id\">\n";
             
             print "<div class=\"meeting_list\" id=\"$row->id\">\n";
@@ -85,16 +94,28 @@ $(document).ready(function(){
                             var end = $('div#add_meeting input#end').val();
                             var building = $('div#add_meeting input#building').val();
                             var room = $('div#add_meeting input#room').val();
+                            var id;
                             
                             $.post( 'add_meeting.php',
                                 { section: section, day: day, start: start, end: end, building: building, room: room },
                                 function(data){
+	                                id = data;
+	                                console.log( 'id is ' + id );
                                     $.post('list_meetings.php',
                                         { section: section },
                                         function(data){
                                             $('div.meeting_list[id=' + section + ']').html(data);
+											var details = $('div.meeting[id=' + id + '] > span.details' ).html();
+											console.log( 'details is ' + details );
+											
+											$.pnotify({
+												pnotify_title: 'Meeting Created',
+												pnotify_text: 'Your meeting, ' + details + ', has been created.',
+												pnotify_shadow: true
+											})
                                         }
 				                    );
+
 				                    $('div#add_meeting').dialog('destroy');
                                 }
 			                 );
@@ -173,7 +194,21 @@ $(document).ready(function(){
     
     $('button.delete_section').button({
     }).click(function(){
-        alert( 'Hi!' );
+    	var id = $(this).attr('id');
+    	var section_name = $('div#sections_list h3[id=' + id + '] > a').html();
+		$('div.section[id=' + id + ']').fadeOut(500);
+		$.pnotify({
+			pnotify_title: 'Section Removed',
+			pnotify_text: 'You have removed ' + section_name + '.',
+			pnotify_shadow: true,
+			pnotify_type: 'error',
+			pnotify_hide: false
+		})
+        $.post( 'list_sections.php',
+            { delete: id },
+            function(data){
+        		$("div#sections_list").html(data);
+    	})
     })
     
 

@@ -25,11 +25,11 @@ if( $_SESSION[ 'admin' ] == 1 ) {
                 . "alt=\"Remove this meeting\" title=\"Remove this meeting\">\n";
             print "<img src=\"../images/silk_icons/cross.png\" height=\"16\" width=\"16\" "
                 . "alt=\"Remove this meeting\" />\n";
-            print "</a>\n";
+            print "</a>\n<span class=\"details\">";
             print $days[ $meeting->day ] . ' ' . date( 'g:i a', strtotime( $meeting->start ) )
                 . ' to '
                 . date( 'g:i a', strtotime( $meeting->end ) )
-                . " in $meeting->building $meeting->room<br />\n";
+                . " in $meeting->building $meeting->room</span><br />\n";
             print "</div>  <!-- div.meeting#$meeting->id -->\n";
         }
     }

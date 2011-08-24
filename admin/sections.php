@@ -55,11 +55,21 @@ $(document).ready(function(){
                             }
                         )
                         
+                        var course_name = $('div#new_section_dialog select#course option:selected').val();
+                        course_name = course_name.substring( 0, course_name.indexOf(':') );
+
                         $('div#new_section_dialog input:text').val('');
                         $('div#new_section_dialog input:radio').attr('checked',false);
                         $('div#new_section_dialog select').val(0);
                         
                         $('div#new_section_dialog').dialog('destroy');
+                        
+						$.pnotify({
+							pnotify_title: 'Section Added',
+							pnotify_text: 'You have added <b>' + course_name + ' ' + section + '</b>.',
+							pnotify_shadow: true
+						})
+
                     },
                     'Cancel': function(){
                         $('div#new_section_dialog').dialog('destroy');
