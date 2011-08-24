@@ -43,7 +43,7 @@ Make sure you know what you&apos;re doing before you enable this script.</p>
 <script type="text/javascript">
 $(document).ready(function(){
     $('input#clean').click(function(){
-        var checked = ( $('input#confirm').attr('checked') == true );
+        var checked = ( $('input#confirm').attr('checked') == 'checked' );
         if( checked ) {
             $.post( 'end_of_semester_cleanup_script.php',
                 { verified: 1 },
