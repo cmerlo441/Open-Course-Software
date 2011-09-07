@@ -93,7 +93,7 @@ $(document).ready(function(){
         
         if( equal && nonempty && length >= 8 && p1_upcase && p2_upcase &&
             p1_lowcase && p2_lowcase && p1_digit && p2_digit ) {
-            $('input:submit').attr('disabled','');
+            $('input:submit').removeAttr('disabled');
         } else {
             $('input:submit').attr('disabled','disabled');
         }
