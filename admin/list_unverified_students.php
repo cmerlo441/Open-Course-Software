@@ -83,7 +83,7 @@ $(document).ready(function(){
         $email_row = $email_result->fetch_assoc( );
         $email = $email_row[ 'email' ];
         $first = $email_row[ 'first' ];
-	$name = name( $email_row );
+		$name = name( $email_row );
         
         // Send denied e-mail
         
@@ -127,49 +127,52 @@ $(document).ready(function(){
 <?php
 
     }
+
+	$sections_query = 'select c.dept, c.course, s.section, s.id '
+		. 'from courses as c, sections as s '
+		. 'where s.course = c.id '
+		. 'order by c.dept, c.course, s.section';
+	$sections_result = $db->query( $sections_query );
+	while( $section_row = $sections_result->fetch_object( ) ) {
     
-    $student_query = 'select * from students '
-        . 'where verified = 0 and password != "Fake Password" '
-        . 'order by last, first, middle';
-    $student_result = $db->query( $student_query );
-    $count = $student_result->num_rows;
-    if( $count > 0 ) {
-        print "<ul id=\"unverified_students\">\n";
-        while( $row = $student_result->fetch_assoc( ) ) {
-            $name = $row[ 'first' ] . ' ';
-            if( $row[ 'middle' ] != '' ) {
-                $name .= $row[ 'middle' ] . ' ';
-            }
-            $name .= $row[ 'last' ];
-            print "<li id=\"{$row[ 'id' ]}\">\n";
-            
-            print "<a href=\"javascript:void(0)\" class=\"verify\" id=\"{$row[ 'id' ]}\">"
-                . "<img src=\"$docroot/images/silk_icons/accept.png\" height=\"16\" "
-                . "width=\"16\" title=\"Verify $name\" /></a>\n";
-            print "<a href=\"javascript:void(0)\" class=\"deny\" id=\"{$row[ 'id' ]}\">"
-                . "<img src=\"$docroot/images/silk_icons/cancel.png\" height=\"16\" "
-                . "width=\"16\" title=\"Deny $name\" /></a>\n";
-            print "{$row[ 'banner' ]}: $name ";
-            
-            $sections_query = 'select c.dept, c.course, s.section '
-                . 'from courses as c, sections as s, student_x_section as x '
-                . 'where s.course = c.id '
-                . 'and x.section = s.id '
-                . "and x.student = {$row[ 'id' ]} "
-                . 'order by c.dept, c.course';
-            $sections_result = $db->query( $sections_query );
-            $section = $sections_result->fetch_assoc( );
-            $section_list = "{$section[ 'dept' ]} {$section[ 'course' ]} {$section[ 'section' ]}";
-            while( $section = $sections_result->fetch_assoc( ) ) {
-                $section_list .= ", {$section[ 'dept' ]} {$section[ 'course' ]} {$section[ 'section' ]}";                
-            }
-            print "($section_list)";
-            
-            print "</li>\n";
-        }
-        print "</ul>\n";
-    } else {
-        print 'None.';
+		$student_query = 'select s.id, s.first, s.middle, s.last, s.email, s.banner, s.password '
+			. 'from students as s, student_x_section as x '
+			. 'where x.student = s.id '
+			. "and x.section = $section_row->id "
+			. 'and s.verified = 0 and password != "Fake Password" '
+			. 'order by s.last, s.first, s.middle';
+	
+/*
+	    $student_query = 'select * from students '
+	        . 'where verified = 0 and password != "Fake Password" '
+	        . 'order by last, first, middle';
+ */
+	    $student_result = $db->query( $student_query );
+	    $count = $student_result->num_rows;
+	    if( $count > 0 ) {
+			print "<h2>$section_row->dept $section_row->course $section_row->section</h2>\n";
+
+	        print "<ul class=\"unverified_students\">\n";
+	        while( $row = $student_result->fetch_assoc( ) ) {
+	            $name = ucwords( $row[ 'first' ] ) . ' ';
+	            if( $row[ 'middle' ] != '' ) {
+	                $name .= ucwords( $row[ 'middle' ] ) . ' ';
+	            }
+	            $name .= ucwords( $row[ 'last' ] );
+	            print "<li id=\"{$row[ 'id' ]}\">\n";
+	            
+	            print "<a href=\"javascript:void(0)\" class=\"verify\" id=\"{$row[ 'id' ]}\">"
+	                . "<img src=\"$docroot/images/silk_icons/accept.png\" height=\"16\" "
+	                . "width=\"16\" title=\"Verify $name\" /></a>\n";
+	            print "<a href=\"javascript:void(0)\" class=\"deny\" id=\"{$row[ 'id' ]}\">"
+	                . "<img src=\"$docroot/images/silk_icons/cancel.png\" height=\"16\" "
+	                . "width=\"16\" title=\"Deny $name\" /></a>\n";
+	            print "{$row[ 'banner' ]}: $name ";
+	            
+	            print "</li>\n";
+	        }
+	        print "</ul>\n";
+	    }
     }
     
 ?>
