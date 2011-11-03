@@ -85,7 +85,7 @@ $(document).ready(function(){
                     pnotify_text: data,
                     pnotify_shadow: true
                 });
-                $('input:checkbox').attr('checked','');
+                $('input:checkbox').removeAttr('checked');
                 $('input#subject').val('');
                 $('textarea#message').val('');
             })
