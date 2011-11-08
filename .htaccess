@@ -1,4 +1,4 @@
-# mod_rewrite rule for OCSW pages
+# mod_rewrite rule for OCSW pages 
 
 RewriteEngine on
 RewriteBase /~username/ # This will get fixed by sed script
