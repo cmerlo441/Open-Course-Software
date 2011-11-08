@@ -1,10 +1,10 @@
-# mod_rewrite rule for PHProf pages
+# mod_rewrite rule for OCSW pages
 
 RewriteEngine on
-#RewriteRule ^pages/(.*) http://torvalds.matcmp.ncc.edu/~cmerlo/pages.php?slug=$1
-RewriteRule ^pages/(.*) http://%{SERVER_NAME}/~cmerlo/pages.php?slug=$1
+RewriteBase /~username/ # This will get fixed by sed script
+RewriteRule ^pages/(.*) pages.php?slug=$1
 
 <Files *.inc>
-  order allow,deny
+  order allow, deny
   deny from all
 </Files>
