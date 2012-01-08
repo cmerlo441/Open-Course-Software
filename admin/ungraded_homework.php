@@ -56,7 +56,6 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 	print "</ul>\n";
     } // for all the sections
 
-    print $found;
     if( ! $found )
 	print 'None.';
 	
