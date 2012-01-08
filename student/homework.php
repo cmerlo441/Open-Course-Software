@@ -7,6 +7,15 @@ if( $_SESSION[ 'student' ] > 0 ) {
     
     $section = $db->real_escape_string( $_GET[ 'section' ] );
     $sequence = 1;
+
+    $section_name_query = 'select c.dept, c.course, s.section '
+      . 'from courses as c, sections as s '
+      . 'where s.course = c.id '
+      . "and s.id = $section";
+    // print "<pre>$section_name_query;</pre>\n";
+    $section_name_result = $db->query( $section_name_query );
+    $section_name_row = $section_name_result->fetch_object( );
+    $section_name = "$section_name_row->dept $section_name_row->course $section_name_row->section";
     
     print "<h2>Past Assignments</h2>\n";
     
@@ -345,6 +354,9 @@ if( $_SESSION[ 'student' ] > 0 ) {
 
 <script type="text/javascript">
 $(document).ready(function(){
+
+    document.title = document.title + " :: <?php echo $section_name; ?>";
+    $("h1").html( $("h1").html() + " for <?php echo $section_name; ?>" );
 
     var student = "<?php echo $_SESSION[ 'student' ];?>";
 

@@ -142,8 +142,8 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 	. "id=\"new_weight_amount\" size=\"3\"/></td>\n";
     print "</tr><tr>\n";
     print "<td colspan=\"2\" style=\"text-align: center\">"
-	. "<input type=\"checkbox\" id=\"collected\"> Do you collect these "
-	. "in class?</td>\n";
+	. "<input type=\"checkbox\" id=\"collected\"> Will students submit these "
+	. "through the web site?</td>\n";
     print "</tr><tr>\n";
     print "<td colspan=\"2\" style=\"text-align: center\">"
 	. "<a href=\"javascript:void(0)\" "
@@ -204,7 +204,7 @@ $(document).ready(function(){
         var grade_weight = $("input#new_weight_amount").val();
         var id = "<?php echo $id; ?>";
         var collected = 0;
-        if( $("input#collected").attr("checked") == true ) {
+        if( $("input#collected").attr("checked") == "checked" ) {
             collected = 1;
         }
         

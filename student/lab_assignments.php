@@ -7,6 +7,15 @@ if( $_SESSION[ 'student' ] > 0 ) {
     
     $section = $db->real_escape_string( $_GET[ 'section' ] );
     $sequence = 1;
+
+    $section_name_query = 'select c.dept, c.course, s.section '
+      . 'from courses as c, sections as s '
+      . 'where s.course = c.id '
+      . "and s.id = $section";
+    // print "<pre>$section_name_query;</pre>\n";
+    $section_name_result = $db->query( $section_name_query );
+    $section_name_row = $section_name_result->fetch_object( );
+    $section_name = "$section_name_row->dept $section_name_row->course $section_name_row->section";
     
     print "<h2>Past Assignments</h2>\n";
     
@@ -37,7 +46,8 @@ if( $_SESSION[ 'student' ] > 0 ) {
                 . "</div>\n\n";
             
             if( isset( $lab[ 'description' ] ) ) {
-                print "<div class=\"description\">Assignment: {$lab[ 'description' ]}</div>\n\n";
+                print "<h2>Assignment</h2>\n";
+                print stripslashes( nl2br(  "<div class=\"description\">{$lab[ 'description' ]}</div>\n\n" ) );
             }
             
             $docs_query = 'select * from assignment_documents '
@@ -63,16 +73,19 @@ if( $_SESSION[ 'student' ] > 0 ) {
                 . "and w.grade_type = {$lab[ 'grade_type' ]}";
             $collected_result = $db->query( $collected_query );
             $collected_row = $collected_result->fetch_assoc( );
+            $sub_row = 0;
             if( $collected_row[ 'collected' ] ) {
             
                 print "<div class=\"submission_details\">\n";
                 $sub_query = 'select id, time, submission from assignment_submissions '
                     . "where assignment = {$lab[ 'id' ]} "
                     . "and student = {$_SESSION[ 'student' ]}";
+
                 $sub_result = $db->query( $sub_query );
                 if( $sub_result->num_rows == 0 ) {
                     print 'You did not submit this assignment.';
                 } else {
+                    print "<h2>Your Submission</h2>\n";
                     $sub_row = $sub_result->fetch_assoc( );
                     print 'Your submission was accepted on '
                         . date( 'l, F j \a\t g:i a', strtotime( $sub_row[ 'time' ] ) )
@@ -82,16 +95,54 @@ if( $_SESSION[ 'student' ] > 0 ) {
                             . stripslashes( $sub_row[ 'submission' ] ) . "</p>\n";
                     }
                 }
+
+		// Was a file upload required?
+				
+		$upload_required_query = 'select id, filename '
+		  . 'from assignment_upload_requirements '
+		  . "where assignment = {$lab[ 'id' ]} "
+		  . 'order by filename';
+		$upload_required_result = $db->query( $upload_required_query );
+		if( $upload_required_result->num_rows > 0 ) {
+		  // Yes, upload(s) was/were required
+		  print "<div id=\"uploads\">\n";
+		  print "<h2>Your Uploaded Files</h2>\n";
+		  print "<ul>\n";
+		  while( $requirement = $upload_required_result->fetch_object( ) ) {
+		    print "<li>$requirement->filename: ";
+		    $upload_query = 'select id, filename, filesize, datetime '
+		      . 'from assignment_uploads '
+		      . "where assignment_upload_requirement = $requirement->id "
+		      . "and student = {$_SESSION[ 'student' ]} "
+		      . 'order by datetime desc '
+		      . 'limit 1';
+		    // print "<pre>$upload_query;</pre>\n";
+		    $upload_result = $db->query( $upload_query );
+		    if( $upload_result->num_rows == 0 ) {
+		      print 'You did not upload this file.';
+		    } else {
+		      $upload = $upload_result->fetch_object();
+		      print "You uploaded $upload->filename ($upload->filesize bytes) at "
+			. date( 'g:i a \o\n l, F j', strtotime( $upload->datetime ) ) . ".  ";
+		      print_link( "download_lab_assignment_submission.php?id=$upload->id", 'Download this file now' );
+		      print '.';
+		    }
+		    print "</li>\n";
+		  }
+		  print "</ul>\n";
+		  print "</div>\n";
+		}
+
                 print "</div>  <!-- div.submission_details -->\n\n";
             
                 $grade_event_query = 'select id from grade_events '
-                    . "where assignment = {$lab[ 'id' ]}";
+		  . "where assignment = {$lab[ 'id' ]}";
                 $grade_event_result = $db->query( $grade_event_query );
                 $grade_event_row = $grade_event_result->fetch_assoc( );
                 $grade_event = $grade_event_row[ 'id' ];
                 
                 $grades_query = 'select * from grades '
-                    . "where grade_event = $grade_event";
+		  . "where grade_event = $grade_event";
                 $grades_result = $db->query( $grades_query );
                 if( $grades_result->num_rows == 0 ) {
                     print 'Not graded yet.';
@@ -106,9 +157,49 @@ if( $_SESSION[ 'student' ] > 0 ) {
                     } else {
                         $grade = 0;
                     }
-                    print "<div class=\"grade\">Your grade: $grade</div>";
+                    print "<h2>Your Grade</h2>\n";
+                    print "<div class=\"grade\">$grade</div>";
                 }
-            } // if homeworks are collected
+                
+                // Comments
+
+                print "<div class=\"comments\" id=\"{$sub_row[ 'sub_id' ]}\">\n";
+                print "<h2>Comments</h2>\n";
+
+                print "<div id=\"current_comments\">\n";                
+                $comments_query = 'select * from submission_comments '
+                    . "where `submission_id` = {$sub_row[ 'id' ]} "
+                    . 'order by `when`';
+                $comments_result = $db->query( $comments_query );
+                if( $comments_result->num_rows == 0 ) {
+                    print "None.\n";
+                } else {
+                    while( $comment_row = $comments_result->fetch_assoc( ) ) {
+                        $whose_comment = $comment_row[ 'who' ] == 0 ? 'prof' : 'student';
+                        print "<div class=\"{$whose_comment}_comment\" id=\"{$comment_row[ 'id' ]}\">";
+                        print "<div class=\"who\">By "
+                            . ( $whose_comment == 'prof' ? "Prof. {$prof[ 'last' ]}" : $_SESSION[ 'name' ] )
+                            . "</div>\n";
+                        print "<div class=\"when\">On "
+                            . date( 'l, F j \a\t g:i a', strtotime( $comment_row[ 'when' ] ) )
+                            . "</div>\n";
+                        print "<div class=\"comment\">"
+                            . wordwrap( nl2br( stripslashes( $comment_row[ 'comment' ] ) ) )
+                            . "</div>  <!-- div.{$whose_comment}_comment -->\n";
+                        print "</div>\n";
+                    }
+                }
+                print "</div>  <!-- div#current_comments -->\n";
+                print "<p>Add a comment:</p>\n";
+                print "<p><textarea class=\"comment\" id=\"{$sub_row[ 'id' ]}\" "
+                    . "cols=\"40\" rows=\"5\">"
+                    . "</textarea></p>\n";
+                print "<input type=\"submit\" class=\"submit_comment\" "
+                    . "value=\"Enter Comment\" id=\"{$sub_row[ 'id' ]}\" />\n";
+                
+                print "</div>  <!-- div.comments#{$sub_row[ 'student_id' ]} -->\n";
+
+            } // if lab assignments are collected
 
             print "</div>  <!-- div.lab_assignment#{$lab[ 'id' ]} -->\n";
             $sequence++;
@@ -144,7 +235,7 @@ if( $_SESSION[ 'student' ] > 0 ) {
                 . "</div>\n\n";
             
             if( isset( $lab[ 'description' ] ) ) {
-                print "<div class=\"description\">Assignment: {$lab[ 'description' ]}</div>\n\n";
+                print stripslashes( nl2br( "<div class=\"description\">Assignment: {$lab[ 'description' ]}</div>\n\n" ) );
             }
             
             $docs_query = 'select * from assignment_documents '
@@ -191,11 +282,66 @@ if( $_SESSION[ 'student' ] > 0 ) {
                             . "</div>\n";
                     }
                 }
-                
-                // Do something here about file uploads!
-                
+                                
                 print "</div> <!-- div.submission_details -->\n\n";
-            } // if homework is collected in this class
+
+		// If a file upload is desired/required, ask for it here
+
+		$upload_query = 'select * '
+		    . 'from assignment_upload_requirements '
+		    . "where assignment = {$lab[ 'id' ]} "
+		    . 'order by filename';
+		$upload_result = $db->query( $upload_query );
+		$amount = $upload_result->num_rows;
+		if( $amount > 0 ) {
+		    print '<p>Please upload the following ';
+		    if( $amount > 1 ) {
+			print $amount . ' ';
+		    }
+		    print 'file';
+		    if( $amount > 1 ) {
+			print 's';
+		    }
+		    print ":</p>\n";
+		    print "<ul>\n";
+		    while( $upload_row = $upload_result->fetch_assoc( ) ) {
+			print "<li class=\"requirement\">{$upload_row[ 'filename' ]}: ";
+                        print "<span class=\"upload_details\" "
+                            . "id=\"upload_details{$upload_row[ 'id' ]}\">\n";
+
+                        $files_query = 'select id, filename, filesize, datetime '
+			    . 'from assignment_uploads '
+                            . "where assignment_upload_requirement = {$upload_row[ 'id' ]} "
+                            . "and student = {$_SESSION[ 'student' ]} "
+			    . "order by datetime desc limit 1";
+                        $files_result = $db->query( $files_query );
+                        if( $files_result->num_rows == 0 ) {
+                            print 'You have not uploaded this file.';
+                        } else {
+			    $file_row = $files_result->fetch_object( );
+			    print "You uploaded $file_row->filename "
+				. "($file_row->filesize bytes) on "
+				. date( 'l, F j, Y \a\t g:i a',
+					strtotime( $file_row->datetime ) )
+				. ".";
+			}
+                            
+                        print "</span>  <!-- span.upload_details#upload_details{$upload_row['id']} -->\n";
+
+			print "<div class=\"upload_container\" "
+			    . "id=\"{$upload_row[ 'id' ]}\">\n";
+			print "<div id=\"fileUpload{$upload_row[ 'id' ]}\"></div> "
+			    . "<!-- fileUpload{$upload_row[ 'id' ]} -->\n";
+
+			print "</div>  <!-- "
+			    . "upload_container#{$upload_row[ 'id' ]} -->\n";
+			print "</li>\n";
+		    }
+		    print "</ul>\n";
+
+		} // if file uploads are required
+
+            } // if lab assignments are collected in this class
 
             print "</div>  <!-- div.lab_assignment#{$lab[ 'id' ]} -->\n";
             $sequence++;
@@ -208,26 +354,97 @@ if( $_SESSION[ 'student' ] > 0 ) {
 
 <script type="text/javascript">
 $(document).ready(function(){
+
+    document.title = document.title + " :: <?php echo $section_name; ?>";
+    $("h1").html( $("h1").html() + " for <?php echo $section_name; ?>" );
+
+    var student = "<?php echo $_SESSION[ 'student' ];?>";
+
     $('div.assignments').accordion({
         active: false,
         autoHeight: false,
-        collapsible: true
+        collapsible: true,
+		/*
+		changestart: function( event, ui ) {
+			var active = $('div.accordion').accordion( 'option', 'active' );
+			alert( active );
+		}
+		*/
     });
     
     $('div#future div.submission').editInPlace({
         url: 'submit_lab_assignment.php',
         params: 'ajax=yes',
         field_type: "textarea",
-		textarea_rows: "10",
-		textarea_cols: "50",
+	textarea_rows: "5",
+	textarea_cols: "40",
         saving_image: "<?php echo $docroot; ?>/images/ajax-loader.gif"
     })
 
+    $('input.submit_comment').click(function(){
+        var id = $(this).attr('id');
+        var comment = $('textarea.comment[id=' + id + ']').val();
+        $.post( 'add_comment.php',
+            { comment: comment, submission: id },
+            function(data){
+                $('div#current_comments').html(data);
+                $('textarea.comment[id=' + id + ']').val('');
+            }
+        )
+    })
+
+
+    $('div.upload_container').each(function(){
+        var id = $(this).attr('id');
+
+	$('div#fileUpload' + id).uploadify({
+	    'uploader': '../uploadify/uploadify.swf',
+	    'script': './assignment_document_upload.php',
+            'cancelImg': '../uploadify/cancel.png',
+            'auto': true,
+            'folder': './uploads',
+            'buttonText': 'Browse',
+            'wmode': 'transparent',
+            'sizeLimit': '5000000',
+            'scriptData': {
+                'requirement': id,
+                'student': student
+            },
+            'fileDataName': 'file',
+            'onComplete': function(event, queueID, fileObj, response, data){
+                $('span.upload_details[id=upload_details' + id + ']')
+		    .fadeOut().html(response).fadeIn();
+                $.pnotify({
+                    pnotify_title: 'File Uploaded',
+                    pnotify_text: 'Your file ' + fileObj.name + ' has been uploaded.',
+                    pnotify_shadow: true
+		})
+            },
+
+	    /* remove this later */
+	    /*
+	    'onOpen': function(event,ID,fileObj){
+		alert(event + ' ' + ID + ' ' + fileObj.name );
+	    },
+	    */
+	    /* remove that later */
+
+            'onError': function( a, b, c, d ){
+                if( d.info == 404 )
+                    alert( 'Can not find upload script' );
+                else
+                    alert( 'error ' + d.type + ": " + d.info );
+            }
+        })
+    })
+	
 })
 </script>
 
 <?php
         
+} else {
+    print $no_student;
 }
    
 $lastmod = filemtime( $_SERVER[ 'SCRIPT_FILENAME' ] );
