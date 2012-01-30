@@ -7,21 +7,26 @@ require_once( '../graph_data/jsonwrapper/jsonwrapper.php' );
 if( $_SESSION[ 'admin' ] == 1 ) {
 
     $last_growled_query = 'select login from last_login_growled '
-	. 'order by login desc limit 1';
+        . 'order by login desc limit 1';
     $last_growled_result = $db->query( $last_growled_query );
     if( $last_growled_result->num_rows == 0 )
-	$last_growled = 1;
+        $last_growled = 1;
     else {
-	$lgrow = $last_growled_result->fetch_assoc( );
-	$last_growled = $lgrow[ 'login' ];
+        $lgrow = $last_growled_result->fetch_assoc( );
+        $last_growled = $lgrow[ 'login' ];
     }
 
-    $login_query = 'select l.id, l.datetime, s.first, s.middle, s.last '
-	. 'from logins as l, students as s '
-	. 'where l.student = s.id '
-	. "and l.id > $last_growled "
-	. 'order by datetime desc '
-	. 'limit 10';
+    $login_query = 'select l.id, l.datetime, s.first, s.middle, s.last, '
+        . 'c.dept, c.course, sec.section '
+        . 'from logins as l, students as s, courses as c, sections as sec, '
+        . 'student_x_section as x '
+        . 'where l.student = s.id '
+        . 'and s.id = x.student '
+        . 'and x.section = sec.id '
+        . 'and sec.course = c.id '
+        . "and l.id > $last_growled "
+        . 'order by datetime desc '
+        . 'limit 10';
     //print "<pre>$login_query;</pre>\n";
     $login_result = $db->query( $login_query );
 
@@ -30,7 +35,8 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     while( $row = $login_result->fetch_assoc( ) ) {
 	$data[ $count ][ 'title' ] = ucwords( $row[ 'first' ] ) . ' '
 	    . ucwords( $row[ 'last' ] );
-	$data[ $count ][ 'text' ] = 'Logged in on '
+	$data[ $count ][ 'text' ] = $row[ 'dept' ] . ' ' . $row[ 'course' ]
+	   . ' ' . $row[ 'section' ] . ' student logged in on '
 	    . date( 'l \a\t g:i a', strtotime( $row[ 'datetime' ] ) )
 	    . '.';
 	if( $count == 0 )
