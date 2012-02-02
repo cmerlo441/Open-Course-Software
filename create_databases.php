@@ -507,7 +507,18 @@ $data[ 'grade_types' ] =
     . "(null,'Online Discussion','Online Discussion'),"
     . "(null,'Project','Projects'),"
     . "(null,'Quiz','Quizzes')";
-    
+
+$data[ 'letter_grades' ] =
+"INSERT INTO `letter_grades` VALUES "
+    . "(null, 'A',  89.5),"
+    . "(null, 'B+', 84.5),"
+    . "(null, 'B',  79.5),"
+    . "(null, 'C+', 74.5),"
+    . "(null, 'C',  69.5),"
+    . "(null, 'D+', 64.5),"
+    . "(null, 'D',  59.5),"
+    . "(null, 'F',  0)";
+
 $data[ 'ocsw' ] =
 "INSERT INTO `ocsw` VALUES "
     . "(null,'words','/usr/share/dict/words','Where is the Unix words file?',1),"

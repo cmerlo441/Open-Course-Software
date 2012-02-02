@@ -13,22 +13,27 @@ if( $_SESSION[ 'student' ] > 0 ) {
 
     // Make sure this student is in this section
     $section_query = 'select id from student_x_section '
-	. "where student = {$_SESSION[ 'student' ]} "
-	. "and section = $section";
+        . "where student = {$_SESSION[ 'student' ]} "
+        . "and section = $section";
     $section_result = $db->query( $section_query );
     if( $section_result->num_rows != 1 )
-	die( 'Database error.' );
+        die( 'Database error.' );
 
     // Get all the grade events of this grade type for this section
-    $events_query = 'select * from grade_events '
-	. "where grade_type = $grade_type "
-	. "and section = $section "
-	. 'order by date, id';
+    $events_query = 'select a.title, e.id, e.section, e.grade_type, e.date, e.assignment '
+        . 'from grade_events as e, assignments as a '
+	    . "where e.grade_type = $grade_type "
+	    . 'and e.assignment = a.id '
+	    . "and e.section = $section "
+	    . 'order by e.date, e.id';
     $events_result = $db->query( $events_query );
 
     if( $events_result->num_rows == 0 )
 	exit( 'None.  Class average uses an average ' . $name
 	      . ' grade of 100%.' );
+
+    $min_grade = 999;
+    $min_grade_event = 0;
 
     while( $event = $events_result->fetch_assoc( ) ) {
 	$sequence++;
@@ -37,6 +42,9 @@ if( $_SESSION[ 'student' ] > 0 ) {
 	if( $events_result->num_rows > 1 ) {
 	    print "$name #{$sequence}: ";
 	}
+    if( $event[ 'title' ] != '' ) {
+        print "{$event[ 'title' ]}, ";
+    }
 	print date( 'F j', strtotime( $event[ 'date' ] ) ) . "</div>\n";
 
 	$grade_event = $event[ 'id' ];
@@ -116,9 +124,19 @@ if( $_SESSION[ 'student' ] > 0 ) {
 			    }
 			    print " &rarr; $curved_grade";
 			    $sum += $curved_grade;
+
+			    if( $curved_grade < $min_grade ) {
+				$min_grade = $curved_grade;
+				$min_grade_event = $grade_event;
+			    }
+
 			}  // if there's a curve
 			else {
 			    $sum += $grade_row[ 'grade' ];
+			    if( $grade_row[ 'grade' ] < $min_grade ) {
+				$min_grade = $grade_row[ 'grade' ];
+				$min_grade_event = $grade_event;
+			    }
 			}
 
 			print "</span>.</div>\n";
@@ -134,6 +152,10 @@ if( $_SESSION[ 'student' ] > 0 ) {
 		    // No, it wasn't submitted.  Average in a 0.
 		    print 'Not submitted.';
 		    $count++;
+		    if( $min_grade > 0 ) {
+			$min_grade = 0;
+			$min_grade_event = $grade_event;
+		    }
 		}
 	    } else {
 
@@ -166,9 +188,18 @@ if( $_SESSION[ 'student' ] > 0 ) {
 			}
 			print " &rarr; $curved_grade";
 			$sum += $curved_grade;
+
+			if( $curved_grade < $min_grade ) {
+			    $min_grade = $curved_grade;
+			    $min_grade_event = $grade_event;
+			}
 		    }  // if there's a curve
 		    else {
 			$sum += $grade_row[ 'grade' ];
+			if( $grade_row[ 'grade' ] < $min_grade ) {
+			    $min_grade = $grade_row[ 'grade' ];
+			    $min_grade_event = $grade_event;
+			}		    
 		    }
 
 		    print "</span>.</div>\n";
@@ -189,6 +220,10 @@ if( $_SESSION[ 'student' ] > 0 ) {
 		    print "<span class=\"grade\" id=\"$grade_event\">"
 			. "0</span></div>\n";
 		    $count++;
+		    if( $min_grade > 0 ) {
+			$min_grade = 0;
+			$min_grade_event = $grade_event;
+		    }
 		}
 	    }
 	} else {
@@ -198,7 +233,42 @@ if( $_SESSION[ 'student' ] > 0 ) {
 	print "</div>  <!-- div.assignment#$grade_event -->\n";
     } // for each event of this type for this section
 
+    // Are we dropping the lowest grade?
+    $drop = 0;
+    $drop_query = 'select d.id '
+	. 'from drop_lowest as d, sections as s '
+	. 'where s.course = d.course '
+	. "and s.id = $section "
+	. "and d.grade_type = $grade_type ";
+    $drop_result = $db->query( $drop_query );
+    if( $drop_result->num_rows == 1 ) {
+	$drop = $min_grade_event;
+	$count--;
+	$sum -= $min_grade;
+    }
+
     $average = ( $count > 0 ? $sum / ( $count * 1.0 ) : 100 );
     print "<div class=\"average\">Average $name Grade: "
 	. number_format( $average, 2 ) . "</div>\n";
+
+?>
+
+<script type="text/javascript">
+$(document).ready(function(){
+
+    var event = <?php echo $drop; ?>;
+
+    if( event > 0 ) {
+	$('div.grade[id=' + event + ']')
+	    .css('background-color','#5c5d60')
+	    .css('color','#8f8b88')
+	    .html( $('div.grade[id=' + event + ']').html() +
+		   '<br />This grade has been dropped.' );
+    }
+
+})
+</script>
+
+<?php
+
 }
