@@ -5,6 +5,9 @@ require_once( '../_header.inc' );
 
 if( $_SESSION[ 'admin' ] == 1 ) {
 
+    print "<div class=\"dialog\" id=\"confirm\" title=\"Are You Sure?\">"
+        . "Are you sure you want to delete this assignment?</div>\n";
+    
     $course_query = 'select c.dept, c.course, c.id as course_id, '
         . 's.id as section_id, s.section '
         . 'from courses as c, sections as s '
