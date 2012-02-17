@@ -7,7 +7,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     $from = stripslashes( trim( $_POST[ 'from' ] ) );
     $to = stripslashes( trim( $_POST[ 'to' ] ) );
     $subject = stripslashes( trim( $_POST[ 'subject' ] ) );
-    $message = stripslashes( trim( wordwrap( $_POST[ 'message' ] ) ) );
+    $message = stripslashes( trim( $_POST[ 'message' ] ) );
     
     $cc_query = 'select v from ocsw where k = "cc"';
     $cc_result = $db->query( $cc_query );

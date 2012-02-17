@@ -237,8 +237,8 @@ $(document).ready(function(){
                     width: 500,
                     buttons: {
                         'Send': function(){
-            			    var subject = $('input#subject').val();
-            			    var message = $('textarea#message').val();
+            		    var subject = $('input#subject').val();
+            		    var message = $('textarea#message').val();
                             $.post( 'send_email.php',
                                 {
                                     student_id: student,
@@ -247,7 +247,7 @@ $(document).ready(function(){
                                     from: prof_address,
                                     subject: subject,
                                     message: message
-            				    }, function( data ) {
+            		        }, function( data ) {
             				    var title;
             				    var text;
             				    var type;
@@ -270,10 +270,10 @@ $(document).ready(function(){
                 					pnotify_type: type
             				    })
             				});
-                            $('div#send_email_dialog').dialog('destroy');
+                            $('div.dialog').dialog('destroy');
                         },
                         'Cancel': function(){
-                            $('div#send_email_dialog').dialog('destroy');
+                            $('div.dialog').dialog('destroy');
                         }
                     }
                 })
