@@ -28,6 +28,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     $total_assignments_row = $total_assignments_result->fetch_assoc( );
     $total_assignments = $total_assignments_row[ 'c' ];
 
+    $sequence = 1;
     foreach( explode( ',', 'Due Already,Due in the Future' ) as $when ) {
         print "<h3>$when</h3>";
         $previous_assignments_query = 'select * from assignments '
@@ -42,7 +43,6 @@ if( $_SESSION[ 'admin' ] == 1 ) {
         if( $previous_assignments_result->num_rows == 0 ) {
             print "<p>None assigned.</p>\n";
         } else {
-	    $sequence = 1;
             while( $a = $previous_assignments_result->fetch_assoc( ) ) {
                 print "<div class=\"one_assignment\" id=\"{$a[ 'id' ]}\">\n";
                 
