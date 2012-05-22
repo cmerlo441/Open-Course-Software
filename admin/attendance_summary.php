@@ -1,111 +1,151 @@
 <?php
 
-$title_stub = 'Attendance Summary';
-require_once ('../_header.inc' );
+$title_stub = 'List of Absences';
+require_once( '../_header.inc' );
 
 if( $_SESSION[ 'admin' ] == 1 ) {
-    
     $sections_query = 'select s.id, c.dept, c.course, s.section '
-        . 'from courses as c, sections as s '
+        . 'from sections as s, courses as c '
         . 'where s.course = c.id '
         . 'order by c.dept, c.course, s.section';
-    $section_result = $db->query( $sections_query );
-    while( $section_object = $section_result->fetch_object( ) ) {
-        $section = $section_object->id;
-        $students = array( );
+    $sections_result = $db->query( $sections_query );
+    while( $section = $sections_result->fetch_object( ) ) {
+        print "<div class=\"section_absences\" id=\"$section->id\">\n";
+        print "<h2>$section->dept $section->course $section->section</h2>\n";
         
-        print "<h2>$section_object->dept $section_object->course $section_object->section</h2>\n";
-
-        $students_query = 'select s.first, s.last, s.banner, s.id '
-            . 'from students as s, student_x_section as x '
-            . "where x.section = $section "
-            . 'and x.student = s.id '
-            . 'order by s.last, s.first, s.middle, s.banner';
-        $students_result = $db->query( $students_query );
-        while( $students_row = $students_result->fetch_object( ) ) {
-            $students[ $students_row->id ][ 'first' ] = ucwords( $students_row->first );
-            $students[ $students_row->id ][ 'last' ] = ucwords( $students_row->last );
-            $students[ $students_row->id ][ 'banner' ] = $students_row->banner;
+        // Get all the meetings for this section
+        
+        $days = array( );
+        
+        $days_query = 'select day from section_meetings '
+            . "where section = $section->id";
+        $days_result = $db->query( $days_query );
+        while( $days_row = $days_result->fetch_assoc( ) ) {
+            $days[ ] = $days_row[ 'day' ];
         }
         
-        $months_query = 'select start, end from semester';
-        $months_result = $db->query( $months_query );
-        $months = $months_result->fetch_object( );
+        /* $meetings will contain $month=>$day, one for each meeting
+         * of this class between the start of the semester and now/end
+         * of semester, whichever is earlier
+         */
         
-        $first_month = date( 'm', strtotime( $months->start ) );
-        $last_month = date( 'm', strtotime( $months->end ) );
+        $meetings = array( );
         
-        for( $month = $first_month; $month <= $last_month; $month = date( 'm', mktime( 0, 0, 0, ++$month, 1, date( 'Y' ) ) ) ) {
-            $dates = array( );
-            print "<h3>" . date( 'F', mktime( 0, 0, 0, $month, 1, date( 'Y' ) ) ) . "</h3>\n";
-    
-            $attendance_query = 'select a.student, a.date, t.type '
-                . 'from attendance as a, attendance_types as t '
-                . "where a.section = $section "
-                . 'and a.presence = t.id '
-                . "and date like \"" . date( 'Y' ) . "-$month%\" "
-                . 'order by a.date, a.student';
-            $attendance_result = $db->query( $attendance_query );
-            while( $attendance_row = $attendance_result->fetch_object( ) ) {
-                $day = date( 'j', strtotime( $attendance_row->date ) );
-                $students[ $attendance_row->student ][ $month ][ $day ] = substr( $attendance_row->type, 0, 1 );
-                if( !isset( $dates[ $day ] ) or ( $dates[ $day ] == 0 ) )
-                    $dates[ $day ] = 1;
-            }
-    
-    /*        
-            print "<pre>";
-            print_r( $students );
-            print "</pre>\n";
-    */
-    
-            print "<table class=\"tablesorter\" id=\"attendance_summary_$month\">\n";
-            print "<thead>\n";
-            print "  <th>ID</th>\n";
-            print "  <th>First</th>\n";
-            print "  <th>Last</th>\n";
-    
-            foreach( $dates as $key=>$value ) {
-                if( $value == 1 )
-                    print "  <th>$key</th>\n";
-            }
-            print "</thead>\n\n";
+        $today = date( 'Y-m-d' );
+        for( $date = $semester_start;
+             $date <= ($today < $semester_end ? $today : $semester_end );
+             $date = date( 'Y-m-d',
+               mktime( 0, 0, 0, date( 'n', strtotime( $date ) ),
+                   date( 'j', strtotime( $date ) ) + 1,
+                   date( 'Y' ) ) ) )
+        {
+            $day = date( 'w', strtotime( $date ) );
             
-            print "<tbody>\n";
-            foreach( $students as $data ) {
-                print "  <tr>\n";
-                print "    <td>{$data[ 'banner' ]}</td>\n";
-                print "    <td>{$data[ 'first' ]}</td>\n";
-                print "    <td>{$data[ 'last' ]}</td>\n";
-                
-                foreach( $dates as $key=>$value ) {
-                    if( $value == 1 ) {
-                        $output = $data[ $month ][ $key ] == '' ? 'A' : $data[ $month ][ $key ];
-                        print "    <td>$output</td>\n";
+            $resched_query = 'select follow from rescheduled_days '
+                . "where date = \"$date\" and "
+                . ( $section_row[ 'day' ] == 1 ? 'day' : 'evening' )
+                . ' = 1';
+            $resched_result = $db->query( $resched_query );
+            if( $resched_result->num_rows == 1 ) {
+                $row = $resched_result->fetch_assoc( );
+                $day = $row[ 'follow' ];
+            }
+            
+            $holiday_query = 'select '
+                . ( $day_eve == 1 ? 'day' : 'evening' )
+                . ' from holidays '
+                . "where " . ( $day_eve == 1 ? 'day' : 'evening' ) . ' = 1 '
+                . "and date = \"$date\"";
+            $holiday_result = $db->query( $holiday_query );
+            if( $holiday_result->num_rows == 1 ) {
+                $day = -1;
+            }
+            
+            if( in_array( $day, $days ) ) {
+                $meetings[ date( 'n', strtotime( $date ) ) ][ date( 'j', strtotime( $date ) ) ] = 1;
+            }
+        }
+
+/*
+        foreach( array_keys( $meetings ) as $month ) {
+            foreach( array_keys( $meetings[ $month ] ) as $day ) {
+                print "      <th>$month/$day</th>\n";
+            }
+        }
+*/
+        
+        $students_query = 'select s.first, s.last, s.id '
+            . 'from students as s, student_x_section as x '
+            . 'where x.student = s.id '
+            . "and x.section = $section->id "
+            . 'order by s.last, s.first';
+        $students_result = $db->query( $students_query );
+        $even = 0;
+        while( $student = $students_result->fetch_object( ) ) {
+            $name = ucwords( "$student->first $student->last" );
+            print "<div class=\"student row$even\" id=\"$student->id\">$name\n";
+            $attendance_query = 'select a.date, t.type '
+                . 'from attendance as a, attendance_types as t '
+                . "where a.student = $student->id "
+                . "and a.section = $section->id "
+                . 'and a.presence = t.id '
+                . 'order by a.date';
+            $attendance_result = $db->query( $attendance_query );
+
+            $absences = array();
+            foreach( array_keys( $meetings ) as $month )
+                foreach( array_keys( $meetings[ $month ] ) as $day )
+                    $absences[ "$month-$day" ] = 1;
+            while( $attendance = $attendance_result->fetch_object( ) ) {
+                if( $attendance->type != 'Absent' and $attendance->type != 'Excused' ) {
+                    $m = date( 'n', strtotime( $attendance->date ) );
+                    $d = date( 'j', strtotime( $attendance->date ) );
+                    $absences[ "$m-$d" ] = 0;
+                }
+            }
+            $values = array_count_values( $absences );
+
+            print "<span class=\"absences\">\n";
+            print "({$values[ 1 ]})";
+            if( $values[ 1 ] > 0 ) {
+                print ': ';
+                $first = true;
+                foreach( $absences as $date=>$presence ) {
+                    if( $presence == 1 ) {
+                        if( ! $first )
+                            print ', ';
+                        print str_replace( '-', '/', $date );
+                        $first = false;
                     }
                 }
-                
-                print "  </tr>\n";
             }
-            print "</tbody>\n";
-            print "</table>\n";
+            print "</span>\n";
+            print "</div>\n";
+
+            $even = ( $even == 0 ? 1 : 0 );
         }
     }
-    
 ?>
 
 <script type="text/javascript">
 
-$(document).ready(function(){
-    $('table.tablesorter').tablesorter( {
-        sortList: [ [2,0], [1,0] ],
-        widgets:  [ 'ocsw' ]
-    });
+$(function(){
+    $('table.attendance_summary > tbody > tr > td.attendance_data').each(function(){
+        var section = $(this).attr('section');
+        var student = $(this).parent().attr('id');
+        var month = $(this).attr('month');
+        var day = $(this).attr('day');
+        
+        $.post( 'attendance_day.php',
+            { section: section, student: student, month: month, day: day },
+            function(data){
+                $(this).html(data);
+            }
+        )
+    })
 })
 
 </script>
 
-<?
-    
+<?php
 }
-?>
