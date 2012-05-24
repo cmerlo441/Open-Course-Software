@@ -39,7 +39,8 @@ if( $_SESSION[ 'admin' ] == 1 ) {
         
         $today = date( 'Y-m-d' );
         $tomorrow = date( 'Y-m-d', mktime( 0, 0, 0, date( 'n' ), date( 'j' ) + 1 ) );
-        for( $date = $today; $date <= $semester_end;
+        
+        for( $date = ( $today < $semester_start ? $semester_start : $today ); $date <= $semester_end;
              $date = date( 'Y-m-d', mktime( 0, 0, 0,
                            date( 'n', strtotime( $date ) ), date( 'j', strtotime( $date ) ) + 1, date( 'Y' ) ) ) )
         {
