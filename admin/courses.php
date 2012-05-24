@@ -11,7 +11,12 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     print "Course Number: <input size=\"5\" type=\"text\" id=\"course\" />";
     print "<input type=\"submit\" id=\"new_course\" value=\"Go\"></div>\n";
     
+} else {
+    print $no_admin;
 }
+
+$lastmod = filemtime( $_SERVER[ 'SCRIPT_FILENAME' ] );
+include( "$fileroot/_footer.inc" );
 
 ?>
 
