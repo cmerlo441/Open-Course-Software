@@ -34,7 +34,7 @@ function print_textbooks( $db, $course, $required = 1 ) {
             print_authors( $db, $authors_result );
             print '  ';
             print number_suffix( $book[ 'edition' ] ) . ' edition, '
-                . $book[ 'year' ] . ".\n";
+                . $book[ 'year' ] . ".  ISBN " . $book[ 'isbn' ] . ".\n";
             
         }
         print "</ul>\n";
@@ -220,6 +220,7 @@ $weights_query = 'select t.plural, w.grade_weight '
     . 'from grade_types as t, grade_weights as w '
     . "where w.course = $course_id "
     . 'and w.grade_type = t.id '
+    . 'and w.grade_weight > 0 '
     . 'order by w.grade_weight desc';
 //print "<pre>$weights_query;</pre>\n";
 $weights_result = $db->query( $weights_query );
@@ -350,6 +351,10 @@ while( $row = $section_result->fetch_assoc( ) ) {
         } else if( preg_match( '/Discuss/', $field ) == 1 ) {
             if( array_key_exists( 'Online Discussion', $weights ) ) {
                 print "<p id=\"$p_id\"><b>$field:</b> $value</p>\n";
+            }
+        } else if( preg_match( '/Homework/', $field ) == 1 ) {
+            if( array_key_exists( 'Homework', $weights ) ) {
+                print "<p id=\"$p_id\"><b>$field</b> $value</p>\n";
             }
         }
         
