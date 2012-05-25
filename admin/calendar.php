@@ -64,7 +64,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
         </tr>
         <tr>
             <td>
-                Are Day Classes Canceled?
+                <label for="holiday_day">Are Day Classes Canceled?</label>
             </td>
             <td>
                 <input type="checkbox" id="holiday_day" />
@@ -72,7 +72,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
         </tr>
         <tr>
             <td>
-                Are Evening Classes Canceled?
+                <label for="holiday_evening">Are Evening Classes Canceled?</label>
             </td>
             <td>
                 <input type="checkbox" id="holiday_evening" />
@@ -118,7 +118,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
         </tr>
         <tr>
             <td>
-                Are Day Classes Rescheduled?
+                <label for="resched_day">Are Day Classes Rescheduled?</label>
             </td>
             <td>
                 <input type="checkbox" id="resched_day" />
@@ -126,7 +126,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
         </tr>
         <tr>
             <td>
-                Are Evening Classes Rescheduled?
+                <label for="resched_evening">Are Evening Classes Rescheduled?</label>
             </td>
             <td>
                 <input type="checkbox" id="resched_evening" />
@@ -187,8 +187,8 @@ if( $_SESSION[ 'admin' ] == 1 ) {
         $('input[id=new_holiday]').click(function() {
             var date = $('input#holiday_date').val();
             var description = $('input#description').val();
-            var day = $('input#holiday_day').attr('checked') == true ? 1 : 0;
-            var evening = $('input#holiday_evening').attr('checked') == true ? 1 : 0;
+            var day = $('input#holiday_day').attr('checked') == "checked" ? 1 : 0;
+            var evening = $('input#holiday_evening').attr('checked') == "checked" ? 1 : 0;
             $.post('holidays.php', {
                 date: date,
                 description: description,
@@ -202,8 +202,8 @@ if( $_SESSION[ 'admin' ] == 1 ) {
         $('input#new_rescheduled_day').click(function() {
             var date = $('input#resched_date').val();
             var follow = $('select#follow').val();
-            var day = $('input#resched_day').attr('checked') == true ? 1 : 0;
-            var evening = $('input#resched_evening').attr('checked') == true ? 1 : 0;
+            var day = $('input#resched_day').attr('checked') == "checked" ? 1 : 0;
+            var evening = $('input#resched_evening').attr('checked') == "checked" ? 1 : 0;
             $.post('rescheduled_days.php', {
                 date: date,
                 follow: follow,

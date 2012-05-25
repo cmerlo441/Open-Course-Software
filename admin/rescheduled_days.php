@@ -15,10 +15,10 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 	$follow  = $db->real_escape_string( $_POST[ 'follow' ] );
 
         $insert_query = 'insert into rescheduled_days'
-	    . '( id, date, day, evening, follow ) '
+	        . '( id, date, day, evening, follow ) '
             . 'values( null, "'
             . date( 'Y-m-d', strtotime( $date ) ) . '", '
-	    . "$day, $evening, $follow )";
+	        . "$day, $evening, $follow )";
         $insert_result = $db->query( $insert_query );
     }
 
@@ -39,12 +39,12 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     } else {
         while( $row = $rescheduled_days_result->fetch_assoc( ) ) {
             print "<div class=\"rescheduled_day\" id=\"{$row[ 'id' ]}\">\n";
-            print "<span class=\"remove\" id=\"{$row[ 'id' ]}\"";
+            print "<span class=\"remove\" id=\"{$row[ 'id' ]}\">";
             print "<a href=\"javascript:void(0)\" "
-		. "class=\"remove_rescheduled_day\" id=\"{$row[ 'id' ]}\" "
+		        . "class=\"remove_rescheduled_day\" id=\"{$row[ 'id' ]}\" "
                 . "title=\"Remove {$row[ 'date' ]}\">";
             print "<img src=\"$docroot/images/silk_icons/cancel.png\" "
-		. "height=\"16\" width=\"16\" /></a></span>\n";
+		        . "height=\"16\" width=\"16\" /></a></span>\n";
             print "<span class=\"date\" id=\"{$row[ 'id' ]}\">"
                 . date( 'l n/j', strtotime( $row[ 'date' ] ) ) . "</span>:\n";
             print "<span class=\"description\" id=\"{$row[ 'id' ]}\">";
