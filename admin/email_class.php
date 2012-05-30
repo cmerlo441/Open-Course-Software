@@ -22,8 +22,10 @@ if( $_SESSION[ 'admin' ] == 1 ) {
         . 'order by c.dept, c.course, s.section';
     $section_result = $db->query( $section_query );
     while( $section_row = $section_result->fetch_assoc( ) ) {
-        print "<input type=\"checkbox\" id=\"{$section_row[ 'id' ]}\" /> "
-            . $section_row[ 'dept' ] . ' ' . $section_row[ 'course' ] . ' '
+        print "<input type=\"checkbox\" id=\"{$section_row[ 'id' ]}\" ";
+        if( $section_result->num_rows == 1 )
+            print 'checked="checked" ';
+        print "/> " . $section_row[ 'dept' ] . ' ' . $section_row[ 'course' ] . ' '
             . $section_row[ 'section' ] . "<br />\n";
     }
 ?>
