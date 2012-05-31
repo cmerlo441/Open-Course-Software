@@ -34,9 +34,9 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     // Is the chosen day rescheduled as another day of the week?
     
     $resched_query = "select follow from rescheduled_days "
-        . "where date = \"$section\" "
-        . 'and ' . ( $day_eve == 1 ? 'day' : 'evening' ) . ' == 1';
-    $resched_result = $db->query( $resched_query );
+        . "where date = \"$date\" "
+        . 'and ' . ( $day_eve == 0 ? 'day' : 'evening' ) . ' = 1';
+        $resched_result = $db->query( $resched_query );
     if( $resched_result->num_rows == 1 ) {
         $resched_row = $resched_result->fetch_assoc( );
         $day = $resched_row[ 'follow' ];
