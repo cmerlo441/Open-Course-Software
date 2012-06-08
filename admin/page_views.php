@@ -1,62 +1,46 @@
 <?php
 
-$title_stub = 'Page View History';
+$title_stub = 'Student Page Views';
 require_once( '../_header.inc' );
 
 if( $_SESSION[ 'admin' ] == 1 ) {
-
-    $student_id = isset( $_GET[ 'student' ] )
-	   ? $db->real_escape_string( $_GET[ 'student' ] )
-	   : 0;
-    $page = isset( $_GET[ 'page' ] )
-	   ? $db->real_escape_string( $_GET[ 'page' ] )
-	   : 0;
-
-    unset( $student );
-    if( $student_id > 0 ) {
-    	$student_query = 'select first, middle, last from students '
-    	    . "where id = $student_id";
-    	$student_result = $db->query( $student_query );
-    	$student_row = $student_result->fetch_assoc( );
-    	$student = name( $student_row );
-    }
-
-    print "<div id=\"page_views\"></div>\n";
-
+    
+    print "<h2 id=\"page_views_description\">All Student Data</h2>\n";
+    print "<div id=\"page_views\" student=\"0\" page_name=\"0\"></div>\n";
+    
 ?>
 
 <script type="text/javascript">
+
 $(document).ready(function(){
-    
-    $.post( 'list_page_views.php',
-
-        function(data) {
+    $.post('list_page_views.php',
+        function(data){
             $('div#page_views').html(data);
-            $('div.twenty_five_rows:first').show();
-    	    $('div.twenty_five_rows').slideDown();
-    	    $('a.more').click(function(){
-                var id = $(this).attr('id');
-                $(this).html() == 'More'
-                    ? $(this).html('Less')
-                    : $(this).html('More');
-                $('div.referrer[id=' + id + ']' ).slideToggle();
-            })
-	    }
-    );
+        }
+    )
 
-    var student = "<?php echo isset( $student ) ? $student : ''; ?>";
-    if( student != '' ) {
-    	var name = " :: " + student;
-	    $('h1').html( $('h1').html( ) + name );
-	    $(document).attr('title', $(document).attr('title') + name );
-    }
-
-    var page = "<?php echo $_GET[ 'page' ]; ?>";
-    if( page != '' ) {
-	    $('h1').html( $('h1').html( ) + ' :: ' + page );
-	    $(document).attr('title', $(document).attr('title') + ' :: ' + page );
-    }
+    $(window).scroll(function(){
+        if( $(window).scrollTop() == $(document).height() - $(window).height() ) {
+            var start = $('div#page_views tr:last').attr('id');
+            var student = $('div#page_views').attr('student');
+            var page = $('div#page_views').attr('page_name');
+            var last_id = $('div#page_views > div:last').attr('id');
+            $.post('list_page_views.php',
+                {
+                     start: start,
+                     student: student,
+                     page_name: page,
+                     last_id: last_id
+                },
+                function(data){
+                    $('div#page_views').append(data);
+                }
+            )
+        };
+        return false;
+    })
 })
+
 </script>
 
 <?php
@@ -64,8 +48,7 @@ $(document).ready(function(){
 } else {
     print $no_admin;
 }
-   
+
 $lastmod = filemtime( $_SERVER[ 'SCRIPT_FILENAME' ] );
 include( "$fileroot/_footer.inc" );
 
-?>

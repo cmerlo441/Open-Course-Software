@@ -4,9 +4,12 @@ $title_stub = 'Login History';
 require_once( '../_header.inc' );
 
 if( $_SESSION[ 'admin' ] == 1 ) {
-    $login_query = 'select l.datetime, l.address, l.browser, s.id, s.first, s.last '
-        . 'from logins as l, students as s '
-        . 'where l.student = s.id';
+    $login_query = 'select l.id as login_id, l.datetime, l.address, l.browser, s.id as student_id, s.first, s.last, x.section '
+        . 'from logins as l, students as s, student_x_section as x '
+        . 'where l.student = s.id '
+        . 'and x.student = s.id '
+        . 'order by l.datetime desc '
+        . 'limit 50';
     $login_result = $db->query( $login_query );
     
     $sections_query = 'select c.dept, c.course, s.section, s.id '
@@ -41,23 +44,13 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     
     <tbody>
 <?php
-    while( $login = $login_result->fetch_assoc( ) ) {
-        print "        <tr";
-        
-        $sections_query = 'select section from student_x_section '
-            . "where student = {$login[ 'id' ]}";
-        $sections_result = $db->query( $sections_query );
-        while( $sections_row = $sections_result->fetch_assoc( ) ) {
-            print " class=\"{$sections_row[ 'section' ]}\"";
-        }
-        
-        print ">\n";
-        print '            <td>'
-	    . lastfirst( $login ) . "</td>\n";
-        print "            <td>" . date( 'm/d H:i', strtotime( $login[ 'datetime' ] ) ) . "</td>\n";
-        print "            <td>{$login[ 'address' ]}</td>\n";
-        print "            <td>" . browser( $login[ 'browser' ] ) . "</td>\n";
-        print "            <td>" . os( $login[ 'browser' ] ) . "</td>\n";
+    while( $login = $login_result->fetch_object( ) ) {
+        print "        <tr class=\"$login->section\" id=\"$login->login_id\">\n";
+        print '            <td>' . ucwords( "$login->last, $login->first" ) . "</td>\n";
+        print "            <td>" . date( 'm/d H:i', strtotime( $login->datetime ) ) . "</td>\n";
+        print "            <td>$login->address</td>\n";
+        print "            <td>" . browser( $login->browser ) . "</td>\n";
+        print "            <td>" . os( $login->browser ) . "</td>\n";
         print "        </tr>\n";
     }
 ?>
@@ -66,7 +59,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 
 <script type="text/javascript">
 $(document).ready(function(){
-    $('#logins').tablesorter({ sortList: [ [1,1], [0,0] ], widgets: [ 'ocsw' ] });
+    $('table#logins').tablesorter({ sortList: [ [1,1], [0,0] ], widgets: [ 'ocsw' ] });
     
     $('a.hide').click(function(){
         var id = $(this).attr('id');
@@ -76,6 +69,21 @@ $(document).ready(function(){
         $('img.on[id=' + id + ']').toggle();
         $('img.off[id=' + id + ']').toggle();
         $('table#logins').trigger('update');
+        return false;
+    })
+    
+    $(window).scroll(function(){
+        var last_row = $('table#logins tr:last').attr('id');
+        if( $(window).scrollTop() == $(document).height() - $(window).height() && last_row > 1 ) {
+            $.post('login_history_data.php',
+                { start: last_row },
+                function(data){
+                    $('table#logins tbody').append(data);
+                    $('table#logins').trigger('update');
+                    $('table#logins tbody td').css('background-color',$('table#logins tbody tr:first td').css('background-color'));
+                }
+            )
+        };
         return false;
     })
     
