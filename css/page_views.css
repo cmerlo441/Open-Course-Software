@@ -1,0 +1,24 @@
+div#page_views > div {
+	padding: 0.75em;
+	margin: 0;
+	text-align: left;
+}
+
+div#page_views > div.even {
+	background-color: #464648;
+}
+
+div#page_views > div.odd {
+	/* nothing */	
+}
+
+div#page_views div.datetime {
+    float: right;
+    padding: 0 0 0 0.5em;
+    font-size: 0.9em;
+}
+
+div#page_views > div.data {
+    float: left;
+    padding: 0 0.5em 0 0;
+}
