@@ -9,6 +9,9 @@ if( $_SESSION[ 'admin' ] == 1 ) {
         . 'where s.course = c.id '
         . 'order by c.dept, c.course, s.section';
     $sections_result = $db->query( $sections_query );
+    
+    print 'Excused absences are written in <span style="font-style: italic;">italic</span>.';
+    
     while( $section = $sections_result->fetch_object( ) ) {
         print "<div class=\"section_absences\" id=\"$section->id\">\n";
         print "<h2>$section->dept $section->course $section->section</h2>\n";
@@ -97,24 +100,41 @@ if( $_SESSION[ 'admin' ] == 1 ) {
                 foreach( array_keys( $meetings[ $month ] ) as $day )
                     $absences[ "$month-$day" ] = 1;
             while( $attendance = $attendance_result->fetch_object( ) ) {
-                if( $attendance->type != 'Absent' and $attendance->type != 'Excused' ) {
+                if( $attendance->type == 'Present' ) {
                     $m = date( 'n', strtotime( $attendance->date ) );
                     $d = date( 'j', strtotime( $attendance->date ) );
                     $absences[ "$m-$d" ] = 0;
+                } else if( $attendance->type == 'Excused' ) {
+                    $m = date( 'n', strtotime( $attendance->date ) );
+                    $d = date( 'j', strtotime( $attendance->date ) );
+                    $absences[ "$m-$d" ] = 2;
                 }
             }
+
+/*            
+            print "<pre>";
+            print_r( $absences );
+            print "</pre>\n";
+*/
+            
             $values = array_count_values( $absences );
 
             print "<span class=\"absences\">\n";
-            print "({$values[ 1 ]})";
-            if( $values[ 1 ] > 0 ) {
+            print '(' . ( $values[ 1 ] + $values[ 2 ] ) . ')';
+            if( $values[ 1 ] + $values[ 2 ] > 0 ) {
                 print ': ';
                 $first = true;
                 foreach( $absences as $date=>$presence ) {
-                    if( $presence == 1 ) {
+                    if( $presence > 0 ) {
                         if( ! $first )
                             print ', ';
+                        if( $presence == 2 ) {
+                            print "<span class=\"excused\" style=\"font-style: italic;\">";
+                        }
                         print str_replace( '-', '/', $date );
+                        if( $presence == 2 ) {
+                            print "</span>";
+                        }
                         $first = false;
                     }
                 }
@@ -124,6 +144,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 
             $even = ( $even == 0 ? 1 : 0 );
         }
+	print "</div>\n";
     }
 ?>
 
@@ -148,4 +169,11 @@ $(function(){
 </script>
 
 <?php
+} else {
+    print $no_admin;
 }
+
+$lastmod = filemtime( $_SERVER[ 'SCRIPT_FILENAME' ] );
+include( "$fileroot/_footer.inc" );
+
+?>
