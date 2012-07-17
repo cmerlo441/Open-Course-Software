@@ -3,9 +3,6 @@
 $no_header = 1;
 require_once( '_header.inc' );
 
-$fail_text = "<h2>Login Failure</h2>"
-    . "<p>Your username and/or password were not found in the system.</p>";
-
 ?>
 
 <p id="top">You are not logged in.<br />
@@ -33,14 +30,62 @@ password?</a></p>
 
 <script type="text/javascript">;
 $(document).ready(function(){
-    $("div.failure").hide();
-
-    $("a#show_login_dialog").click(function(){
+    
+    function login(){
+        $.post( 'login.php',
+        {
+            username: $("div#login_dialog input#username").val(),
+            password: $("div#login_dialog input#password").val()
+        },
+        function(data){
+            if( data == 'admin' ) {
+                $("div#login_dialog").dialog('destroy');
+                $.post( 'admin_tools.php',
+                    function(data){
+                        $("div#not_logged_in").fadeOut(500);
+                        $("div#admin").html(data).fadeIn(500);
+                    }
+                )
+            } else if( data == 'inactive' ) {
+                $("input[id=username]").select();
+                $("span#error_message").html("You are not active in any classes.");
+                $("div#login_error").fadeIn(500);
+            } else if( data == 'student' ) {
+                $("div#login_dialog").dialog('destroy');
+                $.post( 'student_tools.php',
+                    function(data){
+                        $("div#not_logged_in").fadeOut( 500 );
+                        $("div#student").html(data).fadeIn( 500 );
+                    }
+                )
+            } // else...
+            else if( data == 'none' ) {
+                $("input[id=username]").select();
+                $("span#error_message").html("This combination of username and password was not found in the system.  Please check your spelling and try again.");
+                $('div#login_dialog').parent().effect('bounce',{times:3},150);
+                $("div#login_error").fadeIn(500);
+            }
+        })
+    }
         
+    $("a#show_login_dialog").click(function(){
+
         $.get('login_dialog.html',
             function(data){
                 $('div#login_dialog').html(data);
                 $('input#username').focus();
+
+                $('div#login_dialog input#username').on('keypress',function(event){
+                    if(event.keyCode === $.ui.keyCode.ENTER){
+                        $('div#login_dialog input#password').focus();
+                    }
+                })
+                
+                $('div#login_dialog input#password').on('keypress',function(event){
+                    if(event.keyCode === $.ui.keyCode.ENTER) {
+                        login();
+                    }
+                })
             }
         )
 
@@ -49,46 +94,13 @@ $(document).ready(function(){
             hide: 'puff',
             modal: true,
             buttons: {
-                'Log In': function(){
-                    $.post( 'login.php', 
-                    {
-                        username: $("div#login_dialog input#username").val(),
-                        password: $("div#login_dialog input#password").val()
-                    },
-                    function(data){
-                        if( data == 'admin' ) {
-                            $("div#login_dialog").dialog('destroy');
-                            $.post( 'admin_tools.php',
-                                function(data){
-                                    $("div#not_logged_in").fadeOut(500);
-                                    $("div#admin").html(data).fadeIn(500);
-                                }
-                            )
-		        } else if( data == 'inactive' ) {
-			    $("input[id=username]").select();
-			    $("span#error_message").html("You are not active in any classes.");
-			    $("div#login_error").fadeIn(500);
-                        } else if( data == 'student' ) {
-                            $("div#login_dialog").dialog('destroy');
-                            $.post( 'student_tools.php',
-                                function(data){
-                                    $("div#not_logged_in").fadeOut( 500 );
-                                    $("div#student").html(data).fadeIn( 500 );
-                                }
-                            )
-                        } // else...
-                        else if( data == 'none' ) {
-                            $("input[id=username]").select();
-			    $("span#error_message").html("This combination of username and password was not found in the system.  Please check your spelling and try again.");
-                            $("div#login_error").fadeIn(500);
-                        }
-                    })
-                },
+                'Log In': function(){login()},
                 'Cancel': function(){
-                    $(this).dialog('destroy');
+                    $('div#login_dialog').dialog('destroy');
                 }
             }
         });
+        
     })
     
     $("a#show_create_dialog").click(function(){
