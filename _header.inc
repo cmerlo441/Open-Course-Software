@@ -83,6 +83,8 @@ function browser( $browser ) {
         return "Seamonkey {$matches[ 1 ]}";
     } else if( preg_match( '|Chrome/([0-9.]+)|', $browser, $matches ) == 1 ) {
         return "Chrome {$matches[ 1 ]}";
+    } else if( preg_match( '|MSIE ([0-9.]+)|', $browser, $matches ) == 1 ) {
+        return "Internet Explorer {$matches[ 1 ]}";
     } else if( preg_match( '|AppleWebKit/([0-9.]+)|', $browser, $matches ) == 1 ) {
         $string = 'Safari ';
         if( preg_match( '/526/', $matches[ 1 ] ) ) {
@@ -391,13 +393,13 @@ if( $no_header != 1 ) {
 ?>
 
 <!DOCTYPE html>
-<html lang="en"><head><title><?= $title ?></title>
+<html lang="en"><head><title><?php echo $title; ?></title>
 <meta charset="utf-8" />
 <!--[if lt IE 9]>
   <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
 <![endif]-->
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
-<script type="text/javascript" src="<?php echo $docroot ?>/js/jquery-ui-1.8.9.custom.min.js"></script>
+<script type="text/javascript" src="http://code.jquery.com/jquery.min.js"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
 <script type="text/javascript" src="<?php echo $docroot ?>/js/editinplace/src/jquery.editinplace.js"></script>
 <script type="text/javascript" src="<?php echo $docroot ?>/tablesorter/jquery.tablesorter.js"></script>
 <script type="text/javascript" src="<?php echo $docroot ?>/markitup/markitup/jquery.markitup.pack.js"></script>

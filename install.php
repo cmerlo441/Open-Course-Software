@@ -35,7 +35,7 @@ if( $prof_result->num_rows == 0 ) {
 	. "the following important information:</p>\n";
 
     print "<div id=\"real_name\" "
-      . "style=\"padding: 1em; margin: 1em; border: 1px solid black; "
+      . "style=\"padding: 0.5em; margin: 1em; border: 1px solid black; "
       . "width: 45%; float: left; background-color: #8888ff\">\n";
     print "<h1>Your Real Name</h1>\n";
 
@@ -48,7 +48,7 @@ if( $prof_result->num_rows == 0 ) {
     print "</div>\n";
 
     print "<div id=\"creds\" "
-      . "style=\"padding: 1em; margin: 1em; border: 1px solid black; "
+      . "style=\"padding: 0.5em; margin: 1em; border: 1px solid black; "
       . "width: 45%; float: left; background-color: #ff8888\">\n";
     print "<h1>Your OCSW Credentials</h1>\n";
 
