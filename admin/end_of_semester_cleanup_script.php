@@ -29,10 +29,11 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 	. 'sections,'
 	. 'section_meetings,'
 	// . 'shoutbox,'
-    . 'students,'
+	. 'student_notes,'
 	. 'student_x_section,'
 	. 'student_x_verification,'
-	. 'submission_comments';
+    . 'students,'
+    . 'submission_comments';
     foreach( explode( ',', $tables ) as $table ) {
         print "Cleaning out table $table... ";
         $db->query( "truncate $table" );

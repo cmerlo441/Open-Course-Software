@@ -43,7 +43,10 @@ if( $_SESSION[ 'admin' ] == 1 ) {
             print "      <li>";
             print_link( "$admin/roster.php?section={$row[ 'id' ]}", 'Class Roster' );
             $roster_query = "select count( * ) as c from student_x_section "
-                . "where section = \"{$row[ 'id' ]}\" and active = 1 and incomplete = 0";
+                . "where section = \"{$row[ 'id' ]}\" "
+                . 'and ( status = ( select id from student_statuses where status = "Grade" ) '
+                . 'or status = ( select id from student_statuses where status = "Audit" ) '
+                . 'or status = ( select id from student_statuses where status = "INC" ) ) ';
             $roster_result = $db->query( $roster_query );
             $roster_row = $roster_result->fetch_assoc( );
             $roster_result->close();
@@ -145,6 +148,13 @@ $(document).ready(function(){
             $('div#upcoming_events').html(data).slideDown(750);
 	    }
     )
+
+	$.post("<?php echo $docroot; ?>/admin/ungraded_homework.php",
+		function(data){
+			$('h2#ungraded_homework').slideDown();
+			$('div#ungraded_homework').html(data).slideDown(750);
+		}
+	)
 
     $.post( "<?php echo $admin; ?>/recent_logins.php",
         function( data ) {

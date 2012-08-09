@@ -4,16 +4,16 @@ $no_header = 1;
 require_once( './_header.inc' );
 
 $admin_query = 'select * from prof '
-  . 'where username = "' . $db->real_escape_string( $_POST[ 'username' ] ) . '" '
-  . 'and password = md5( "' . $db->real_escape_string( $_POST[ 'password' ] )
-  . '" )';
+    . 'where username = "' . $db->real_escape_string( $_POST[ 'username' ] ) . '" '
+    . 'and password = md5( "' . $db->real_escape_string( $_POST[ 'password' ] )
+    . '" )';
 $admin_result = $db->query( $admin_query );
 
 $student_query = 'select * from students '
-  . 'where banner = "'
-      . strtoupper( $db->real_escape_string( $_POST[ 'username' ] ) ) . '" '
-  . 'and password = md5( "' . $db->real_escape_string( $_POST[ 'password' ] )
-  . '" )';
+    . 'where banner = "'
+    . strtoupper( $db->real_escape_string( $_POST[ 'username' ] ) ) . '" '
+    . 'and password = md5( "' . $db->real_escape_string( $_POST[ 'password' ] )
+    . '" )';
 $student_result = $db->query( $student_query );
 
 if( $student_result->num_rows == 1 ) {
@@ -22,12 +22,14 @@ if( $student_result->num_rows == 1 ) {
     // If student is not active in any classes, don't log him/her in
 
     $x_query = 'select * from student_x_section '
-      . "where student = {$student_row[ 'id' ]} "
-      . 'and active = 1';
+        . "where student = {$student_row[ 'id' ]} "
+        . 'and ( status = ( select id from student_statuses where status = "Grade" ) '
+        . ' or status = ( select id from student_statuses where status = "Audit" ) '
+        . ' or status = ( select id from student_statuses where status = "INC" ) ) ';
     $x_result = $db->query( $x_query );
     if( $x_result->num_rows == 0 ) {
-      print 'inactive';
-      die( );
+        print 'inactive';
+        die( );
     }
 
     $_SESSION[ 'student' ] = $student_row[ 'id' ];

@@ -15,13 +15,20 @@ if( $_SESSION[ 'admin' ] == 1 ) {
             <li>All documents you uploaded with respect to these assignments</li>
         </ul>
     </li>
-    <li>Grades</li>
-    <li>Holidays and rescheduled days</li>
-    <li>Login and page view history</li>
-    <li>Sent and received e-mail</li>
-    <li>Current sections</li>
-    <li>All student information</li>
+    <li style="padding-top: 0.5em">Semester-specific information, including:
+        <ul>
+            <li>Student accounts</li>
+            <li>Grades</li>
+            <li>Reference materials</li>
+            <li>Sent and received e-mail</li>
+            <li>Holidays and rescheduled days</li>
+            <li>Student login and page view history</li>
+            <li>This semester's sections</li>
+        </ul>
+    </li>
 </ul>
+
+<p>Information that you will need later, like course and textbook information, will remain.</p>
 
 <p>You may want to view or print a semester
 <?php print_link( 'attendance_summary.php', 'attendance summary' ); ?> before
@@ -31,10 +38,10 @@ continuing.</p>
 Make sure you know what you&apos;re doing before you enable this script.</p>
 
 <p style="margin: 0 auto"><input type="checkbox" id="confirm" />
-<label for="confirm">I know what I&apos;m doing, and I want to delete all the information from the previous semester.</label>
+<label for="confirm">I know what I&apos;m doing, and I want to delete all the information from <?php echo $semester; ?>.</label>
 </p>
 
-<p style="text-align: center"><input type="submit" id="clean" /></p>
+<p style="text-align: center"><input type="submit" id="clean" value="Delete all information from <?php echo $semester; ?>." /></p>
 
 <div class="dialog" id="cleanup_dialog" title="Cleanup Results">
 <img src="<?php echo $docroot; ?>/images/ajax-loader.gif" alt="Please wait" />

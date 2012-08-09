@@ -6,8 +6,8 @@ require_once( '../_header.inc' );
 if( $_SESSION[ 'admin' ] == 1 ) {
     $student_id = $db->real_escape_string( $_POST[ 'student' ] );
     $section    = $db->real_escape_string( $_POST[ 'section' ] );
-
-    $student_query = 'select s.id, s.first, s.middle, s.last, s.email, x.active '
+    
+    $student_query = 'select s.id, s.first, s.middle, s.last, s.email, x.id as x, x.status '
         . 'from students as s, student_x_section as x '
         . "where s.id = $student_id "
         . 'and x.student = s.id '
@@ -23,6 +23,14 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 
     $student_name = htmlentities( $student_name, ENT_QUOTES );
     
+    if( isset( $_POST[ 'note' ] ) ) {
+        $note = $db->real_escape_string( $_POST[ 'note' ] );
+        $insert_query = 'insert into student_notes ( id, student_x_section, note, datetime ) '
+            . "values( null, {$student_row[ 'x' ]}, \"$note\", \""
+            . date( 'Y-m-d G:i:s' ) . '" )';
+        $insert_result = $db->query( $insert_query );
+    }
+
     print "<h2>$student_name</h2>\n";
     
     print "<div id=\"student_details\">\n";
@@ -163,8 +171,12 @@ if( $_SESSION[ 'admin' ] == 1 ) {
         
         $month++;
     }
-    
+
     print "</div>  <!-- div#attendance -->\n";
+    
+    /*************************************************************************
+     * Login History
+     *************************************************************************/
     
     print "<h3><a href=\"#\">Login History</a></h3>\n";
     print "<div id=\"login_history\">\n";
@@ -209,6 +221,39 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 
 
 </div>  <!-- div#login_history -->
+
+<?php
+
+    /*************************************************************************
+     * Student Notes
+     *************************************************************************/
+    
+    print "<h3><a href=\"#\">Notes</a></h3>\n";
+    print "<div class=\"student_notes\" id=\"$student_id\">\n";
+    $notes_query = 'select id, datetime, note '
+        . 'from student_notes '
+        . "where student_x_section = {$student_row[ 'x' ]} "
+        . 'order by datetime';
+    $notes_result = $db->query( $notes_query );
+    if( $notes_result->num_rows == 0 ) {
+        print 'You have not entered any notes for this student.';
+    } else {
+        while( $note = $notes_result->fetch_object( ) ) {
+            print "<div>$note->note\n";
+            print "<span class=\"date\">"
+                . date( 'l, F j, g:i a', strtotime( $note->datetime ) )
+                . "</span></div>\n";
+        }
+    }
+    
+    print "<p>Enter a new note below.  Only you will ever see what you type here.</p>\n";
+    print "<textarea class=\"note\" rows=\"5\" cols = \"60\"></textarea><br />\n";
+    print "<input type=\"submit\" class=\"submit_note\" value=\"Add Note\" />\n";
+    
+    print "</div>  <!-- div.student_notes -->\n";
+    
+?>
+
 </div>  <!-- div#student_details -->
 
 <script type="text/javascript">
@@ -341,6 +386,16 @@ $(document).ready(function(){
         autoHeight: false,
         collapsible: true
     });
+    
+    $('input.submit_note').click(function(){
+        var note = $('div.student_notes[id=' + student + '] > textarea.note').val();
+        $.post( 'student.php',
+            { student: student, section: section, note: note },
+            function(data){
+                $('div#student_details').html(data).accordion( 'option', 'active', 4 );
+            }
+        )
+    })
 
 })
 </script>

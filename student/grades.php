@@ -10,7 +10,9 @@ if( $_SESSION[ 'student' ] > 0 ) {
         . 'and x.section = ' . $db->real_escape_string( $_GET[ 'section' ] ) . ' '
         . 'and x.section = s.id '
         . 'and s.course = c.id '
-        . 'and x.active = 1 '
+        . 'and ( x.status = ( select id from student_statuses where status = "Grade" ) '
+        . 'or x.status = ( select id from student_statuses where status = "Audit" ) '
+        . 'or x.status = ( select id from student_statuses where status = "INC" ) ) '
         . 'order by c.dept, c.course';
     $sections_result = $db->query( $sections_query );
     $section_row = $sections_result->fetch_assoc( );
@@ -26,6 +28,7 @@ if( $_SESSION[ 'student' ] > 0 ) {
         . 'from grade_types as t, grade_weights as w '
         . 'where w.grade_type = t.id '
         . "and w.course = {$section_row[ 'course_id' ]} "
+	. 'and w.grade_weight > 0 '
         . 'order by w.grade_weight desc';
     $grade_type_result = $db->query( $grade_type_query );
     while( $grade_type = $grade_type_result->fetch_assoc( ) ) {

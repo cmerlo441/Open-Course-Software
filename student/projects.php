@@ -18,7 +18,9 @@ if( $_SESSION[ 'student' ] > 0 ) {
         . "and x.section = $section_id "
         . 'and x.section = s.id '
         . 'and s.course = c.id '
-        . 'and x.active = 1 '
+        . 'and ( x.status = ( select id from student_statuses where status = "Grade" ) '
+        . 'or x.status = ( select id from student_statuses where status = "Audit" ) '
+        . 'or x.status = ( select id from student_statuses where status = "INC" ) ) '
         . 'order by c.dept, c.course';
     $sections_result = $db->query( $sections_query );
     $section_row = $sections_result->fetch_assoc( );

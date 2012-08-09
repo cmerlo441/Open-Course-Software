@@ -33,7 +33,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     // How many have there been?
     $count_query = 'select count( id ) as count from assignments '
         . "where section = {$assignment_row[ 'section' ]} "
-	. "and grade_type = {$assignment_row[ 'grade_type' ]}";
+        . "and grade_type = {$assignment_row[ 'grade_type' ]}";
     $count_result = $db->query( $count_query );
     $count_row = $count_result->fetch_assoc( );
     $count = $count_row[ 'count' ];
@@ -65,9 +65,9 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     print "<h3>Assignment Details</h3>\n";
     print "<div id=\"assignment\">\n";
     if( $assignment_row[ 'title' ] == '' )
-	$title = '(No title)';
+	   $title = '(No title)';
     else
-	$title = nl2br( $assignment_row[ 'title' ] );
+	   $title = nl2br( $assignment_row[ 'title' ] );
     print "<div class=\"editInPlace\" id=\"title\">$title</div>\n";
     print "<div class=\"editInPlace\" id=\"description\">\n";
     print stripslashes( nl2br( "{$assignment_row[ 'description' ]}</div>\n" ) );
@@ -77,9 +77,9 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     $due_date_passed = date( 'Y-m-d H:i:s' ) > $assignment_row[ 'due_date' ];
 
     if( ! $due_date_passed ) {
-	print "<h3>File Upload Requirements</h3>\n";
-	print "<div id=\"upload_requirements\">\n";
-	print "</div>  <!-- div#upload_requirements -->\n";
+    	print "<h3>File Upload Requirements</h3>\n";
+    	print "<div id=\"upload_requirements\">\n";
+    	print "</div>  <!-- div#upload_requirements -->\n";
     }
 
     print "<div id=\"files\">\n";
@@ -227,7 +227,9 @@ if( $_SESSION[ 'admin' ] == 1 ) {
                 . 'assignment_submissions as sub '
                 . 'where x.student = s.id '
                 . "and x.section = {$assignment_row[ 'section' ]} "
-                . 'and x.active = 1 '
+                . 'and ( x.status = ( select id from student_statuses where status = "Grade" ) '
+                . 'or x.status = ( select id from student_statuses where status = "Audit" ) '
+                . 'or x.status = ( select id from student_statuses where status = "INC" ) ) '
                 . 'and sub.student = s.id '
                 . "and sub.assignment = {$assignment_row[ 'id' ]} "
                 . 'order by s.last, s.first, s.middle';
@@ -377,7 +379,9 @@ if( $_SESSION[ 'admin' ] == 1 ) {
             . "where e.assignment = $assignment "
             . 'and e.section = x.section '
             . 'and x.student = s.id '
-            . 'and x.active = 1 '
+            . 'and ( x.status = ( select id from student_statuses where status = "Grade" ) '
+            . 'or x.status = ( select id from student_statuses where status = "Audit" ) '
+            . 'or x.status = ( select id from student_statuses where status = "INC" ) ) '
             . 'order by s.last, s.first, s.middle';
         $student_result = $db->query( $student_query );
         $count = 0;

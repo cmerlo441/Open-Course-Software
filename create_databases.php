@@ -202,6 +202,15 @@ $tables[ 'letter_grades' ] =
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1";
 
+$tables[ 'links' ] =
+"CREATE TABLE `links` (
+  `id` int(11) NOT NULL auto_increment,
+  `url` varchar(100) NOT NULL,
+  `link_text` varchar(100) NOT NULL,
+  `created` datetime NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1";
+
 $tables[ 'logins' ] =
 "CREATE TABLE `logins` (
   `id` bigint(20) NOT NULL auto_increment,
@@ -394,13 +403,20 @@ $tables[ 'semester' ] =
   PRIMARY KEY  (`name`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1";
 
+$tables[ 'student_statuses' ] =
+"CREATE TABLE `student_statuses` (
+  `id` int(11) NOT NULL auto_increment,
+  `status` varchar(5) NOT NULL,
+  `description` text NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1";
+
 $tables[ 'student_x_section' ] =
 "CREATE TABLE `student_x_section` (
   `id` int(11) NOT NULL auto_increment,
   `student` int(11) NOT NULL,
   `section` int(11) NOT NULL,
-  `active` tinyint(4) NOT NULL default '0',
-  `incomplete` tinyint(4) NOT NULL default '0',
+  `status` int(11) NOT NULL default '1',
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1";
 
@@ -507,18 +523,7 @@ $data[ 'grade_types' ] =
     . "(null,'Online Discussion','Online Discussion'),"
     . "(null,'Project','Projects'),"
     . "(null,'Quiz','Quizzes')";
-
-$data[ 'letter_grades' ] =
-"INSERT INTO `letter_grades` VALUES "
-    . "(null, 'A',  89.5),"
-    . "(null, 'B+', 84.5),"
-    . "(null, 'B',  79.5),"
-    . "(null, 'C+', 74.5),"
-    . "(null, 'C',  69.5),"
-    . "(null, 'D+', 64.5),"
-    . "(null, 'D',  59.5),"
-    . "(null, 'F',  0)";
-
+    
 $data[ 'ocsw' ] =
 "INSERT INTO `ocsw` VALUES "
     . "(null,'words','/usr/share/dict/words','Where is the Unix words file?',1),"
@@ -538,7 +543,17 @@ $data[ 'publishers' ] =
     . "(null,'McGraw Hill','http://www.mhhe.com/'),"
     . "(null,'Pearson','http://www.pearsonhighered.com/'),"
     . "(null,'Prentice Hall','http://www.pearsonhighered.com/')";
-    
+
+$data[ 'student_statuses' ] =
+"INSERT INTO `student_statuses` VALUES "
+    . "(null,'Grade','The student is on track to receive a letter grade between A and F.'),"
+    . "(null,'Audit','The student is auditing the class, as per the Office of the Registrar.'),"
+    . "(null,'INC','The student has requested an incomplete.'),"
+    . "(null,'W','The instructor signed a withdrawal form, and the student has submitted this form to the Office of the Registrar.'),"
+    . "(null,'UW','The student stopped attending class, and has never presented a withdrawal form for the instructor's signature.  (Credit-level classes only.)'),"
+    . "(null,'UU','The student stopped attending class, and has never presented a withdrawal form for the instructor's signature.  (Remedial classes only.)'),"
+    . "(null,'NA','The student has never attended this course.')";
+        
 $data[ 'syllabus_sections' ] =
 "INSERT INTO `syllabus_sections` VALUES "
     . "(1,'Instructor','',0,0),"

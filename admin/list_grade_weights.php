@@ -5,6 +5,12 @@ require_once ('../_header.inc' );
 
 if( $_SESSION[ 'admin' ] == 1 ) {
 	$course = $db->real_escape_string( $_REQUEST[ 'course' ] );
+    
+    $course_name_query = 'select dept, course from courses '
+        . "where id = $course";
+    $course_name_result = $db->query( $course_name_query );
+    $course_name_obj = $course_name_result->fetch_object( );
+    $course_name = "$course_name_obj->dept $course_name_obj->course";
 	
 	if( isset( $_POST[ 'delete' ] ) ) {
 		$id = $db->real_escape_string( $_POST[ 'delete' ] );
@@ -18,14 +24,15 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 			. "values( null, $course, $type, $weight, 0 )" );
 	}
 	
-	$weights_query = 'select w.id, w.grade_type as type, t.grade_type as t, w.grade_weight as w, w.collected '
+	$weights_query = 'select w.id, w.grade_type as type, t.plural, '
+	    . 't.grade_type as t, w.grade_weight as w, w.collected '
 		. 'from grade_weights as w, grade_types as t '
 		. 'where w.grade_type = t.id '
 		. "and w.course = $course "
 		. 'order by t.grade_type';
 	$weights_result = $db->query( $weights_query );
 	if( $weights_result->num_rows == 0 ) {
-		print "<p>You have not defined any grade weights for this class.</p>\n";
+		print "<p>You have not defined any grade weights for $course_name.</p>\n";
 	} else {
 		print "<ul>\n";
 		$ids = array( );
@@ -52,11 +59,15 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 			print "<br /><input type=\"checkbox\" ";
 			if( $weight->collected == 1 )
 				print 'checked ';
-			print "id=\"collected\" style=\"margin-left: 3em\"> Submitted over the web?\n";
+			print "class=\"collected\" grade_type=\"$weight->type\" "
+			    . "singular=\"$weight->t\" plural=\"$weight->plural\" id=\"c$course:$weight->type\" "
+			    . "style=\"margin: 0 1em 0 3em;\"><label for=\"c$course:$weight->type\">Submitted over the web?</label>\n";
 			print "<br /><input type=\"checkbox\" ";
 			if( $drop == 1 )
 				print 'checked ';
-			print "id=\"drop_lowest\" style=\"margin-left: 3em\"> Drop the lowest grade?\n";
+			print "class=\"drop_lowest\" grade_type=\"$weight->type\" "
+			    . "singular=\"$weight->t\" plural=\"$weight->plural\" id=\"d$course:$weight->type\" "
+                . "style=\"margin: 0 1em 0 3em;\"><label for=\"d$course:$weight->type\">Drop the lowest grade?</label>\n";
 			print "</li>\n";
 		}
 		print "</ul>\n";
@@ -98,6 +109,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 $(document).ready(function(){
 	
 	var course = "<?php echo $course; ?>";
+	var course_name = "<?php echo $course_name; ?>";
 
     $("div#new_weight_pct").slider({
         value: 20,
@@ -134,6 +146,59 @@ $(document).ready(function(){
 		if( sum == 100 )
 			$('div.warning').fadeOut( 100 );
 	})
+	
+	$('input:checkbox.collected').click(function(){
+	    var course = <?php echo $course; ?>;
+	    var grade_type = $(this).attr('grade_type');
+	    var checked = $(this).attr('checked') == 'checked' ? 1 : 0;
+	    var type = $(this).attr('plural');
+	    var status = checked == 1 ? 'now' : 'no longer';
+	    $.post( 'toggle_collected.php',
+	        { course: course, grade_type: grade_type, checked: checked },
+	        function(data){
+	            if( data != 1 ) {
+                    $.pnotify({
+                        pnotify_title: 'Database Error',
+                        pnotify_text: 'The system was not able to make this change at this time.',
+                        pnotify_shadow: true,
+                        pnotify_type: 'error'
+                    })
+	            } else {
+	                $.pnotify({
+	                    pnotify_title: 'Setting Changed',
+	                    pnotify_text: type + ' will ' + status + ' be collected over the web for ' + course_name + '.',
+	                    pnotify_shadow: true
+	                })
+	            }
+	        }
+	    );
+	})
 
+    $('input:checkbox.drop_lowest').click(function(){
+        var course = <?php echo $course; ?>;
+        var grade_type = $(this).attr('grade_type');
+        var checked = $(this).attr('checked') == 'checked' ? 1 : 0;
+        var status = checked == 1 ? 'now' : 'no longer';
+        var type = $(this).attr('singular');
+        $.post( 'toggle_drop_lowest.php',
+            { course: course, grade_type: grade_type, checked: checked },
+            function(data){
+                if( data != 1 ) {
+                    $.pnotify({
+                        pnotify_title: 'Database Error',
+                        pnotify_text: 'The system was not able to make this change at this time.',
+                        pnotify_shadow: true,
+                        pnotify_type: 'error'
+                    })
+                } else {
+                    $.pnotify({
+                        pnotify_title: 'Setting Changed',
+                        pnotify_text: 'The lowest ' + type.toLowerCase() + ' will ' + status + ' be dropped for ' + course_name + '.',
+                        pnotify_shadow: true
+                    })
+                }
+            }
+        );
+    })
 })
 </script>

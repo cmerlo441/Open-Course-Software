@@ -26,7 +26,9 @@ if( $_SESSION[ 'admin' ] == 1 ) {
         $students_query = 'select s.first, s.middle, s.last, s.email '
             . 'from students as s, student_x_section as x '
             . 'where x.student = s.id '
-            . 'and x.active = 1 '
+            . 'and ( x.status = ( select id from student_statuses where status = "Grade" ) '
+            . 'or x.status = ( select id from student_statuses where status = "Audit" ) '
+            . 'or x.status = ( select id from student_statuses where status = "INC" ) ) '
             . "and x.section = $section "
             . 'order by last, first, middle';
         $students_result = $db->query( $students_query );

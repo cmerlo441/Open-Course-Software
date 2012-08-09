@@ -10,7 +10,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     $types_query = 'select * from attendance_types';
     $types_result = $db->query( $types_query );
     while( $type_row = $types_result->fetch_assoc( ) ) {
-      $types[ $type_row[ 'id' ] ] = substr( $type_row[ 'type' ], 0, 1 );
+        $types[ $type_row[ 'id' ] ] = substr( $type_row[ 'type' ], 0, 1 );
     }
     
     $reverse_types = array( );
@@ -28,14 +28,17 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     } else {
         
         $student_count_query = 'select * from student_x_section '
-            . "where section = $section and active = 1";
+            . "where section = $section "
+            . 'and ( status = ( select id from student_statuses where status = "Grade" ) '
+            . 'or status = ( select id from student_statuses where status = "Audit" ) '
+            . 'or status = ( select id from student_statuses where status = "INC" ) ) ';
         $student_count_result = $db->query( $student_count_query );
         $num_students = $student_count_result->num_rows;
         
         $section_row = $section_result->fetch_assoc( );
         $section_name = "{$section_row[ 'dept' ]} {$section_row[ 'course' ]} "
             . $section_row[ 'section' ];
-	$day_eve = $section_row[ 'day' ];
+	    $day_eve = $section_row[ 'day' ];
         
         /* $days will contain numbers representing the days of the week this
          * class meets
@@ -51,8 +54,8 @@ if( $_SESSION[ 'admin' ] == 1 ) {
         }
         
         /* $meetings will contain $month=>$day, one for each meeting
-	 * of this class between the start of the semester and now/end
-	 * of semester, whichever is earlier
+	     * of this class between the start of the semester and now/end
+	     * of semester, whichever is earlier
          */
         
         $meetings = array( );
@@ -69,8 +72,8 @@ if( $_SESSION[ 'admin' ] == 1 ) {
             
             $resched_query = 'select follow from rescheduled_days '
                 . "where date = \"$date\" and "
-		. ( $section_row[ 'day' ] == 1 ? 'day' : 'evening' )
-		. ' = 1';
+		        . ( $section_row[ 'day' ] == 1 ? 'day' : 'evening' )
+		        . ' = 1';
             $resched_result = $db->query( $resched_query );
             if( $resched_result->num_rows == 1 ) {
                 $row = $resched_result->fetch_assoc( );
@@ -80,7 +83,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
             $holiday_query = 'select '
                 . ( $day_eve == 1 ? 'day' : 'evening' )
                 . ' from holidays '
-		. "where " . ( $day_eve == 1 ? 'day' : 'evening' ) . ' = 1 '
+		        . "where " . ( $day_eve == 1 ? 'day' : 'evening' ) . ' = 1 '
                 . "and date = \"$date\"";
             $holiday_result = $db->query( $holiday_query );
             if( $holiday_result->num_rows == 1 ) {
@@ -124,7 +127,9 @@ if( $_SESSION[ 'admin' ] == 1 ) {
                 . 'from students as s, student_x_section as x '
                 . 'where x.student = s.id '
                 . "and x.section = $section "
-                . 'and x.active = 1 '
+                . 'and ( x.status = ( select id from student_statuses where status = "Grade" ) '
+                . 'or x.status = ( select id from student_statuses where status = "Audit" ) '
+                . 'or x.status = ( select id from student_statuses where status = "INC" ) ) '
                 . 'order by s.last, s.first, s.middle';
             $students_result = $db->query( $students_query );
             $student_count = 1;

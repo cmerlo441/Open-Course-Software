@@ -17,7 +17,8 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 
         // Activate student in all relevant sections 
 
-        $section_query = 'update student_x_section set active = 1 '
+        $section_query = 'update student_x_section '
+            . 'set status = ( select id from student_statuses where status = "Grade" ) '
             . "where student = $id";
         $section_result = $db->query( $section_query );
         
@@ -28,10 +29,10 @@ if( $_SESSION[ 'admin' ] == 1 ) {
         $student_result = $db->query( $student_query );
         $student = $student_result->fetch_assoc( );
         $name = name( $student );
-        $message = wordwrap( "Hello, {$student[ 'first' ]}.  "
+        $message = "Hello, {$student[ 'first' ]}.  "
             . "Your account has been finalized, and you can now log in.  "
             . "Just visit $url and click on \"Log in now\".  Have a great "
-            . "semester!" );
+            . "semester!";
 
         $headers = "From: {$prof[ 'name' ]} <{$prof[ 'email' ]}>\n";
 

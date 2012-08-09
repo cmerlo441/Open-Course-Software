@@ -19,9 +19,9 @@ if( $_SESSION[ 'admin' ] == 1 ) {
         $local_sum = 0;
         $count = 0;
         $weight = $weights_row[ 'grade_weight' ];
-	$grade_type = $weights_row[ 'grade_type' ];
-	$min = 999;
-
+    	$grade_type = $weights_row[ 'grade_type' ];
+    	$min = 999;
+    
         // Find all the grade events of this type assigned to this section
         
         $events_query = 'select id from grade_events '
@@ -43,45 +43,45 @@ if( $_SESSION[ 'admin' ] == 1 ) {
                     . "and student = $student";
                 $grade_result = $db->query( $grade_query );
                 if( $grade_result->num_rows == 1 ) {
-		  $grade_row = $grade_result->fetch_assoc( );
-		  $grade = $grade_row[ 'grade' ];
-
-		  // Is there a curve?
-
-		  $curve_query = 'select * from curves '
-		    . "where grade_event = {$event[ 'id' ]} ";
-		  $curve_result = $db->query( $curve_query );
-		  if( $curve_result->num_rows == 1 ) {
-		    $curve_row = $curve_result->fetch_assoc( );
-		    if( $curve_row[ 'points' ] > 0 ) {
-		      $grade += $curve_row[ 'points' ];
-		    } else {
-		      $grade *= ( 1 + $curve_row[ 'percent' ] * 0.01 );
-		    }
-		  }
-		      
-		  $local_sum += $grade;
-		  if( $grade < $min )
-		      $min = $grade;
-
+                    $grade_row = $grade_result->fetch_assoc( );
+                    $grade = $grade_row[ 'grade' ];
+                
+                    // Is there a curve?
+                
+                    $curve_query = 'select * from curves '
+                        . "where grade_event = {$event[ 'id' ]} ";
+                    $curve_result = $db->query( $curve_query );
+                    if( $curve_result->num_rows == 1 ) {
+                        $curve_row = $curve_result->fetch_assoc( );
+                    if( $curve_row[ 'points' ] > 0 ) {
+                        $grade += $curve_row[ 'points' ];
+                    } else {
+                        $grade *= ( 1 + $curve_row[ 'percent' ] * 0.01 );
+                    }
+                }
+    		      
+                $local_sum += $grade;
+                if( $grade < $min )
+                    $min = $grade;
+    
                 } else {
-		    $min = 0;
-		}
+        		    $min = 0;
+    	       	}
             }
         }
-
-	// Do we drop the lowest grade of this type?
-	$drop_lowest_query = 'select d.id '
-	    . 'from sections as s, drop_lowest as d '
-	    . "where s.id = $section "
-	    . 'and s.course = d.course '
-	    . "and d.grade_type = {$weights_row[ 'grade_type' ]}";
-	$drop_lowest_result = $db->query( $drop_lowest_query );
-
-	if( $drop_lowest_result->num_rows == 1 ) {
-	    $local_sum -= $min;
-	    $count--;
-	}
+    
+    	// Do we drop the lowest grade of this type?
+    	$drop_lowest_query = 'select d.id '
+    	    . 'from sections as s, drop_lowest as d '
+    	    . "where s.id = $section "
+    	    . 'and s.course = d.course '
+    	    . "and d.grade_type = {$weights_row[ 'grade_type' ]}";
+    	$drop_lowest_result = $db->query( $drop_lowest_query );
+    
+    	if( $drop_lowest_result->num_rows == 1 ) {
+    	    $local_sum -= $min;
+    	    $count--;
+    	}
 
         $sum += ( ( ( $count > 0 ? $local_sum / ( $count * 1.0 ) : 100 ) * 1.0 ) * ( $weight / 100 ) );
     }
@@ -89,34 +89,36 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 
     // Is this a credit-level class?
     $course_number_query = 'select c.course '
-	. 'from sections as s, courses as c '
-	. "where s.id = $section "
-	. 'and s.course = c.id';
+    	. 'from sections as s, courses as c '
+    	. "where s.id = $section "
+    	. 'and s.course = c.id';
     //print "<pre>$course_number_query;</pre>\n";
     $course_number_result = $db->query( $course_number_query );
     $course_number_row = $course_number_result->fetch_object( );
     //print "<pre>$course_number_row->course</pre>\n";
 
-    $i_w_query = 'select active, incomplete '
-	. 'from student_x_section '
-	. "where student = $student and section = $section";
-    $i_w_result = $db->query( $i_w_query );
-    $i_w_row = $i_w_result->fetch_object( );
+    $status_query = 'select s.status '
+    	. 'from student_x_section as x, student_statuses as s '
+    	. "where x.student = $student "
+    	. "and x.section = $section "
+    	. "and x.status = s.id";
+    $status_result = $db->query( $status_query );
+    $status_row = $status_result->fetch_object( );
     $letter_grade = '';
-    if( $i_w_row->active == 0 )
-	$letter_grade = 'W';
-    else if( $i_w_row->incomplete == 1 )
-	$letter_grade = 'I';
+    if( $status_row->status != 'Grade' )
+        $letter_grade = $status_row->status;
     else if( ( $course_number_row->course * 1 ) >= 100 ) {
 
-	$letter_grade_query = 'select letter from letter_grades '
-	    . "where grade <= $sum limit 1";
-	$letter_grade_result = $db->query( $letter_grade_query );
-	$letter_grade_row = $letter_grade_result->fetch_object( );
-	$letter_grade = $letter_grade_row->letter;
+    	$letter_grade_query = 'select letter from letter_grades '
+    	    . "where grade <= $sum limit 1";
+    	$letter_grade_result = $db->query( $letter_grade_query );
+    	$letter_grade_row = $letter_grade_result->fetch_object( );
+    	$letter_grade = $letter_grade_row->letter;
     }
     if( $letter_grade != '' )
-	print " / <span style=\"font-weight: bold;\">$letter_grade</span>";
+	   print " / <span style=\"font-weight: bold;\">$letter_grade</span>";
+    
+    $db->close();
 
 }
 ?>

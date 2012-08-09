@@ -7,9 +7,9 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 
     $id = $db->real_escape_string( $_POST[ 'course' ] );
     $weights_query = 'select w.id, t.plural, w.grade_weight, w.collected '
-	. 'from grade_weights as w, grade_types as t '
-	. 'where w.grade_type = t.id '
-	. "and w.course = $id";
+    	. 'from grade_weights as w, grade_types as t '
+    	. 'where w.grade_type = t.id '
+    	. "and w.course = $id";
     $weights_result = $db->query( $weights_query );
     print "<table id=\"grade_weights_table\" style=\"margin: auto\">";
     print "<thead>\n";

@@ -78,8 +78,8 @@ if( $well_formed_banner == 0 ) {
         
         foreach( explode( ',', $sections ) as $section ) {
             $section_query = 'insert into student_x_section '
-                . '( id, student, section, active, incomplete ) '
-                . "values( null, $student_id, $section, 0, 0 )";
+                . '( id, student, section, status ) '
+                . "values( null, $student_id, $section, 0 )";
             $section_result = $db->query( $section_query );
         }
         
