@@ -220,7 +220,6 @@ $weights_query = 'select t.plural, w.grade_weight '
     . 'from grade_types as t, grade_weights as w '
     . "where w.course = $course_id "
     . 'and w.grade_type = t.id '
-    . 'and w.grade_weight > 0 '
     . 'order by w.grade_weight desc';
 //print "<pre>$weights_query;</pre>\n";
 $weights_result = $db->query( $weights_query );
@@ -297,7 +296,7 @@ while( $row = $section_result->fetch_assoc( ) ) {
         print "<p id=\"evaluation\"><b>Evaluation:</b> $value</p>\n";
         print "<ul>\n";
         foreach( $weights as $column=>$weight ) {
-            print "<li>$column: $weight%";
+            if( $weight > 0 ) { print "<li>$column: $weight%"; }
 	    print "</li>\n";
         }
         print "</ul>\n";
@@ -354,7 +353,7 @@ while( $row = $section_result->fetch_assoc( ) ) {
             }
         } else if( preg_match( '/Homework/', $field ) == 1 ) {
             if( array_key_exists( 'Homework', $weights ) ) {
-                print "<p id=\"$p_id\"><b>$field</b> $value</p>\n";
+                print "<p id=\"$p_id\"><b>$field:</b> $value</p>\n";
             }
         }
         
