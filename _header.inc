@@ -399,7 +399,7 @@ if( $no_header != 1 ) {
   <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
 <![endif]-->
 <script type="text/javascript" src="http://code.jquery.com/jquery.min.js"></script>
-<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/jquery-ui.min.js"></script>
 <script type="text/javascript" src="<?php echo $docroot ?>/js/editinplace/src/jquery.editinplace.js"></script>
 <script type="text/javascript" src="<?php echo $docroot ?>/tablesorter/jquery.tablesorter.js"></script>
 <script type="text/javascript" src="<?php echo $docroot ?>/markitup/markitup/jquery.markitup.pack.js"></script>
