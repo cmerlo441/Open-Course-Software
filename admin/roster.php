@@ -20,7 +20,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     $statuses_query = 'select id, status '
         . 'from student_statuses '
         . 'where status != "'
-        . ( $credits == 0 ? 'UW' : 'UU' ) . '" '
+        . ( $credits == 0 ? 'UW and status != NA' : 'UU' ) . '" '
         . 'order by id';
     $statuses_result = $db->query( $statuses_query );
     while( $status_row = $statuses_result->fetch_object( ) ) {
