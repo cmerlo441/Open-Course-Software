@@ -328,6 +328,24 @@ while( $row = $section_result->fetch_assoc( ) ) {
 		}
 	}
     
+    else if( $field == 'Computer Center' ) {
+        if( $course_row[ 'dept' ] == 'CMP' or $course_row[ 'dept' ] == 'CSC' or $course_row[ 'dept' ] == 'ITE' ) {
+            print "<p id=\"computer_center\"><b>Computer Center:</b> $value</p>\n";
+        }
+    }
+    
+    else if( $field == 'Math Success Center' ) {
+        if( $course_row[ 'dept' ] == 'MAT' and $course_row[ 'course' ] < 100 ) {
+            print "<p id=\"math_success_center\"><b>Math Success Center:</b> $value</p>\n";
+        }
+    }
+    
+    else if( $field == 'Math Center' ) {
+        if( $course_row[ 'dept' ] == 'MAT' and $course_row[ 'course' ] >= 100 ) {
+            print "<p id=\"math_center\"><b>Math Center:</b> $value</p>\n";
+        }
+    }
+    
     else {
         $p_id = strtolower( str_replace( ' ', '_', $field ) );
         
