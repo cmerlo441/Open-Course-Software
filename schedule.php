@@ -82,7 +82,7 @@ foreach( $day_names as $number=>$day ) {
                     $r_result = $db->query( $r_query );
                     if( $r_result->num_rows == 1 )
                         $r = $r_result->fetch_object( );
-                    if( $r_result->num_rows == 0 or $r->day == $day ) {
+                    if( ( $r_result->num_rows == 0 and date( 'N' ) == $number ) or $r->day == $number ) {
                         // This is wrong for rescheduled evenings
                         if( $meeting_row[ 'start' ] <= date( 'H:i:s' )
                             and $meeting_row[ 'end' ] > date( 'H:i:s' ) ) {

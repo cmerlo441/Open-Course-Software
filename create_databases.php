@@ -523,6 +523,17 @@ $data[ 'grade_types' ] =
     . "(null,'Online Discussion','Online Discussion'),"
     . "(null,'Project','Projects'),"
     . "(null,'Quiz','Quizzes')";
+
+$data[ 'letter_grades' ] =
+"INSERT INTO `letter_grades` (id, letter, grade ) VALUES "
+    . "(null, 'A',  '89.5'),"
+    . "(null, 'B+', '84.5'),"
+    . "(null, 'B',  '79.5'),"
+    . "(null, 'C+', '74.5'),"
+    . "(null, 'C',  '69.5'),"
+    . "(null, 'D+', '64.5'),"
+    . "(null, 'D',  '59.5'),"
+    . "(null, 'F',  '0')";    
     
 $data[ 'ocsw' ] =
 "INSERT INTO `ocsw` VALUES "
@@ -542,7 +553,8 @@ $data[ 'publishers' ] =
     . "(null,'Course Technology','http://www.cengage.com/coursetechnology/'),"
     . "(null,'McGraw Hill','http://www.mhhe.com/'),"
     . "(null,'Pearson','http://www.pearsonhighered.com/'),"
-    . "(null,'Prentice Hall','http://www.pearsonhighered.com/')";
+    . "(null,'Prentice Hall','http://www.pearsonhighered.com/'),"
+    . "(null,'Wiley','http://www.wiley.com/')";
 
 $data[ 'student_statuses' ] =
 "INSERT INTO `student_statuses` VALUES "
@@ -550,8 +562,8 @@ $data[ 'student_statuses' ] =
     . "(null,'Audit','The student is auditing the class, as per the Office of the Registrar.'),"
     . "(null,'INC','The student has requested an incomplete.'),"
     . "(null,'W','The instructor signed a withdrawal form, and the student has submitted this form to the Office of the Registrar.'),"
-    . "(null,'UW','The student stopped attending class, and has never presented a withdrawal form for the instructor's signature.  (Credit-level classes only.)'),"
-    . "(null,'UU','The student stopped attending class, and has never presented a withdrawal form for the instructor's signature.  (Remedial classes only.)'),"
+    . "(null,'UW','The student stopped attending class, and has never presented a withdrawal form for the instructor\'s signature.  (Credit-level classes only.)'),"
+    . "(null,'UU','The student stopped attending class, and has never presented a withdrawal form for the instructor\'s signature.  (Remedial classes only.)'),"
     . "(null,'NA','The student has never attended this course.')";
         
 $data[ 'syllabus_sections' ] =
