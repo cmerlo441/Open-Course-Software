@@ -216,9 +216,10 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     
     // Start displaying student data
     $students = array( );
-    $student_query = 'select s.id, s.first, s.last, s.banner, x.active, x.incomplete '
-        . 'from students as s, student_x_section as x '
+    $student_query = 'select s.id, s.first, s.last, s.banner, stat.status '
+        . 'from students as s, student_x_section as x, student_statuses as stat '
         . 'where x.student = s.id '
+	. 'and x.status = stat.id '
         . "and x.section = $section "
         . 'order by s.last, s.first';
     $student_result = $db->query( $student_query );
@@ -308,10 +309,8 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 
         $final_location = column( substr_count( $row6, $col_sep ) ) . $row;
         
-        if( $student[ 'active' ] == 0 ) {
-            print "{$col_sep}\"W\"";
-        } else if( $student[ 'incomplete' ] == 1 ) {
-            print "{$col_sep}\"I\"";
+        if( $student[ 'status' ] != 'Grade' ) {
+            print "{$col_sep}\"{$student[ 'status' ]}\"";
         } else {
             print "{$col_sep}=";
             $letter_grades = array( );
