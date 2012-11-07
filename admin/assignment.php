@@ -157,13 +157,13 @@ if( $_SESSION[ 'admin' ] == 1 ) {
                 while( $student = $student_result->fetch_assoc( ) ) {
                     print "        <tr id=\"{$student[ 'student' ]}\">\n";
                     
-		    $last_submit_query = 'select u.datetime '
-		    . 'from assignment_upload_requirements as r, '
-		    . 'assignment_uploads as u '
-		    . 'where u.assignment_upload_requirement = r.id '
-		    . "and u.student = {$student[ 'student' ]} "
-		    . "and r.assignment = {$assignment_row[ 'id' ]} "
-		    . 'order by datetime desc limit 1';
+        		    $last_submit_query = 'select u.datetime '
+            		    . 'from assignment_upload_requirements as r, '
+            		    . 'assignment_uploads as u '
+            		    . 'where u.assignment_upload_requirement = r.id '
+            		    . "and u.student = {$student[ 'student' ]} "
+            		    . "and r.assignment = {$assignment_row[ 'id' ]} "
+            		    . 'order by datetime desc limit 1';
 
                     $last_submit_result = $db->query( $last_submit_query );
                     $last_submit_row = $last_submit_result->fetch_assoc( );
@@ -194,7 +194,8 @@ if( $_SESSION[ 'admin' ] == 1 ) {
                     print "</td>\n";
                     
                     // See if a grade has been posted
-    
+
+		    unset( $grade );
                     $grade_query = 'select * from grades '
                         . "where grade_event = $event "
                         . "and student = {$student[ 'student' ]}";
@@ -237,6 +238,8 @@ if( $_SESSION[ 'admin' ] == 1 ) {
             if( $submissions_result->num_rows == 0 ) {
                 print 'No submissions.';
             } else {
+                $rows = $submissions_result->num_rows;
+                print "$rows submission" . ( $rows == 1 ? '' : 's' );
                 $count = 0;
                 $sum = 0;
                 while( $submission = $submissions_result->fetch_assoc( ) ) {
@@ -266,6 +269,9 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 		    $upload_r_result = $db->query( $upload_r_query );
 		    if( $upload_r_result->num_rows > 0 ) {
 			print "<h2>File Uploads</h2>\n";
+
+			// This *really* needs to be AJAXed in!
+
 			while( $req = $upload_r_result->fetch_assoc( ) ) {
 			    print "<div class='upload' "
 				. "style='border: 1px solid #5d562c; "
@@ -287,7 +293,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 				$row = $upload_result->fetch_assoc( );
 				$ext = preg_replace( '/.*\.([^\.]+)$/', "$1",
 						     $row[ 'filename' ] );
-				if( $ext == 'zip' ) {
+				if( $ext == 'zip' or $ext == 'docx' or $ext == 'pdf' or $ext == 'xlsx' ) {
 				    print_link( 'download_student_upload.php?'
 						. "id={$row[ 'id' ]}",
 						$row[ 'filename' ] );
@@ -296,6 +302,55 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 						strtotime( $row[ 'datetime' ] ) );
 				    print ".  {$row[ 'filesize' ]} bytes.";
 				}
+
+				else if( $ext == 'c' ) {
+				    print "<pre class='brush:c'>{$row[ 'file' ]}</pre>\n";
+				}
+
+				else if( $ext == 'cpp' ) {
+				    print "<pre class='brush:cpp'>{$row[ 'file' ]}</pre>\n";
+				}
+
+				else if( $ext == 'cs' ) {
+				    print "<pre class='brush:csharp'>{$row[ 'file' ]}</pre>\n";
+				}
+
+				else if( $ext == 'css' ) {
+				    print "<pre class='brush:css'>{$row[ 'file' ]}</pre>\n";
+				}
+
+				else if( $ext == 'java' ) {
+				    print "<pre class='brush:java'>{$row[ 'file' ]}</pre>\n";
+				}
+
+				else if( $ext == 'js' ) {
+				    print "<pre class='brush:js'>{$row[ 'file' ]}</pre>\n";
+				}
+
+				else if( $ext == 'pl' ) {
+				    print "<pre class='brush:perl'>{$row[ 'file' ]}</pre>\n";
+				}
+
+				else if( $ext == 'php' ) {
+				    print "<pre class='brush:php'>{$row[ 'file' ]}</pre>\n";
+				}
+
+				else if( $ext == 'txt' ) {
+				    print "<pre class='brush:text'>{$row[ 'file' ]}</pre>\n";
+				}
+
+				else if( $ext == 'py' ) {
+				    print "<pre class='brush:py'>{$row[ 'file' ]}</pre>\n";
+				}
+
+				else if( $ext == 'ruby' ) {
+				    print "<pre class='brush:ruby'>{$row[ 'file' ]}</pre>\n";
+				}
+
+				else if( $ext == 'vb' ) {
+				    print "<pre class='brush:vb'>{$row[ 'file' ]}</pre>\n";
+				}
+
 			    }
 			    print "</div>  <!-- div.upload -->\n";
 			}
@@ -319,7 +374,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 		    print "<div class=\"grade\">\n";
                     print "Grade: "
                         . "<span class=\"grade\" id=\"{$submission[ 'student_id' ]}\" size=\"4\" "
-                        . "id=\"{$submission[ 'sub_id' ]}\">$grade</span>\n";
+                         . "id=\"{$submission[ 'sub_id' ]}\">$grade</span>\n";
 		    print "</div>  <!-- div.grade -->\n";
     
                     print "<div class=\"comments\" id=\"{$submission[ 'sub_id' ]}\">\n";
@@ -599,7 +654,7 @@ $(document).ready(function(){
         'folder': './uploads',
         'buttonText': 'Browse',
         'wmode': 'transparent',
-        'sizeLimit': '500000',
+        'sizeLimit': '2000000',
         'scriptData': {'assignment': assignment},
         'fileDataName': 'file',
         'onComplete': function(a,b,c,d,e){
