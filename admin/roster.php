@@ -99,6 +99,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
         	$absences_query = 'select a.id '
                 . 'from attendance as a, attendance_types as t '
                 . "where a.student = {$row[ 'id' ]} "
+                . "and a.section = {$row[ 'section' ]} "
                 . "and a.presence = t.id "
                 . "and t.type like \"a%\"";
             $absences_result = $db->query( $absences_query );
