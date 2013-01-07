@@ -40,7 +40,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
              $date = date( 'Y-m-d',
                mktime( 0, 0, 0, date( 'n', strtotime( $date ) ),
                    date( 'j', strtotime( $date ) ) + 1,
-                   date( 'Y' ) ) ) )
+		       date( 'Y', strtotime( $date ) ) ) ) )
         {
             $day = date( 'w', strtotime( $date ) );
             
