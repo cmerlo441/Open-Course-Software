@@ -20,6 +20,8 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 
 <div id="unverified"></div>
 
+<div id="last_comment"></div>
+
 <div class="accordion" id="admin_tools">
 
 <h3><a href="#">Current Sections</a></h3>
@@ -187,6 +189,15 @@ $(document).ready(function(){
         function(data) {
             if( data != '' ) {
                 $('div#unverified').html(data).slideDown(500);
+            }
+        }
+    )
+
+    $('div#last_comment').hide();
+    $.post( "<?php echo $admin; ?>/last_comment.php",
+        function(data){
+            if( data != '' ) {
+                $('div#last_comment').html(data).slideDown(500);
             }
         }
     )

@@ -14,18 +14,23 @@ if( $_FILES[ 'file' ][ 'error' ] == 0 ) {
     }
     
     $file = $db->real_escape_string( $file );
-    $section = $db->real_escape_string( $_POST[ 'section' ] );
+    $section = $db->real_escape_string( $_REQUEST[ 'section' ] );
 
     $insert_query = 'insert into reference '
         . '( id, filename, size, type, section, uploaded, available, file ) values '
         . "( null, \"{$_FILES[ 'file' ][ 'name' ]}\", \"{$_FILES[ 'file' ][ 'size' ]}\", "
         . "\"{$_FILES[ 'file' ][ 'type' ]}\", "
         . "\"$section\", \"" . date( 'Y-m-d H:i:s' ) . "\", 0, \"$file\" )";
+    //print "<script type=\"text/javascript\">alert( $insert_query );</script>\n";
     $insert_result = $db->query( $insert_query );
-
-    print 'Done.';
+    if( $db->affected_rows == 1 ) {
+    	// Change this to be the ID of the newly-entered file
+        print 'Done.';
+    } else {
+        print 'Database error.';
+    }
 } else {
-    print 'Error.';
+    print 'Upload error.';
 }
 
 ?>
