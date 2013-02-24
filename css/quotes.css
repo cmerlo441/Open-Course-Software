@@ -1,0 +1,28 @@
+div#search {
+    text-align: center;
+    padding: 0.5em;
+    margin: 0 0 1em -1em;
+    background-color: #5d562c;
+    border-radius: 10px;
+    -moz-border-radius: 10px;
+
+}
+
+div#quotes > div {
+    padding: 0.5em;
+    width: 100%;
+    float: right;
+}
+
+div#quotes > div.odd {
+    background-color: #464648;
+}
+
+div#quotes > div > div.icons {
+    float: right;
+    padding: 0 0 0 0.5em;
+}
+
+div#quotes span.attribution {
+    font-style: italic;
+}
