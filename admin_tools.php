@@ -2,6 +2,7 @@
 
 $no_header = 1;
 require_once( '_header.inc' );
+include_once( "what_class_is_meeting_now.php" );
 
 if( $_SESSION[ 'admin' ] == 1 ) {
 ?>
@@ -20,13 +21,16 @@ if( $_SESSION[ 'admin' ] == 1 ) {
 
 <div id="unverified"></div>
 
-<div id="last_comment"></div>
+<!-- <div id="last_comment"></div> -->
 
 <div class="accordion" id="admin_tools">
 
 <h3><a href="#">Current Sections</a></h3>
 <div id="sections">
     <?php
+
+    $current_class = what_class_is_meeting_now();
+
     $sections_query = 'select c.dept, c.course, c.short_name, '
         . 's.id, s.section, s.banner '
         . 'from courses as c, sections as s '
@@ -234,6 +238,9 @@ $(document).ready(function(){
         var id = $(this).attr("id");
         $("div#sections ul.section_tasks[id=" + id + "]").slideToggle(1000);
     })
+    var current_class = <?php echo $current_class; ?>;
+    if( current_class > 0 )
+	$('div#sections a#' + current_class + '.section_tasks').click();
     
     if( $('div#sections ul.section_tasks').size() == 1 ) {
         $('div#sections ul.section_tasks').first().slideDown(1000);
