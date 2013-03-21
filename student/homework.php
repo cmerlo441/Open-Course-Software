@@ -324,6 +324,7 @@ if( $_SESSION[ 'student' ] > 0 ) {
 				. date( 'l, F j, Y \a\t g:i a',
 					strtotime( $file_row->datetime ) )
 				. ".";
+			    print_link( "download_homework_submission.php?id=$file_row->id", 'Download this file now' );
 			}
                             
                         print "</span>  <!-- span.upload_details#upload_details{$upload_row['id']} -->\n";
