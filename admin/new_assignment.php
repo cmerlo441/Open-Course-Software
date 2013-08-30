@@ -5,21 +5,22 @@ require_once( '../_header.inc' );
 
 if( $_SESSION[ 'admin' ] == 1 ) {
 
-  // Does this professor have a Twitter account?
-  $twitter = null;
-  $twitter_enabled_query = 'select twitter_username as u, '
-    . 'twitter_password as p '
-    . 'from prof';
-  $twitter_enabled_result = $db->query( $twitter_enabled_query );
-  if( $twitter_enabled_result->num_rows > 0 ) {
-    include_once( '../twitter/class.twitter.php' );
-    $twitter_creds_row = $twitter_enabled_result->fetch_assoc( );
-    $u = $twitter_creds_row[ 'u' ];
-    $p = $twitter_creds_row[ 'p' ];
-    $twitter = new twitter( );
-    $twitter->username = $u;
-    $twitter->password = $p;
-  }
+    // From http://www.somacon.com/p113.php
+    function uuid() {
+      
+       // The field names refer to RFC 4122 section 4.1.2
+    
+       return sprintf('urn:uuid:%04x%04x-%04x-%03x4-%04x-%04x%04x%04x',
+           mt_rand(0, 65535), mt_rand(0, 65535), // 32 bits for "time_low"
+           mt_rand(0, 65535), // 16 bits for "time_mid"
+           mt_rand(0, 4095),  // 12 bits before the 0100 of (version) 4 for "time_hi_and_version"
+           bindec(substr_replace(sprintf('%016b', mt_rand(0, 65535)), '01', 6, 2)),
+               // 8 bits, the last two of which (positions 6 and 7) are 01, for "clk_seq_hi_res"
+               // (hence, the 2nd hex digit after the 3rd hyphen can only be 1, 5, 9 or d)
+               // 8 bits for "clk_seq_low"
+           mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535) // 48 bits for "node" 
+       ); 
+    }
 
     $grade_type = $db->real_escape_string( $_POST[ 'assignment_type' ] );
     $section = $db->real_escape_string( $_POST[ 'section' ] );
@@ -39,7 +40,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
         . "values( null, $grade_type, $section, \"$posted_date\", \"$due_date\", "
         . "\"$title\", \"$description\", 0 )";
 
-    print $assignment_query;
+    //print $assignment_query;
 
     $assignment_result = $db->query( $assignment_query );
     
@@ -52,91 +53,90 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     
     $db->query( 'unlock tables' );
 
-    // Tweet it!
+    // Add to Atom database
 
-    if( $twitter != null ) {
+    // Get the course and section
 
-      // Get the course and section
+    $section_query = 'select c.id as course_id, c.dept, c.course, s.section '
+        . 'from courses as c, sections as s '
+        . 'where s.course = c.id '
+        . "and s.id = $section";
 
-      $section_query = 'select c.id as course_id, c.dept, c.course, s.section '
-	. 'from courses as c, sections as s '
-	. 'where s.course = c.id '
-	. "and s.id = $section";
+    //print $section_query;
 
-      print $section_query;
+    $section_result = $db->query( $section_query );
+    $section_row = $section_result->fetch_assoc( );
+    $section = $section_row[ 'dept' ] . ' ' . $section_row[ 'course' ]
+        . ' ' . $section_row[ 'section' ];
+    $section_result->free();
 
-      $section_result = $db->query( $section_query );
-      $section_row = $section_result->fetch_assoc( );
-      $section = $section_row[ 'dept' ] . ' ' . $section_row[ 'course' ]
-	. ' ' . $section_row[ 'section' ];
+    // Get the assignment type
 
-      // Get the assignment type
+    $grade_type_query = 'select t.grade_type as t, w.collected as w '
+        . 'from grade_types as t, grade_weights as w '
+        . "where t.id = $grade_type "
+        . 'and w.grade_type = t.id '
+        . "and w.course = {$section_row[ 'course_id' ]}";
 
-      $grade_type_query = 'select t.grade_type as t, w.collected as w '
-	. 'from grade_types as t, grade_weights as w '
-	. "where t.id = $grade_type "
-	. 'and w.grade_type = t.id '
-	. "and w.course = {$section_row[ 'course_id' ]}";
+    $grade_type_result = $db->query( $grade_type_query );
+    $grade_type_row = $grade_type_result->fetch_assoc( );
+    $type = $grade_type_row[ 't' ];
+    $grade_type_result->free();
 
-      $grade_type_result = $db->query( $grade_type_query );
-      $grade_type_row = $grade_type_result->fetch_assoc( );
-      $type = $grade_type_row[ 't' ];
+    // Only add things to the Atom database that will be collected...
 
-      // Only tweet things that will be collected...
-
-      if( $grade_type_row[ 'w' ] == 1 ) {
-
-	// Build the string
-
-	$update_string = 'New ' . strtolower( $type ) . ' ';
-	if( $title != '' ) {
-	  $update_string .= "\"$title\" ";
-	}
-	$update_string .= " posted for $section.  Due "
-	  . date( 'l, F jS', strtotime( $due_date ) )
-	  . '.';
-
-	// Tweet it!
-
-	$twitter->update( $update_string );
-      }
-
-      // ... or exams that will happen in the future
-
-      else if( preg_match( '/[Ee]xam/', $type ) == 1 and
-		 date( 'Y-m-d H:i' ) < date( 'Y-m-d H:i',
-					     strtotime( $due_date ) ) ) {
-
-	// Build the string
-	$update_string = "$type scheduled for $section on "
-	  . date( 'l, F jS', strtotime( $due_date ) );
-
-	// Tweet it!
-
-	$twitter->update( $update_string );
-
-      }
-
-      // ... or HW for math classes
-      else if( preg_match( '/^MAT/', $section ) and
-	       date( 'Y-m-d H:i' ) < date( 'Y-m-d H:i',
-					   strtotime( $due_date ) ) and
-	       preg_match( '/Homework/i', $type ) ) {
-	// Build the string
-	       
-	$update_string = 'New ' . strtolower( $type ) . ' ';
-	if( $title != '' ) {
-	  $update_string .= "\"$title\" ";
-	}
-	$update_string .= " posted for $section.  Due "
-	  . date( 'l, F jS', strtotime( $due_date ) )
-	  . '.';
-
-	// Tweet it!
-
-	$twitter->update( $update_string );
-      }
+    if( $grade_type_row[ 'w' ] == 1 ) {
+    	$atom_title = "$section: New " . strtolower( $type ) . ' posted';
+        $atom_subtitle = '';
+        if( $title != '' )
+            $atom_subtitle = $title;
+        $atom_content = "$atom_title.  Due " . date( 'l, F jS', strtotime( $due_date ) ) . '.';
+        $atom_url = "http://{$_SERVER[ 'SERVER_NAME' ]}$docroot/";
+        $atom_query = 'insert into atom( id, title, subtitle, content, url, uuid, posted ) '
+            . "values( null, \"$atom_title\", \"$atom_subtitle\", \"$atom_content\", \"$atom_url\", \"" . uuid() . '", "'
+            . date( 'c' ) . "\" )";
+        print "<pre>$atom_query;</pre>\n";
+        $atom_result = $db->query( $atom_query );
+        $atom_result->free();    
     }
- }
+
+    // ... or exams that will happen in the future
+
+    else if( preg_match( '/[Ee]xam/', $type ) == 1 and date( 'Y-m-d H:i' ) < date( 'Y-m-d H:i', strtotime( $due_date ) ) ) {
+
+        $atom_title = "$section: $type Scheduled for " . date( "D, M j", strtotime( $due_date ) );
+        $atom_subtitle = '';
+        if( $title != '' )
+            $atom_subtitle = $title;
+        $atom_content = $atom_title;
+        if( $description != '' ) {
+            $atom_content .= '.  ' . $description;
+            if( strlen( $atom_content ) > 140 ) {
+                $atom_content = substr( $atom_content, 0, 137 ) . '...';
+            }
+        }
+        $atom_url = "http://{$_SERVER[ 'SERVER_NAME' ]}$docroot/";
+        $atom_query = 'insert into atom( id, title, subtitle, content, url, uuid, posted ) '
+            . "values( null, \"$atom_title\", \"$atom_subtitle\", \"$atom_content\", \"$atom_url\", \"" . uuid() . '", "'
+            . date( 'c' ) . "\" )";
+        $atom_result = $db->query( $atom_query );
+        $atom_result->free();    
+    }
+
+    // ... or HW, whether it's accepted or not
+    else if( date( 'Y-m-d H:i' ) < date( 'Y-m-d H:i', strtotime( $due_date ) ) and preg_match( '/Homework/i', $type ) ) {
+        $atom_title = "$section: New " . strtolower( $type ) . ' posted';
+        $atom_subtitle = '';
+        if( $title != '' )
+            $atom_subtitle = $title;
+        $atom_content = "$atom_title.  Due " . date( 'l, F jS', strtotime( $due_date ) ) . '.';
+        $atom_url = "http://{$_SERVER[ 'SERVER_NAME' ]}$docroot/";
+        $atom_query = 'insert into atom( id, title, subtitle, content, url, uuid, posted ) '
+            . "values( null, \"$atom_title\", \"$atom_subtitle\", \"$atom_content\", \"$atom_url\", \"" . uuid() . '", "'
+            . date( 'c' ) . "\" )";
+        $atom_result = $db->query( $atom_query );
+        $atom_result->free();    
+    }
+}
 
 ?>
