@@ -65,6 +65,18 @@ $tables[ 'assignments' ] =
     PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1";
 
+$tables[ 'atom' ] =
+    "CREATE TABLE `atom' (
+    `id` bigint(20) NOT NULL auto_increment,
+    `title` varchar(64) NOT NULL,
+    `subtitle` varchar(128) NOT NULL,
+    `content` varchar(140) NOT NULL,
+    `url` varchar(250) NOT NULL,
+    `uuid` varchar(50) NOT NULL,
+    `posted` datetime,
+    PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1";
+
 $tables[ 'attendance' ] =
     "CREATE TABLE `attendance` (
     `id` int(11) NOT NULL auto_increment,
