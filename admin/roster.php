@@ -54,6 +54,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     
     if( $roster_result->num_rows == 0 ) {
         print "<p>No students.";
+	$roster_result->close();
     } else {
         print "<table class=\"tablesorter\" id=\"roster_table\">\n";
         print "<thead>\n";
@@ -145,21 +146,23 @@ if( $_SESSION[ 'admin' ] == 1 ) {
             } else {
                 print "<ul>\n";
                 while( $row = $recent_absences_result->fetch_assoc( ) ) {
-                print '<ul>' . lastfirst( $row );
-                $how_many_query = 'select a.id '
-                    . 'from attendance as a, attendance_types as t '
-                    . "where a.student = {$row[ 'id' ]} "
-                    . "and a.section = {$section_row[ 'id' ]} "
-                    . "and a.presence = t.id "
-                    . 'and t.type = "absent"';
-                $how_many_result = $db->query( $how_many_query );
-                $how_many = $how_many_result->num_rows;
-                print " (" . getOrdinal( $how_many ) . " absence)</ul>\n";
-            }
-            print "</ul>\n";
-        }
-    }
-    print "</div>  <!-- div#recent_absences -->\n";
+		    print '<ul>' . lastfirst( $row );
+		    $how_many_query = 'select a.id '
+			. 'from attendance as a, attendance_types as t '
+			. "where a.student = {$row[ 'id' ]} "
+			. "and a.section = {$section_row[ 'id' ]} "
+			. "and a.presence = t.id "
+			. 'and t.type = "absent"';
+		    $how_many_result = $db->query( $how_many_query );
+		    $how_many = $how_many_result->num_rows;
+		    print " (" . getOrdinal( $how_many ) . " absence)</ul>\n";
+		    $how_many_result->close();
+		}
+		print "</ul>\n";
+		$recent_absences_result->close();
+	    }
+	}
+	print "</div>  <!-- div#recent_absences -->\n";
 
     print "<div id=\"student_data\"></div>\n";
 }
@@ -172,6 +175,7 @@ $(document).ready(function(){
     var course  = "<?php echo $course_id; ?>";
     var section = "<?php echo $section; ?>";
 
+    /*
     // add parser through the tablesorter addParser method
     $.tablesorter.addParser({
         // set a unique id
@@ -183,23 +187,38 @@ $(document).ready(function(){
         format: function(s) {
             // format your data for normalization
             var m = null;
+	    alert(s);
             if( m = /value="([0-9])" selected/.exec(s.toLowerCase()) ) {
                 var v = m[1];
+		alert(v);
                 return v;
             }
         },
         // set type, either numeric or text
         type: 'numeric'
     });
+    */
 
     $(document).attr('title', $(document).attr('title') + ' :: <?php echo $course; ?>');
     
     $("#roster_table").tablesorter({
         sortList: [ [3,0], [1,0], [0,0] ],
         widgets: [ 'ocsw', 'clickable_rows' ],
+
+		// Thanks for this code to http://stackoverflow.com/questions/5904677/using-jquery-tablesorter-to-sort-columns-containing-drop-down-select-tags-and
+
+        textExtraction: function(node){
+            if( $(node).find('option:selected').text() != '' )
+                return $(node).find('option:selected').text();
+            else
+                return $(node).text();
+            }
+
+		/*
         headers: {
             3: { sorter: 'status' }
         }
+		*/
     });
     
     $('#roster_table td.average').each(function(){

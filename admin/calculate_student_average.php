@@ -69,6 +69,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     	       	}
             }
         }
+	$events_result->close();
     
     	// Do we drop the lowest grade of this type?
     	$drop_lowest_query = 'select d.id '
@@ -82,9 +83,11 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     	    $local_sum -= $min;
     	    $count--;
     	}
+	$drop_lowest_result->close();
 
         $sum += ( ( ( $count > 0 ? $local_sum / ( $count * 1.0 ) : 100 ) * 1.0 ) * ( $weight / 100 ) );
     }
+    $weights_result->close();
     print number_format( $sum, 2 );
 
     // Is this a credit-level class?
@@ -96,6 +99,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     $course_number_result = $db->query( $course_number_query );
     $course_number_row = $course_number_result->fetch_object( );
     //print "<pre>$course_number_row->course</pre>\n";
+    $course_number_result->close();
 
     $status_query = 'select s.status '
     	. 'from student_x_section as x, student_statuses as s '
@@ -104,6 +108,7 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     	. "and x.status = s.id";
     $status_result = $db->query( $status_query );
     $status_row = $status_result->fetch_object( );
+    $status_result->close();
     $letter_grade = '';
     if( $status_row->status != 'Grade' )
         $letter_grade = $status_row->status;
