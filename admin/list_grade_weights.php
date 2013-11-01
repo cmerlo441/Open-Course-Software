@@ -135,16 +135,18 @@ $(document).ready(function(){
 
 	$('input#new_weight_button').click(function(){
 		var type = $('select#new_weight').val();
-		var weight = $('input#new_weight_amount').val().replace('%','');
-		$.post( 'list_grade_weights.php',
-			{ course: course, type: type, weight: weight },
-			function(data){
-				$('div#weightsdiv').html(data);
-			}
-		)
-		var sum = "<?php echo $sum->sum; ?>";
-		if( sum == 100 )
-			$('div.warning').fadeOut( 100 );
+		if( type > 0 ) {
+    		var weight = $('input#new_weight_amount').val().replace('%','');
+    		$.post( 'list_grade_weights.php',
+    			{ course: course, type: type, weight: weight },
+    			function(data){
+    				$('div#weightsdiv').html(data);
+    			}
+    		)
+    		var sum = "<?php echo $sum->sum; ?>";
+    		if( sum == 100 )
+    			$('div.warning').fadeOut( 100 );
+        } // if a grade type has been chosen
 	})
 	
 	$('input:checkbox.collected').click(function(){

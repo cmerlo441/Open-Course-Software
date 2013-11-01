@@ -86,16 +86,22 @@ if( $_SESSION[ 'admin' ] == 1 ) {
     // Only add things to the Atom database that will be collected...
 
     if( $grade_type_row[ 'w' ] == 1 ) {
-    	$atom_title = "$section: New " . strtolower( $type ) . ' posted';
+    	$atom_title = "$section: New " . strtolower( $type );
         $atom_subtitle = '';
-        if( $title != '' )
+        if( $title != '' ) {
             $atom_subtitle = $title;
+	    $atom_title .= " \"$atom_subtitle\"";
+	}
+	$atom_title .= " posted";
         $atom_content = "$atom_title.  Due " . date( 'l, F jS', strtotime( $due_date ) ) . '.';
         $atom_url = "http://{$_SERVER[ 'SERVER_NAME' ]}$docroot/";
         $atom_query = 'insert into atom( id, title, subtitle, content, url, uuid, posted ) '
-            . "values( null, \"$atom_title\", \"$atom_subtitle\", \"$atom_content\", \"$atom_url\", \"" . uuid() . '", "'
-            . date( 'c' ) . "\" )";
-        print "<pre>$atom_query;</pre>\n";
+            . 'values( null, "' . htmlspecialchars( $atom_title ) . '", '
+	    . '"' . htmlspecialchars( $atom_subtitle ) . '", '
+	    . '"' . htmlspecialchars( $atom_content ) . '", '
+	    . '"' . htmlspecialchars( $atom_url ) . '", '
+	    . '"' . uuid() . '", "' . date( 'c' ) . '" )';
+        print $atom_query;
         $atom_result = $db->query( $atom_query );
         $atom_result->free();    
     }
@@ -117,8 +123,11 @@ if( $_SESSION[ 'admin' ] == 1 ) {
         }
         $atom_url = "http://{$_SERVER[ 'SERVER_NAME' ]}$docroot/";
         $atom_query = 'insert into atom( id, title, subtitle, content, url, uuid, posted ) '
-            . "values( null, \"$atom_title\", \"$atom_subtitle\", \"$atom_content\", \"$atom_url\", \"" . uuid() . '", "'
-            . date( 'c' ) . "\" )";
+            . 'values( null, "' . htmlspecialchars( $atom_title ) . '", '
+	    . '"' . htmlspecialchars( $atom_subtitle ) . '", '
+	    . '"' . htmlspecialchars( $atom_content ) . '", '
+	    . '"' . htmlspecialchars( $atom_url ) . '", '
+	    . '"' . uuid() . '", "' . date( 'c' ) . '" )';
         $atom_result = $db->query( $atom_query );
         $atom_result->free();    
     }
@@ -132,8 +141,11 @@ if( $_SESSION[ 'admin' ] == 1 ) {
         $atom_content = "$atom_title.  Due " . date( 'l, F jS', strtotime( $due_date ) ) . '.';
         $atom_url = "http://{$_SERVER[ 'SERVER_NAME' ]}$docroot/";
         $atom_query = 'insert into atom( id, title, subtitle, content, url, uuid, posted ) '
-            . "values( null, \"$atom_title\", \"$atom_subtitle\", \"$atom_content\", \"$atom_url\", \"" . uuid() . '", "'
-            . date( 'c' ) . "\" )";
+            . 'values( null, "' . htmlspecialchars( $atom_title ) . '", '
+	    . '"' . htmlspecialchars( $atom_subtitle ) . '", '
+	    . '"' . htmlspecialchars( $atom_content ) . '", '
+	    . '"' . htmlspecialchars( $atom_url ) . '", '
+	    . '"' . uuid() . '", "' . date( 'c' ) . '" )';
         $atom_result = $db->query( $atom_query );
         $atom_result->free();    
     }
