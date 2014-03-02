@@ -17,8 +17,20 @@ class Calendar {
         $this->first_day = date( "w", mktime( 0, 0, 0, $m, 1, $y ) );
         $this->num_days = date( "t", mktime( 0, 0, 0, $m, 1, $y ) );
         $this->docroot = $docroot;
+
+	/*
+	 * This code used to generate lots of error messages,
+	 * because $login_type and $login_section aren't
+	 * set anywhere.  I think the goal was to tailor
+	 * the Calendars to who was logged in, but
+	 * in developing the new version, this won't be
+	 * necessary.  More stuff commented out below because of this.
+
         $this->login_type = $login_type;
         $this->login_section = $login_section;
+
+	*/
+
         if( $attendance != 0 ) {
             $this->attendance = $attendance;
         }
@@ -86,13 +98,17 @@ class Calendar {
                 print "class=\"today\">";
             } else if( $col % 7 == 0 || $col % 7 == 6 ) {
                 print "class=\"weekend\">";
-            } else if( $this->attendance[ $date ] == 'Present' ) {
+            } else if( isset( $this->attendance[ $date ] ) &&
+		       $this->attendance[ $date ] == 'Present' ) {
                 print "class=\"present\">";
-            } else if( $this->attendance[ $date ] == 'Absent' ) {
+            } else if( isset( $this->attendance[ $date ]) &&
+		       $this->attendance[ $date ] == 'Absent' ) {
                 print "class=\"absent\">";
-            } else if( $this->attendance[ $date ] == 'Excused' ) {
+            } else if( isset( $this->attendance[ $date ]) &&
+		       $this->attendance[ $date ] == 'Excused' ) {
                 print "class=\"excused\">";
-            } else if( $this->holidays[ $date ] != '' ) {
+            } else if( isset( $this->holidays[ $date ] ) &&
+		       $this->holidays[ $date ] != '' ) {
                 print "class=\"holiday\" title=\""
 		    . $this->holidays[ $date ][ 'description' ]
 		    . '.  ';
@@ -156,6 +172,8 @@ class Calendar {
     */
     
     function event_list( ) {
+
+	/* We don't need this stuff.
     
         $login_types = array( );
         
@@ -164,6 +182,8 @@ class Calendar {
         while( $row = $lt_result->fetch_assoc( ) ) {
             $login_types[ $row[ 'type' ] ] = $row[ 'id' ];
         }
+
+	*/
         
         $now = date( "Y-m-d H:i:s" );
         $today = date( "Y-m-d" );
